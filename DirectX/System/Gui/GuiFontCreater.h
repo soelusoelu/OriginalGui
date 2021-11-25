@@ -51,9 +51,10 @@ private:
     static unsigned stbAdler32(unsigned adler32, unsigned char* buffer, unsigned buflen);
 
 private:
-    static unsigned char* stb__barrier_out_e, * stb__barrier_out_b;
-    static const unsigned char* stb__barrier_in_b;
-    static unsigned char* stb__dout;
+    static inline unsigned char* stb__barrier_out_e = nullptr;
+    static inline unsigned char* stb__barrier_out_b = nullptr;
+    static inline const unsigned char* stb__barrier_in_b = nullptr;
+    static inline unsigned char* stb__dout = nullptr;
 
     static constexpr int PROGGY_CLEAN_TTF_COMPRESSED_DATA_BASE85_SIZE = 11980;
     static constexpr char PROGGY_CLEAN_TTF_COMPRESSED_DATA_BASE85[PROGGY_CLEAN_TTF_COMPRESSED_DATA_BASE85_SIZE + 1] = {

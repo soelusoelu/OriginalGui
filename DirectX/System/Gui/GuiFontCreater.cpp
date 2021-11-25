@@ -53,7 +53,8 @@ std::shared_ptr<GuiFont> GuiFontCreater::addFontFromMemoryTTF(
     if (glyphRanges) {
         cfg.glyphRanges = glyphRanges;
     }
-    return AddFont(&cfg);
+    //return AddFont(&cfg);
+    return nullptr;
 }
 
 std::shared_ptr<GuiFont> GuiFontCreater::addFontFromMemoryCompressedTTF(
