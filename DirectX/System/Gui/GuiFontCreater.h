@@ -3,6 +3,7 @@
 #include "GuiFont.h"
 #include "GuiFontConfig.h"
 #include <memory>
+#include <vector>
 
 class GuiFontCreater {
 public:
@@ -17,13 +18,12 @@ private:
 
     static std::unique_ptr<GuiFont> addFont(GuiFontConfig& config);
     static std::unique_ptr<GuiFont> addFontFromMemoryTTF(
-        void* fontData,
-        int fontSize,
+        std::vector<unsigned char>& fontData,
         GuiFontConfig& config,
         const wchar_t* glyphRanges = nullptr
     );
     static std::unique_ptr<GuiFont> addFontFromMemoryCompressedTTF(
-        const void* compressedFontData,
+        const unsigned char* compressedFontData,
         int compressedFontSize,
         GuiFontConfig& config,
         const wchar_t* glyphRanges = nullptr

@@ -170,6 +170,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="System\Gui\GuiBitVector.cpp" />
+    <ClCompile Include="System\Gui\GuiFontInitializer.cpp" />
+    <ClCompile Include="System\Gui\GuiCursor.cpp" />
     <ClCompile Include="System\Gui\GuiFontCreater.cpp" />
     <ClCompile Include="System\Gui\GuiFontAtlas.cpp" />
     <ClCompile Include="System\Gui\GuiContext.cpp" />
@@ -215,6 +218,7 @@
     <ClCompile Include="Mesh\Fbx\Reader\FbxReader.cpp" />
     <ClCompile Include="Mesh\Fbx\FbxMesh.cpp" />
     <ClCompile Include="Mesh\Fbx\FbxParser.cpp" />
+    <ClCompile Include="System\Gui\TrueType.cpp" />
     <ClCompile Include="Utility\JsonHelper.cpp" />
     <ClCompile Include="System\Shader\DataTransfer.cpp" />
     <ClCompile Include="Engine\Camera\EngineCamera.cpp" />
@@ -422,12 +426,17 @@
     <ClCompile Include="Engine\ModelViewer\VertexSelector.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="System\Gui\FontInfo.h" />
+    <ClInclude Include="System\Gui\GuiBitVector.h" />
+    <ClInclude Include="System\Gui\GuiFontInitializer.h" />
+    <ClInclude Include="System\Gui\GuiCursor.h" />
     <ClInclude Include="System\Gui\GuiFont.h" />
     <ClInclude Include="System\Gui\GuiFontCreater.h" />
     <ClInclude Include="System\Gui\GuiFontAtlas.h" />
     <ClInclude Include="System\Gui\GuiContext.h" />
     <ClInclude Include="System\Gui\Gui.h" />
     <ClInclude Include="System\Gui\GuiFontConfig.h" />
+    <ClInclude Include="System\Gui\GuiPlatform.h" />
     <ClInclude Include="System\Texture\Format\PNG\BackgroundColor.h" />
     <ClInclude Include="System\Texture\Format\PNG\ImageLastModificationTime.h" />
     <ClInclude Include="System\Texture\Format\PNG\InflateDataToColorConverter.h" />
@@ -491,6 +500,7 @@
     <ClInclude Include="Mesh\Fbx\FbxParser.h" />
     <ClInclude Include="System\Texture\Format\ITextureReader.h" />
     <ClInclude Include="System\Texture\Format\PNG\TextureData.h" />
+    <ClInclude Include="System\Gui\TrueType.h" />
     <ClInclude Include="Utility\JsonHelper.h" />
     <ClInclude Include="System\Shader\DataTransfer.h" />
     <ClInclude Include="Engine\Camera\EngineCamera.h" />

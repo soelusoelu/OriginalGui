@@ -4,15 +4,11 @@
 #include <vector>
 
 struct GuiFont {
-    GuiFontConfig& config;
+    GuiFontConfig config;
 
     std::vector<float> indexAdvanceX;
     float fallbackAdvanceX = 0.f;
     float fontSize = 0.f;
 
     std::vector<wchar_t> indexLookup;
-
-    GuiFont(GuiFontConfig& config)
-        : config(config) {
-    }
 };

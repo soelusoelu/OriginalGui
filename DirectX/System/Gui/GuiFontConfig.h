@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "../../Math/Math.h"
+#include <vector>
 
 //struct GuiFontConfig {
 //    //フォントデータ
@@ -51,9 +52,7 @@
 
 struct GuiFontConfig {
     //フォントデータ
-    void* fontData = nullptr;
-    //フォントデータサイズ
-    int fontDataSize = 0;
+    std::vector<unsigned char> fontData;
     //ピクセル単位でのサイズ
     float pixelsSize = 0.f;
     //サブピクセルの位置決めのために、より高い品質でラスタライズする
@@ -70,9 +69,9 @@ struct GuiFontConfig {
     Vector2 glyphExtraSpacing = Vector2::zero;
     //このフォント入力からすべてのグリフをオフセットする
     Vector2 glyphOffset = Vector2::zero;
-    //ユーザーが提供するUnicode範囲のリストへのポインタ(1つの範囲につき2つの値、値は包括的、ゼロ終端のリスト)
+    //ユーザーが提供するUnicode範囲のリストへのポインタ(1つの範囲につき2つの値、値は包括的)
     //この配列データは、フォントが生きている限り持続する必要がある
-    const wchar_t* glyphRanges = nullptr;
+    std::vector<wchar_t> glyphRanges;
     //グリフの最小AdvanceX、Minを設定してフォントアイコンを揃える
     //Min/Maxの両方を設定してモノスペースフォントを強制する
     float glyphMinAdvanceX = 0.f;

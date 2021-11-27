@@ -272,6 +272,10 @@
     <ClCompile Include="System\Gui\GuiContext.cpp" />
     <ClCompile Include="System\Gui\GuiFontAtlas.cpp" />
     <ClCompile Include="System\Gui\GuiFontCreater.cpp" />
+    <ClCompile Include="System\Gui\GuiCursor.cpp" />
+    <ClCompile Include="System\Gui\GuiFontInitializer.cpp" />
+    <ClCompile Include="System\Gui\GuiBitVector.cpp" />
+    <ClCompile Include="System\Gui\TrueType.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Component\ComponentManager.h" />
@@ -618,6 +622,12 @@
     <ClInclude Include="System\Gui\GuiFontConfig.h" />
     <ClInclude Include="System\Gui\GuiFontCreater.h" />
     <ClInclude Include="System\Gui\GuiFont.h" />
+    <ClInclude Include="System\Gui\GuiCursor.h" />
+    <ClInclude Include="System\Gui\GuiPlatform.h" />
+    <ClInclude Include="System\Gui\GuiFontInitializer.h" />
+    <ClInclude Include="System\Gui\GuiBitVector.h" />
+    <ClInclude Include="System\Gui\TrueType.h" />
+    <ClInclude Include="System\Gui\FontInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\MeshCommonHeader.hlsli" />
