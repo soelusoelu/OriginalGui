@@ -10,29 +10,27 @@ public:
     ~GuiFontCreater() = delete;
 
     //デフォルトフォントを作成する
-    static void createDefaultFont(const GuiFontConfig* config = nullptr);
+    static std::unique_ptr<GuiFont> createDefaultFont(const GuiFontConfig* config = nullptr);
 
 private:
     static const wchar_t* getGlyphRangesDefault();
 
-    static std::shared_ptr<GuiFont> addFontFromMemoryTTF(
+    static std::unique_ptr<GuiFont> addFont(GuiFontConfig& config);
+    static std::unique_ptr<GuiFont> addFontFromMemoryTTF(
         void* fontData,
         int fontSize,
-        float pixelsSize,
-        const GuiFontConfig* config = nullptr,
+        GuiFontConfig& config,
         const wchar_t* glyphRanges = nullptr
     );
-    static std::shared_ptr<GuiFont> addFontFromMemoryCompressedTTF(
+    static std::unique_ptr<GuiFont> addFontFromMemoryCompressedTTF(
         const void* compressedFontData,
         int compressedFontSize,
-        float pixelsSize,
-        const GuiFontConfig* config = nullptr,
+        GuiFontConfig& config,
         const wchar_t* glyphRanges = nullptr
     );
-    static std::shared_ptr<GuiFont> addFontFromMemoryCompressedBase85TTF(
+    static std::unique_ptr<GuiFont> addFontFromMemoryCompressedBase85TTF(
         const char* compressedFontDataBase85,
-        float pixelsSize,
-        const GuiFontConfig* config = nullptr,
+        GuiFontConfig& config,
         const wchar_t* glyphRanges = nullptr
     );
 

@@ -19,6 +19,7 @@
 #include "../Sound/XAudio2/SoundEngine.h"
 #include "../Utility/LevelLoader.h"
 #include "../Utility/Random.h"
+#include "../System/Gui/Gui.h"
 
 Game::Game()
     : mWindow(nullptr)
@@ -97,6 +98,9 @@ void Game::initialize() {
     InputManager::initialize(hwnd);
     GameObjectCreater::initialize();
     mSceneManager->initialize();
+
+    auto gui = std::make_unique<Gui>();
+    int a = 0;
 }
 
 void Game::mainLoop() {

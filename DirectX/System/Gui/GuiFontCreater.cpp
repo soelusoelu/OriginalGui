@@ -3,7 +3,7 @@
 #include <cassert>
 #include <vector>
 
-void GuiFontCreater::createDefaultFont(const GuiFontConfig* config) {
+std::unique_ptr<GuiFont> GuiFontCreater::createDefaultFont(const GuiFontConfig* config) {
     auto cfg = (config) ? *config : GuiFontConfig();
 
     if (!config) {
@@ -15,17 +15,17 @@ void GuiFontCreater::createDefaultFont(const GuiFontConfig* config) {
     if (cfg.pixelsSize <= 0.f) {
         cfg.pixelsSize = 13.f;
     }
-    cfg.ellipsisChar = static_cast<wchar_t>(0x0085);
+    //cfg.ellipsisChar = static_cast<wchar_t>(0x0085);
     cfg.glyphOffset.y = floorf(cfg.pixelsSize / 13.f); //13ユニットごとにオフセットを1追加
 
     const auto glyphRanges = (cfg.glyphRanges) ? cfg.glyphRanges : getGlyphRangesDefault();
     auto font = addFontFromMemoryCompressedBase85TTF(
         PROGGY_CLEAN_TTF_COMPRESSED_DATA_BASE85,
-        cfg.pixelsSize,
-        &cfg,
+        cfg,
         glyphRanges
     );
-    //return font;
+
+    return font;
 }
 
 const wchar_t* GuiFontCreater::getGlyphRangesDefault() {
@@ -36,56 +36,57 @@ const wchar_t* GuiFontCreater::getGlyphRangesDefault() {
     return &ranges[0];
 }
 
-std::shared_ptr<GuiFont> GuiFontCreater::addFontFromMemoryTTF(
+std::unique_ptr<GuiFont> GuiFontCreater::addFont(GuiFontConfig& config) {
+    //assert(!Locked && "Cannot modify a locked ImFontAtlas between NewFrame() and EndFrame/Render()!");
+    assert(config.fontData && config.fontDataSize > 0);
+    assert(config.pixelsSize > 0.0f);
+
+    return std::make_unique<GuiFont>(config);
+}
+
+std::unique_ptr<GuiFont> GuiFontCreater::addFontFromMemoryTTF(
     void* fontData,
     int fontSize,
-    float pixelsSize,
-    const GuiFontConfig* config,
+    GuiFontConfig& config,
     const wchar_t* glyphRanges
 ) {
     //assert(!Locked && "Cannot modify a locked ImFontAtlas between NewFrame() and EndFrame/Render()!");
-    auto cfg = config ? *config : GuiFontConfig();
-    assert(cfg.fontData == nullptr);
+    assert(!config.fontData);
 
-    cfg.fontData = fontData;
-    cfg.fontDataSize = fontSize;
-    cfg.pixelsSize = pixelsSize;
+    config.fontData = fontData;
+    config.fontDataSize = fontSize;
     if (glyphRanges) {
-        cfg.glyphRanges = glyphRanges;
+        config.glyphRanges = glyphRanges;
     }
-    //return AddFont(&cfg);
-    return nullptr;
+    return addFont(config);
 }
 
-std::shared_ptr<GuiFont> GuiFontCreater::addFontFromMemoryCompressedTTF(
+std::unique_ptr<GuiFont> GuiFontCreater::addFontFromMemoryCompressedTTF(
     const void* compressedFontData,
     int compressedFontSize,
-    float pixelsSize,
-    const GuiFontConfig* config,
+    GuiFontConfig& config,
     const wchar_t* glyphRanges
 ) {
     unsigned bufDecompressedSize = stbDecompressLength(static_cast<const unsigned char*>(compressedFontData));
     std::vector<unsigned char> bufDecompressedData(bufDecompressedSize);
     stbDecompress(bufDecompressedData.data(), (const unsigned char*)compressedFontData, compressedFontSize);
 
-    auto cfg = config ? *config : GuiFontConfig();
-    assert(cfg.fontData == nullptr);
+    assert(!config.fontData);
 
-    cfg.fontDataOwnedByAtlas = true;
-    return addFontFromMemoryTTF(bufDecompressedData.data(), bufDecompressedSize, pixelsSize, &cfg, glyphRanges);
+    //cfg.fontDataOwnedByAtlas = true;
+    return addFontFromMemoryTTF(bufDecompressedData.data(), bufDecompressedSize, config, glyphRanges);
 }
 
-std::shared_ptr<GuiFont> GuiFontCreater::addFontFromMemoryCompressedBase85TTF(
+std::unique_ptr<GuiFont> GuiFontCreater::addFontFromMemoryCompressedBase85TTF(
     const char* compressedFontDataBase85,
-    float pixelsSize,
-    const GuiFontConfig* config,
+    GuiFontConfig& config,
     const wchar_t* glyphRanges
 ) {
     constexpr int compressedTTFSize = ((PROGGY_CLEAN_TTF_COMPRESSED_DATA_BASE85_SIZE + 4) / 5) * 4;
     unsigned char compressedTTF[compressedTTFSize] = { 0 };
     decode85(compressedTTF, reinterpret_cast<const unsigned char*>(compressedFontDataBase85));
-    auto font = addFontFromMemoryCompressedTTF(compressedTTF, compressedTTFSize, pixelsSize, config, glyphRanges);
-    return std::shared_ptr<GuiFont>();
+
+    return addFontFromMemoryCompressedTTF(compressedTTF, compressedTTFSize, config, glyphRanges);
 }
 
 unsigned GuiFontCreater::stbDecompress(unsigned char* dst, const unsigned char* src, unsigned length) {

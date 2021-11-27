@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+#include "GuiFont.h"
+#include <memory>
+
 class GuiFontAtlas {
 public:
     GuiFontAtlas();
@@ -8,8 +11,6 @@ public:
     GuiFontAtlas& operator=(const GuiFontAtlas&) = delete;
 
 private:
-    void createFontTexture();
-
-private:
     int mTexID;
+    std::unique_ptr<GuiFont> mFont;
 };

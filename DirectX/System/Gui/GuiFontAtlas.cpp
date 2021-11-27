@@ -1,13 +1,10 @@
 ﻿#include "GuiFontAtlas.h"
+#include "GuiFontCreater.h"
 
 GuiFontAtlas::GuiFontAtlas()
     : mTexID(-1)
+    , mFont(GuiFontCreater::createDefaultFont())
 {
-    createFontTexture();
 }
 
 GuiFontAtlas::~GuiFontAtlas() = default;
-
-void GuiFontAtlas::createFontTexture() {
-
-}
