@@ -4,6 +4,7 @@
 #include "GuiBitVector.h"
 #include "GuiFontConfig.h"
 #include "GuiRect.h"
+#include "PackContext.h"
 #include "TrueType.h"
 #include <vector>
 
@@ -56,7 +57,6 @@ private:
         GuiFontBuildSrcData& src,
         GuiFontBuildDstData& dst
     );
-
     static void unpackBitVectorToFlatIndexList(
         std::vector<int>& dst,
         const GuiBitVector& src
@@ -69,4 +69,8 @@ private:
         const GuiFontConfig& config,
         int totalGlyphsCount
     );
+
+    //パッキング開始
+    static void startPacking(PackContext& packContext, const GuiFontAtlas& font);
+    static void fontAtlasBuildPackCustomRects(GuiFontAtlas& font, void* contextOpaque);
 };

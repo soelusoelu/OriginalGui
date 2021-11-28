@@ -2,6 +2,7 @@
 
 #include "FontInfo.h"
 #include "GuiFontConfig.h"
+#include "PackContext.h"
 #include "../../Math/Math.h"
 
 struct PackedChar {
@@ -59,6 +60,16 @@ public:
         int* y0 = nullptr,
         int* x1 = nullptr,
         int* y1 = nullptr
+    );
+
+    static void packBegin(
+        PackContext& packContext,
+        unsigned char* pixels,
+        int pw,
+        int ph,
+        int strideInBytes,
+        int padding,
+        void* allocContext
     );
 
 private:

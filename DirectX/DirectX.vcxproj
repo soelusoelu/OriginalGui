@@ -428,6 +428,7 @@
   <ItemGroup>
     <ClInclude Include="System\Gui\FontInfo.h" />
     <ClInclude Include="System\Gui\GuiBitVector.h" />
+    <ClInclude Include="System\Gui\GuiFontAtlasCustomRect.h" />
     <ClInclude Include="System\Gui\GuiFontInitializer.h" />
     <ClInclude Include="System\Gui\GuiCursor.h" />
     <ClInclude Include="System\Gui\GuiFont.h" />
@@ -438,6 +439,7 @@
     <ClInclude Include="System\Gui\GuiFontConfig.h" />
     <ClInclude Include="System\Gui\GuiPlatform.h" />
     <ClInclude Include="System\Gui\GuiRect.h" />
+    <ClInclude Include="System\Gui\PackContext.h" />
     <ClInclude Include="System\Texture\Format\PNG\BackgroundColor.h" />
     <ClInclude Include="System\Texture\Format\PNG\ImageLastModificationTime.h" />
     <ClInclude Include="System\Texture\Format\PNG\InflateDataToColorConverter.h" />

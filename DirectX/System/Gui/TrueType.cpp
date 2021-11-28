@@ -1,5 +1,6 @@
 ﻿#include "TrueType.h"
 #include "GuiPlatform.h"
+#include "GuiRect.h"
 #include <cassert>
 
 bool TrueType::initializeFont(FontInfo& info, const GuiFontConfig& config) {
@@ -244,6 +245,38 @@ bool TrueType::getGlyphBox(
     }
 
     return true;
+}
+
+void TrueType::packBegin(
+    PackContext& packContext,
+    unsigned char* pixels,
+    int pw,
+    int ph,
+    int strideInBytes,
+    int padding,
+    void* allocContext
+) {
+    rpContext* context = new rpContext();
+    int numNodes = pw - padding;
+    rpNode* nodes = new rpNode[numNodes];
+
+    packContext.userAllocatorContext = allocContext;
+    packContext.width = pw;
+    packContext.height = ph;
+    packContext.pixels = pixels;
+    packContext.packInfo = context;
+    packContext.nodes = nodes;
+    packContext.padding = padding;
+    packContext.strideInBytes = (strideInBytes != 0) ? strideInBytes : pw;
+    packContext.hOversample = 1;
+    packContext.vOversample = 1;
+    packContext.skipMissing = 0;
+
+    context->initialize(pw - padding, ph - padding, nodes, numNodes);
+
+    if (pixels) {
+        memset(pixels, 0, pw * ph);
+    }
 }
 
 unsigned TrueType::findTable(const unsigned char* data, const char* tag) {

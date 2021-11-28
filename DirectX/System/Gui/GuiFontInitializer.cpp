@@ -1,7 +1,9 @@
 ﻿#include "GuiFontInitializer.h"
 #include "GuiFontAtlas.h"
+#include "GuiFontAtlasCustomRect.h"
 #include "GuiFontConfig.h"
 #include "GuiRect.h"
+#include "PackContext.h"
 #include "TrueType.h"
 #include <algorithm>
 #include <cassert>
@@ -26,8 +28,10 @@ void GuiFontInitializer::initialize(GuiFontAtlas& font) {
     }
 
     unpackBitMap(srcData, dstData);
-
     packVirtualCanvas(srcData, font, config, totalGlyphsCount);
+
+    PackContext packContext = { 0 };
+    startPacking(packContext, font);
 }
 
 bool GuiFontInitializer::checkRequestedCodepoint(
@@ -159,4 +163,44 @@ void GuiFontInitializer::packVirtualCanvas(
     } else {
         w = 512;
     }
+}
+
+void GuiFontInitializer::startPacking(PackContext& packContext, const GuiFontAtlas& font) {
+    constexpr int TEX_HEIGHT_MAX = 1024 * 32;
+
+    TrueType::packBegin(
+        packContext,
+        nullptr,
+        font.getFont().texWidth,
+        TEX_HEIGHT_MAX,
+        0,
+        font.getTexGlyphPadding(),
+        nullptr
+    );
+
+    //ImFontAtlasBuildPackCustomRects(atlas, spc.pack_info);
+}
+
+void GuiFontInitializer::fontAtlasBuildPackCustomRects(GuiFontAtlas& font, void* contextOpaque) {
+    rpContext* packContext = static_cast<rpContext*>(contextOpaque);
+    assert(packContext);
+
+    //std::vector<GuiFontAtlasCustomRect>& user_rects = font.CustomRects;
+    //IM_ASSERT(user_rects.Size >= 1); // We expect at least the default custom rects to be registered, else something went wrong.
+
+    //ImVector<stbrp_rect> pack_rects;
+    //pack_rects.resize(user_rects.Size);
+    //memset(pack_rects.Data, 0, (size_t)pack_rects.size_in_bytes());
+    //for (int i = 0; i < user_rects.Size; i++) {
+    //    pack_rects[i].w = user_rects[i].Width;
+    //    pack_rects[i].h = user_rects[i].Height;
+    //}
+    //stbrp_pack_rects(packContext, &pack_rects[0], pack_rects.Size);
+    //for (int i = 0; i < pack_rects.Size; i++)
+    //    if (pack_rects[i].was_packed) {
+    //        user_rects[i].X = pack_rects[i].x;
+    //        user_rects[i].Y = pack_rects[i].y;
+    //        IM_ASSERT(pack_rects[i].w == user_rects[i].Width && pack_rects[i].h == user_rects[i].Height);
+    //        atlas->TexHeight = ImMax(atlas->TexHeight, pack_rects[i].y + pack_rects[i].h);
+    //    }
 }

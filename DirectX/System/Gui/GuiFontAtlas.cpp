@@ -9,7 +9,7 @@ GuiFontAtlas::GuiFontAtlas()
     , mFont(GuiFontCreater::createDefaultFont())
     , mCursor(std::make_unique<GuiCursor>())
 {
-    GuiFontInitializer::initialize(*this);
+    //GuiFontInitializer::initialize(*this);
 }
 
 GuiFontAtlas::~GuiFontAtlas() = default;
