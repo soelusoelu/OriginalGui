@@ -437,6 +437,7 @@
     <ClInclude Include="System\Gui\Gui.h" />
     <ClInclude Include="System\Gui\GuiFontConfig.h" />
     <ClInclude Include="System\Gui\GuiPlatform.h" />
+    <ClInclude Include="System\Gui\GuiRect.h" />
     <ClInclude Include="System\Texture\Format\PNG\BackgroundColor.h" />
     <ClInclude Include="System\Texture\Format\PNG\ImageLastModificationTime.h" />
     <ClInclude Include="System\Texture\Format\PNG\InflateDataToColorConverter.h" />

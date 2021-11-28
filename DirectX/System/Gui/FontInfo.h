@@ -2,6 +2,12 @@
 
 #include <vector>
 
+struct GuiBuf {
+    unsigned char* data = nullptr;
+    int cursor = 0;
+    int size = 0;
+};
+
 struct FontInfo {
     //フォントデータへのポインタ
     std::vector<unsigned char> data;

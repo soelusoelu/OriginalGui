@@ -5,6 +5,7 @@
 
 GuiFontAtlas::GuiFontAtlas()
     : mTexID(-1)
+    , mTexGlyphPadding(1)
     , mFont(GuiFontCreater::createDefaultFont())
     , mCursor(std::make_unique<GuiCursor>())
 {
@@ -13,7 +14,11 @@ GuiFontAtlas::GuiFontAtlas()
 
 GuiFontAtlas::~GuiFontAtlas() = default;
 
-const GuiFont& GuiFontAtlas::getFont() const {
+int GuiFontAtlas::getTexGlyphPadding() const {
+    return mTexGlyphPadding;
+}
+
+GuiFont& GuiFontAtlas::getFont() const {
     return *mFont;
 }
 

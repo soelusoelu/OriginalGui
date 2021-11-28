@@ -12,11 +12,14 @@ public:
     GuiFontAtlas(const GuiFontAtlas&) = delete;
     GuiFontAtlas& operator=(const GuiFontAtlas&) = delete;
 
-    const GuiFont& getFont() const;
+    int getTexGlyphPadding() const;
+    GuiFont& getFont() const;
     const GuiCursor& getCursor() const;
 
 private:
     int mTexID;
+    //テクスチャ内のグリフ間のパディング(ピクセル単位)
+    int mTexGlyphPadding;
     std::unique_ptr<GuiFont> mFont;
     std::unique_ptr<GuiCursor> mCursor;
 };

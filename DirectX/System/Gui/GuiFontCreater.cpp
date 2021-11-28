@@ -70,7 +70,7 @@ std::unique_ptr<GuiFont> GuiFontCreater::addFontFromMemoryCompressedTTF(
 ) {
     unsigned bufDecompressedSize = stbDecompressLength(compressedFontData);
     std::vector<unsigned char> bufDecompressedData(bufDecompressedSize);
-    stbDecompress(bufDecompressedData.data(), (const unsigned char*)compressedFontData, compressedFontSize);
+    stbDecompress(bufDecompressedData.data(), compressedFontData, compressedFontSize);
 
     assert(config.fontData.empty());
 

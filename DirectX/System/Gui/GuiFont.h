@@ -10,5 +10,8 @@ struct GuiFont {
     float fallbackAdvanceX = 0.f;
     float fontSize = 0.f;
 
+    unsigned texWidth = 0;
+    unsigned texHeight = 0;
+
     std::vector<wchar_t> indexLookup;
 };

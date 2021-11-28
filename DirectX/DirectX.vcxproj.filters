@@ -628,6 +628,7 @@
     <ClInclude Include="System\Gui\GuiBitVector.h" />
     <ClInclude Include="System\Gui\TrueType.h" />
     <ClInclude Include="System\Gui\FontInfo.h" />
+    <ClInclude Include="System\Gui\GuiRect.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\MeshCommonHeader.hlsli" />
