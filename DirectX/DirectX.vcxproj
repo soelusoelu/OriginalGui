@@ -170,6 +170,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="System\Gui\GuiDrawList.cpp" />
+    <ClCompile Include="System\Gui\GuiWindow.cpp" />
     <ClCompile Include="System\Gui\GuiBitVector.cpp" />
     <ClCompile Include="System\Gui\GuiFontInitializer.cpp" />
     <ClCompile Include="System\Gui\GuiCursor.cpp" />
@@ -426,6 +428,11 @@
     <ClCompile Include="Engine\ModelViewer\VertexSelector.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="System\Gui\DrawCornerFlags.h" />
+    <ClInclude Include="System\Gui\GuiDrawCommand.h" />
+    <ClInclude Include="System\Gui\GuiDrawList.h" />
+    <ClInclude Include="System\Gui\GuiDrawListSharedData.h" />
+    <ClInclude Include="System\Gui\GuiWindow.h" />
     <ClInclude Include="System\Gui\FontInfo.h" />
     <ClInclude Include="System\Gui\GuiBitVector.h" />
     <ClInclude Include="System\Gui\GuiFontAtlasCustomRect.h" />

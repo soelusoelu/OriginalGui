@@ -151,24 +151,24 @@ void ModelViewer::draw(const Renderer& renderer) const {
 
 void ModelViewer::drawGUI() const {
     //マウス位置を補正する
-    const auto& mousePos = Input::mouse().getMousePosition();
-    ImGui::GetIO().MousePos = ImVec2(mousePos.x, mousePos.y);
-    //ウィンドウ位置を固定
-    ImGui::SetNextWindowPos(ImVec2(Window::width(), 0.f), ImGuiCond_Always);
-    //ウィンドウサイズを固定
-    ImGui::SetNextWindowSize(ImVec2(Window::standardWidth() - Window::width(), Window::standardHeight()), ImGuiCond_Always);
+    //const auto& mousePos = Input::mouse().getMousePosition();
+    //ImGui::GetIO().MousePos = ImVec2(mousePos.x, mousePos.y);
+    ////ウィンドウ位置を固定
+    //ImGui::SetNextWindowPos(ImVec2(Window::width(), 0.f), ImGuiCond_Always);
+    ////ウィンドウサイズを固定
+    //ImGui::SetNextWindowSize(ImVec2(Window::standardWidth() - Window::width(), Window::standardHeight()), ImGuiCond_Always);
 
-    ImGui::Begin("ModelViewer");
+    //ImGui::Begin("ModelViewer");
 
-    mLight->drawGUI();
-    ImGui::Separator(); //区切り線
-    mPlane->drawGUI();
-    if (mMode == ModelViewerMode::COLLIDER_OPERATE) {
-        ImGui::Separator(); //区切り線
-        mColliderManager->drawGUI();
-    }
+    //mLight->drawGUI();
+    //ImGui::Separator(); //区切り線
+    //mPlane->drawGUI();
+    //if (mMode == ModelViewerMode::COLLIDER_OPERATE) {
+    //    ImGui::Separator(); //区切り線
+    //    mColliderManager->drawGUI();
+    //}
 
-    ImGui::End();
+    //ImGui::End();
 }
 
 void ModelViewer::changeMode(ModelViewerMode mode) {

@@ -116,6 +116,21 @@ void Game::mainLoop() {
     InputManager::update();
     mWindow->update();
 
+    {
+        ////ウィンドウ位置
+        //ImGui::SetNextWindowPos(ImVec2(800.f, 256.f), ImGuiCond_Once);
+        ////ウィンドウサイズ
+        //ImGui::SetNextWindowSize(ImVec2(256.f, 512.f), ImGuiCond_Once);
+        ////ウィンドウを不透明に
+        //ImGui::SetNextWindowBgAlpha(1.f);
+
+        bool isOpen = false;
+        ImGui::Begin("OBBOption", &isOpen);
+        //static int num = 0;
+        //ImGui::DragInt("drag", &num);
+        ImGui::End();
+    }
+
     mSceneManager->update();
     mSceneManager->draw();
 
