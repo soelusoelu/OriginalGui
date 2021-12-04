@@ -1,26 +1,29 @@
 ﻿#include "GuiContext.h"
+#include "Gui.h"
 #include "GuiFontAtlas.h"
 #include "GuiRenderer.h"
 #include "GuiWindow.h"
 #include <cassert>
 
 GuiContext::GuiContext()
-    : mFontAtlas(std::make_unique<GuiFontAtlas>())
+    //: mFontAtlas(std::make_unique<GuiFontAtlas>())
+    : mFontAtlas(nullptr)
     , mGuiRenderer(std::make_unique<GuiRenderer>())
     , mDrawListSharedData()
 {
+    Gui::mContext = this;
 }
 
-GuiContext::~GuiContext() = default;
-
-std::shared_ptr<GuiWindow> GuiContext::createWindow(const std::string & name, bool endButton) {
-    auto window = std::make_shared<GuiWindow>(*this, name, endButton);
-    mWindows.emplace_back(window);
-    return window;
+GuiContext::~GuiContext() {
+    Gui::mContext = nullptr;
 }
 
 void GuiContext::draw() {
     mGuiRenderer->draw(*this);
+}
+
+void GuiContext::addWindow(const std::shared_ptr<GuiWindow>& window) {
+    mWindows.emplace_back(window);
 }
 
 const GuiDrawListSharedData& GuiContext::getDrawListSharedData() const {

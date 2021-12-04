@@ -12,7 +12,7 @@ public:
     GuiWindow(
         GuiContext& context,
         const std::string& name,
-        bool endButton = false
+        bool endButton
     );
     ~GuiWindow();
     GuiDrawList& getDrawList() const;

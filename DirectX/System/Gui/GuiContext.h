@@ -16,10 +16,10 @@ public:
     GuiContext(const GuiContext&) = delete;
     GuiContext& operator=(const GuiContext&) = delete;
 
-    //ウィンドウの作成
-    std::shared_ptr<GuiWindow> createWindow(const std::string& name, bool endButton = false);
     //すべてのGuiを描画する
     void draw();
+    //ウィンドウの追加
+    void addWindow(const std::shared_ptr<GuiWindow>& window);
     //DrawListSharedDataを取得する
     const GuiDrawListSharedData& getDrawListSharedData() const;
     //ウィンドウを取得する

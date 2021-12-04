@@ -19,6 +19,7 @@
 #include "../Sound/XAudio2/SoundEngine.h"
 #include "../Utility/LevelLoader.h"
 #include "../Utility/Random.h"
+#include "../System/Gui/Gui.h"
 #include "../System/Gui/GuiContext.h"
 #include "../System/Gui/GuiWindow.h"
 
@@ -103,7 +104,7 @@ void Game::initialize() {
     mSceneManager->initialize();
 
     mGuiContext = std::make_unique<GuiContext>();
-    mGuiWindow = mGuiContext->createWindow("");
+    mGuiWindow = Gui::createWindow("");
 }
 
 void Game::mainLoop() {

@@ -279,6 +279,7 @@
     <ClCompile Include="System\Gui\GuiWindow.cpp" />
     <ClCompile Include="System\Gui\GuiDrawList.cpp" />
     <ClCompile Include="System\Gui\GuiRenderer.cpp" />
+    <ClCompile Include="System\Gui\Gui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Component\ComponentManager.h" />
@@ -640,6 +641,7 @@
     <ClInclude Include="System\Gui\GuiDrawListSharedData.h" />
     <ClInclude Include="System\Gui\GuiRenderer.h" />
     <ClInclude Include="System\Gui\GuiVertex.h" />
+    <ClInclude Include="System\Gui\Gui.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\MeshCommonHeader.hlsli" />
