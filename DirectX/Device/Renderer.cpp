@@ -6,13 +6,13 @@
 #include "../Utility/LevelLoader.h"
 
 Renderer::Renderer() :
-    mGBuffer(std::make_unique<GBuffer>()) {
+    mGBuffer(nullptr) {
 }
 
 Renderer::~Renderer() = default;
 
 void Renderer::initialize() {
-    mGBuffer->create();
+    //mGBuffer->create();
 }
 
 void Renderer::renderToTexture() {

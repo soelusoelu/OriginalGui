@@ -89,3 +89,8 @@ struct ShadowConstantBuffer {
     Matrix4 lightView; //ライトの視点
     Matrix4 lightProj; //ライトのプロジェクション行列
 };
+
+//GUI
+struct GuiConstantBuffer {
+    Matrix4 wp;
+};

@@ -1,12 +1,14 @@
 ﻿#include "GuiDrawList.h"
+#include "GuiContext.h"
 #include <cassert>
 
-GuiDrawList::GuiDrawList()
-    : mData(nullptr)
+GuiDrawList::GuiDrawList(GuiContext& context)
+    : mContext(context)
     , mVertexCurrentIndex(0)
     , mVertexWritePtr(nullptr)
     , mIndexWritePtr(nullptr)
 {
+    mCommandBuffer.emplace_back(GuiDrawCommand());
 }
 
 GuiDrawList::~GuiDrawList() = default;
@@ -40,7 +42,7 @@ void GuiDrawList::addConvexPolyFilled(
         return;
     }
 
-    auto uv = mData->texUvWhitePixel;
+    auto uv = mContext.getDrawListSharedData().texUvWhitePixel;
 
     //アンチエイリアスなしの塗りつぶし
     int idxCount = (points.size() - 2) * 3;
@@ -59,6 +61,18 @@ void GuiDrawList::addConvexPolyFilled(
         mIndexWritePtr += 3;
     }
     mVertexCurrentIndex += vtxCount;
+}
+
+const std::vector<GuiDrawCommand>& GuiDrawList::getDrawCommands() const {
+    return mCommandBuffer;
+}
+
+const std::vector<GuiVertex>& GuiDrawList::getVertexBuffer() const {
+    return mVertexBuffer;
+}
+
+const std::vector<unsigned short>& GuiDrawList::getIndexBuffer() const {
+    return mIndexBuffer;
 }
 
 void GuiDrawList::pathLineTo(const Vector2& pos) {
@@ -132,7 +146,7 @@ void GuiDrawList::primReserve(int idxCount, int vtxCount) {
 void GuiDrawList::primRect(const Vector2& a, const Vector2& c, const Vector4& color) {
     Vector2 b(c.x, a.y);
     Vector2 d(a.x, c.y);
-    Vector2 uv(mData->texUvWhitePixel);
+    Vector2 uv(mContext.getDrawListSharedData().texUvWhitePixel);
     unsigned short idx = static_cast<unsigned>(mVertexCurrentIndex);
     mIndexWritePtr[0] = idx;
     mIndexWritePtr[1] = idx + 1;

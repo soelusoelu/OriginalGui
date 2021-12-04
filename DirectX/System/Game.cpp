@@ -19,12 +19,15 @@
 #include "../Sound/XAudio2/SoundEngine.h"
 #include "../Utility/LevelLoader.h"
 #include "../Utility/Random.h"
-#include "../System/Gui/Gui.h"
+#include "../System/Gui/GuiContext.h"
+#include "../System/Gui/GuiWindow.h"
 
 Game::Game()
     : mWindow(nullptr)
     , mFPSCounter(nullptr)
     , mRootObject(nullptr)
+    , mGuiContext(nullptr)
+    , mGuiWindow(nullptr)
     , mSceneManager(nullptr)
     , mInstance(nullptr)
 {
@@ -99,8 +102,8 @@ void Game::initialize() {
     GameObjectCreater::initialize();
     mSceneManager->initialize();
 
-    auto gui = std::make_unique<Gui>();
-    int a = 0;
+    mGuiContext = std::make_unique<GuiContext>();
+    mGuiWindow = mGuiContext->createWindow("");
 }
 
 void Game::mainLoop() {
@@ -139,6 +142,8 @@ void Game::mainLoop() {
     //imguiの描画
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+    mGuiContext->draw();
 
     mFPSCounter->fixedFrame();
     dx.present();

@@ -147,7 +147,7 @@ void Texture::createIndexBuffer() {
 
     SubResourceDesc sub;
     sub.data = indices;
-    indexBuffer = new IndexBuffer(bd, sub);
+    indexBuffer = new IndexBuffer(bd, &sub);
 }
 
 void Texture::createSampler() {

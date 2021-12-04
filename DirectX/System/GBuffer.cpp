@@ -194,5 +194,5 @@ void GBuffer::createIndexBuffer() {
     SubResourceDesc sub;
     sub.data = indices;
 
-    mIndexBuffer = std::make_unique<IndexBuffer>(bd, sub);
+    mIndexBuffer = std::make_unique<IndexBuffer>(bd, &sub);
 }

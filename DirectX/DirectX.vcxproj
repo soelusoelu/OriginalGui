@@ -170,6 +170,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="System\Gui\GuiRenderer.cpp" />
     <ClCompile Include="System\Gui\GuiDrawList.cpp" />
     <ClCompile Include="System\Gui\GuiWindow.cpp" />
     <ClCompile Include="System\Gui\GuiBitVector.cpp" />
@@ -178,7 +179,6 @@
     <ClCompile Include="System\Gui\GuiFontCreater.cpp" />
     <ClCompile Include="System\Gui\GuiFontAtlas.cpp" />
     <ClCompile Include="System\Gui\GuiContext.cpp" />
-    <ClCompile Include="System\Gui\Gui.cpp" />
     <ClCompile Include="System\Texture\Format\PNG\InflateDataToColorConverter.cpp" />
     <ClCompile Include="Mesh\BoneHelper.cpp" />
     <ClCompile Include="Engine\DebugManager\DebugUtility\DebugUtility.cpp" />
@@ -428,10 +428,12 @@
     <ClCompile Include="Engine\ModelViewer\VertexSelector.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="System\Gui\GuiRenderer.h" />
     <ClInclude Include="System\Gui\DrawCornerFlags.h" />
     <ClInclude Include="System\Gui\GuiDrawCommand.h" />
     <ClInclude Include="System\Gui\GuiDrawList.h" />
     <ClInclude Include="System\Gui\GuiDrawListSharedData.h" />
+    <ClInclude Include="System\Gui\GuiVertex.h" />
     <ClInclude Include="System\Gui\GuiWindow.h" />
     <ClInclude Include="System\Gui\FontInfo.h" />
     <ClInclude Include="System\Gui\GuiBitVector.h" />
@@ -442,7 +444,6 @@
     <ClInclude Include="System\Gui\GuiFontCreater.h" />
     <ClInclude Include="System\Gui\GuiFontAtlas.h" />
     <ClInclude Include="System\Gui\GuiContext.h" />
-    <ClInclude Include="System\Gui\Gui.h" />
     <ClInclude Include="System\Gui\GuiFontConfig.h" />
     <ClInclude Include="System\Gui\GuiPlatform.h" />
     <ClInclude Include="System\Gui\GuiRect.h" />
@@ -815,6 +816,16 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Shader\Gui.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>

@@ -212,5 +212,5 @@ void Mesh::createIndexBuffer(unsigned meshIndex) {
     SubResourceDesc sub;
     sub.data = indices.data();
 
-    mIndexBuffers.emplace_back(std::make_unique<IndexBuffer>(bd, sub));
+    mIndexBuffers.emplace_back(std::make_unique<IndexBuffer>(bd, &sub));
 }

@@ -3,18 +3,15 @@
 #include "DrawCornerFlags.h"
 #include "GuiDrawCommand.h"
 #include "GuiDrawListSharedData.h"
+#include "GuiVertex.h"
 #include "../../Math/Math.h"
 #include <vector>
 
-struct GuiDrawVertex {
-    Vector2 pos;
-    Vector2 uv;
-    Vector4 color;
-};
+class GuiContext;
 
 class GuiDrawList {
 public:
-    GuiDrawList();
+    GuiDrawList(GuiContext& context);
     ~GuiDrawList();
     GuiDrawList(const GuiDrawList&) = delete;
     GuiDrawList& operator=(const GuiDrawList&) = delete;
@@ -30,6 +27,10 @@ public:
         const std::vector<Vector2>& points,
         const Vector4& color
     );
+
+    const std::vector<GuiDrawCommand>& getDrawCommands() const;
+    const std::vector<GuiVertex>& getVertexBuffer() const;
+    const std::vector<unsigned short>& getIndexBuffer() const;
 
 private:
     void pathLineTo(const Vector2& pos);
@@ -52,14 +53,15 @@ private:
     void primRect(const Vector2& a, const Vector2& b, const Vector4& color);
 
 private:
+    GuiContext& mContext;
+
     //描画に必要なもの
     std::vector<GuiDrawCommand> mCommandBuffer;
-    std::vector<GuiDrawVertex> mVertexBuffer;
+    std::vector<GuiVertex> mVertexBuffer;
     std::vector<unsigned short> mIndexBuffer;
 
-    const GuiDrawListSharedData* mData;
     unsigned mVertexCurrentIndex;
-    GuiDrawVertex* mVertexWritePtr;
+    GuiVertex* mVertexWritePtr;
     unsigned short* mIndexWritePtr;
     std::vector<Vector2> mPath;
     GuiDrawCommand mCommandHeader;

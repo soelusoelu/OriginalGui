@@ -89,5 +89,5 @@ void LineRenderer::createIndexBuffer() {
     SubResourceDesc sub;
     sub.data = indices;
 
-    mIndexBuffer = new IndexBuffer(bd, sub);
+    mIndexBuffer = new IndexBuffer(bd, &sub);
 }

@@ -8,6 +8,8 @@ struct JsonObject;
 class Window;
 class FPSCounter;
 class SceneManager;
+class GuiContext;
+class GuiWindow;
 
 class Game {
 public:
@@ -33,6 +35,8 @@ private:
     std::unique_ptr<Window> mWindow;
     std::unique_ptr<FPSCounter> mFPSCounter;
     std::shared_ptr<JsonObject> mRootObject;
+    std::unique_ptr<GuiContext> mGuiContext;
+    std::shared_ptr<GuiWindow> mGuiWindow;
     SceneManager* mSceneManager;
     HINSTANCE mInstance;
 

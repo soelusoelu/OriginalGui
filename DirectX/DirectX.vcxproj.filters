@@ -22,6 +22,7 @@
     <FxCompile Include="Shader\SimpleMeshTexture.hlsl" />
     <FxCompile Include="Shader\SpriteInstancing.hlsl" />
     <FxCompile Include="Shader\Line3DInstancing.hlsl" />
+    <FxCompile Include="Shader\Gui.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Component\ComponentManager.cpp" />
@@ -268,7 +269,6 @@
     <ClCompile Include="Mesh\BoneHelper.cpp" />
     <ClCompile Include="System\Texture\Format\PNG\PngReader.cpp" />
     <ClCompile Include="System\Texture\Format\PNG\InflateDataToColorConverter.cpp" />
-    <ClCompile Include="System\Gui\Gui.cpp" />
     <ClCompile Include="System\Gui\GuiContext.cpp" />
     <ClCompile Include="System\Gui\GuiFontAtlas.cpp" />
     <ClCompile Include="System\Gui\GuiFontCreater.cpp" />
@@ -278,6 +278,7 @@
     <ClCompile Include="System\Gui\TrueType.cpp" />
     <ClCompile Include="System\Gui\GuiWindow.cpp" />
     <ClCompile Include="System\Gui\GuiDrawList.cpp" />
+    <ClCompile Include="System\Gui\GuiRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Component\ComponentManager.h" />
@@ -618,7 +619,6 @@
     <ClInclude Include="System\Texture\Format\PNG\BackgroundColor.h" />
     <ClInclude Include="System\Texture\Format\PNG\ImageLastModificationTime.h" />
     <ClInclude Include="System\Texture\Format\PNG\InternationalText.h" />
-    <ClInclude Include="System\Gui\Gui.h" />
     <ClInclude Include="System\Gui\GuiContext.h" />
     <ClInclude Include="System\Gui\GuiFontAtlas.h" />
     <ClInclude Include="System\Gui\GuiFontConfig.h" />
@@ -638,6 +638,8 @@
     <ClInclude Include="System\Gui\DrawCornerFlags.h" />
     <ClInclude Include="System\Gui\GuiDrawCommand.h" />
     <ClInclude Include="System\Gui\GuiDrawListSharedData.h" />
+    <ClInclude Include="System\Gui\GuiRenderer.h" />
+    <ClInclude Include="System\Gui\GuiVertex.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\MeshCommonHeader.hlsli" />
