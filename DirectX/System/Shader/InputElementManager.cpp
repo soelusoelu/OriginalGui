@@ -134,8 +134,8 @@ InputElementManager::InputElementManager() {
 
     mInputLayouts.emplace("Gui.hlsl", InputLayout{
         { "POSITION", 0, VertexType::FLOAT2, 0, 0, SlotClass::VERTEX_DATA, 0 },
-        { "COLOR", 0, VertexType::FLOAT4, 0, D3D11_APPEND_ALIGNED_ELEMENT, SlotClass::VERTEX_DATA, 0 },
-        { "TEXCOORD", 0, VertexType::FLOAT2, 0, D3D11_APPEND_ALIGNED_ELEMENT, SlotClass::VERTEX_DATA, 0 }
+        { "TEXCOORD", 0, VertexType::FLOAT2, 0, D3D11_APPEND_ALIGNED_ELEMENT, SlotClass::VERTEX_DATA, 0 },
+        { "COLOR", 0, VertexType::FLOAT4, 0, D3D11_APPEND_ALIGNED_ELEMENT, SlotClass::VERTEX_DATA, 0 }
     });
 }
 

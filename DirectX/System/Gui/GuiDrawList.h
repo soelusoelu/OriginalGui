@@ -23,16 +23,17 @@ public:
         float rounding = 0.f,
         DrawCornerFlags flag = DrawCornerFlags::NONE
     );
-    void addConvexPolyFilled(
-        const std::vector<Vector2>& points,
-        const Vector4& color
-    );
 
     const std::vector<GuiDrawCommand>& getDrawCommands() const;
     const std::vector<GuiVertex>& getVertexBuffer() const;
     const std::vector<unsigned short>& getIndexBuffer() const;
 
 private:
+    void addConvexPolyFilled(
+        const std::vector<Vector2>& points,
+        const Vector4& color
+    );
+
     void pathLineTo(const Vector2& pos);
     void pathFillConvex(const Vector4& color);
     void pathRect(
@@ -60,9 +61,6 @@ private:
     std::vector<GuiVertex> mVertexBuffer;
     std::vector<unsigned short> mIndexBuffer;
 
-    unsigned mVertexCurrentIndex;
-    GuiVertex* mVertexWritePtr;
-    unsigned short* mIndexWritePtr;
     std::vector<Vector2> mPath;
     GuiDrawCommand mCommandHeader;
 };

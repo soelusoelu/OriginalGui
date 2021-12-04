@@ -4,9 +4,6 @@
 
 GuiDrawList::GuiDrawList(GuiContext& context)
     : mContext(context)
-    , mVertexCurrentIndex(0)
-    , mVertexWritePtr(nullptr)
-    , mIndexWritePtr(nullptr)
 {
     mCommandBuffer.emplace_back(GuiDrawCommand());
 }
@@ -34,6 +31,18 @@ void GuiDrawList::addRectFilled(
     }
 }
 
+const std::vector<GuiDrawCommand>& GuiDrawList::getDrawCommands() const {
+    return mCommandBuffer;
+}
+
+const std::vector<GuiVertex>& GuiDrawList::getVertexBuffer() const {
+    return mVertexBuffer;
+}
+
+const std::vector<unsigned short>& GuiDrawList::getIndexBuffer() const {
+    return mIndexBuffer;
+}
+
 void GuiDrawList::addConvexPolyFilled(
     const std::vector<Vector2>& points,
     const Vector4& color
@@ -45,34 +54,22 @@ void GuiDrawList::addConvexPolyFilled(
     auto uv = mContext.getDrawListSharedData().texUvWhitePixel;
 
     //アンチエイリアスなしの塗りつぶし
-    int idxCount = (points.size() - 2) * 3;
-    int vtxCount = points.size();
+    auto pointCount = points.size();
+    int idxCount = (pointCount - 2) * 3;
+    int vtxCount = pointCount;
     primReserve(idxCount, vtxCount);
+    GuiVertex vertex = { Vector2::zero, uv, color };
     for (int i = 0; i < vtxCount; ++i) {
-        mVertexWritePtr[0].pos = points[i];
-        mVertexWritePtr[0].uv = uv;
-        mVertexWritePtr[0].color = color;
-        ++mVertexWritePtr;
+        vertex.pos = points[i];
+        mVertexBuffer.emplace_back(vertex);
     }
-    for (int i = 2; i < points.size(); ++i) {
-        mIndexWritePtr[0] = static_cast<unsigned short>(mVertexCurrentIndex);
-        mIndexWritePtr[1] = static_cast<unsigned short>(mVertexCurrentIndex + i - 1);
-        mIndexWritePtr[2] = static_cast<unsigned short>(mVertexCurrentIndex + i);
-        mIndexWritePtr += 3;
+
+    auto idx = static_cast<unsigned short>(mVertexBuffer.size());
+    for (int i = 2; i < pointCount; ++i) {
+        mIndexBuffer.emplace_back(idx);
+        mIndexBuffer.emplace_back(idx + i - 1);
+        mIndexBuffer.emplace_back(idx + i);
     }
-    mVertexCurrentIndex += vtxCount;
-}
-
-const std::vector<GuiDrawCommand>& GuiDrawList::getDrawCommands() const {
-    return mCommandBuffer;
-}
-
-const std::vector<GuiVertex>& GuiDrawList::getVertexBuffer() const {
-    return mVertexBuffer;
-}
-
-const std::vector<unsigned short>& GuiDrawList::getIndexBuffer() const {
-    return mIndexBuffer;
 }
 
 void GuiDrawList::pathLineTo(const Vector2& pos) {
@@ -134,32 +131,28 @@ void GuiDrawList::primReserve(int idxCount, int vtxCount) {
     auto& drawCmd = mCommandBuffer[mCommandBuffer.size() - 1];
     drawCmd.elemCount += idxCount;
 
-    auto vtxBufferOldSize = mVertexBuffer.size();
-    mVertexBuffer.resize(vtxBufferOldSize + vtxCount);
-    mVertexWritePtr = mVertexBuffer.data() + vtxBufferOldSize;
-
-    auto idxBufferOldSize = mIndexBuffer.size();
-    mIndexBuffer.resize(idxBufferOldSize + idxCount);
-    mIndexWritePtr = mIndexBuffer.data() + idxBufferOldSize;
+    mVertexBuffer.reserve(mVertexBuffer.size() + vtxCount);
+    mIndexBuffer.reserve(mIndexBuffer.size() + idxCount);
 }
 
 void GuiDrawList::primRect(const Vector2& a, const Vector2& c, const Vector4& color) {
     Vector2 b(c.x, a.y);
     Vector2 d(a.x, c.y);
     Vector2 uv(mContext.getDrawListSharedData().texUvWhitePixel);
-    unsigned short idx = static_cast<unsigned>(mVertexCurrentIndex);
-    mIndexWritePtr[0] = idx;
-    mIndexWritePtr[1] = idx + 1;
-    mIndexWritePtr[2] = idx + 2;
-    mIndexWritePtr[3] = idx;
-    mIndexWritePtr[4] = idx + 2;
-    mIndexWritePtr[5] = idx + 3;
-    mIndexWritePtr += 6;
+    auto idx = static_cast<unsigned short>(mVertexBuffer.size());
+    mIndexBuffer.emplace_back(idx);
+    mIndexBuffer.emplace_back(idx + 1);
+    mIndexBuffer.emplace_back(idx + 2);
+    mIndexBuffer.emplace_back(idx);
+    mIndexBuffer.emplace_back(idx + 2);
+    mIndexBuffer.emplace_back(idx + 3);
 
-    mVertexWritePtr[0].pos = a; mVertexWritePtr[0].uv = uv; mVertexWritePtr[0].color = color;
-    mVertexWritePtr[1].pos = b; mVertexWritePtr[1].uv = uv; mVertexWritePtr[1].color = color;
-    mVertexWritePtr[2].pos = c; mVertexWritePtr[2].uv = uv; mVertexWritePtr[2].color = color;
-    mVertexWritePtr[3].pos = d; mVertexWritePtr[3].uv = uv; mVertexWritePtr[3].color = color;
-    mVertexWritePtr += 4;
-    mVertexCurrentIndex += 4;
+    GuiVertex vertex = { a, uv, color };
+    mVertexBuffer.emplace_back(vertex);
+    vertex.pos = b;
+    mVertexBuffer.emplace_back(vertex);
+    vertex.pos = c;
+    mVertexBuffer.emplace_back(vertex);
+    vertex.pos = d;
+    mVertexBuffer.emplace_back(vertex);
 }

@@ -10,7 +10,7 @@ GuiWindow::GuiWindow(
     , mDrawList(std::make_unique<GuiDrawList>(context))
     , mEndButton(endButton)
     , mPosition(Vector2(64.f, 64.f)) //デフォルト位置
-    , mSize(Vector2(720.f, 1080.f)) //デフォルトサイズ
+    , mSize(Vector2(256.f, 512.f)) //デフォルトサイズ
     , mActive(true)
 {
     mDrawList->addRectFilled(mPosition, mPosition + mSize);

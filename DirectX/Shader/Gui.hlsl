@@ -13,7 +13,7 @@ struct VS_OUTPUT
     float2 uv : TEXCOORD0;
 };
 
-VS_OUTPUT VS(float2 pos : POSITION, float4 col : COLOR, float2 uv : TEXCOORD)
+VS_OUTPUT VS(float2 pos : POSITION, float2 uv : TEXCOORD, float4 col : COLOR)
 {
     VS_OUTPUT output = (VS_OUTPUT) 0;
     output.pos = mul(wp, float4(pos, 0.f, 1.f));
