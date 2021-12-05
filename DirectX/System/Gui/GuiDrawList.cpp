@@ -4,11 +4,21 @@
 
 GuiDrawList::GuiDrawList(GuiContext& context)
     : mContext(context)
+    , mCommandBuffer(2) //0: ウィンドウ, 1: ウィジェット
+    , mCurrentLayer(0)
 {
-    mCommandBuffer.emplace_back(GuiDrawCommand());
 }
 
 GuiDrawList::~GuiDrawList() = default;
+
+void GuiDrawList::addLayer() {
+    mCommandBuffer.emplace_back(GuiDrawCommand());
+}
+
+void GuiDrawList::setLayer(unsigned layer) {
+    assert(layer < mCommandBuffer.size());
+    mCurrentLayer = layer;
+}
 
 void GuiDrawList::addRectFilled(
     const Vector2& min,
@@ -39,6 +49,12 @@ void GuiDrawList::updateWindowPosition(const Vector2& amount) {
 
 void GuiDrawList::updateWindowSize(const Vector2& amount) {
 
+}
+
+void GuiDrawList::updateVertexPosition(const Vector2& amount, unsigned startIndex, unsigned stopIndex) {
+    for (unsigned i = startIndex; i <= stopIndex; ++i) {
+        mVertexBuffer[i].pos += amount;
+    }
 }
 
 const std::vector<GuiDrawCommand>& GuiDrawList::getDrawCommands() const {
@@ -138,7 +154,7 @@ void GuiDrawList::pathArcToFast(
 void GuiDrawList::primReserve(int idxCount, int vtxCount) {
     assert(idxCount >= 0 && vtxCount >= 0);
 
-    auto& drawCmd = mCommandBuffer[mCommandBuffer.size() - 1];
+    auto& drawCmd = mCommandBuffer[mCurrentLayer];
     drawCmd.elemCount += idxCount;
 
     mVertexBuffer.reserve(mVertexBuffer.size() + vtxCount);

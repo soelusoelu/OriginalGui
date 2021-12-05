@@ -42,10 +42,15 @@ void GuiRenderer::draw(const GuiContext& context) {
         auto cmdCount = cmds.size();
         for (int j = 0; j < cmdCount; ++j) {
             const auto& cmd = cmds[j];
-            dx.drawIndexed(cmd.elemCount, cmd.indexOffset + idxOffset, cmd.vertexOffset + vtxOffset);
+            if (cmd.elemCount == 0) {
+                continue;
+            }
+
+            //dx.drawIndexed(cmd.elemCount, cmd.indexOffset + idxOffset, cmd.vertexOffset + vtxOffset);
+            dx.drawIndexed(cmd.elemCount, idxOffset, vtxOffset);
+            idxOffset += cmd.elemCount;
         }
         vtxOffset += drawList.getVertexBuffer().size();
-        idxOffset += drawList.getIndexBuffer().size();
     }
 }
 

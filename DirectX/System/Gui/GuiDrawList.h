@@ -16,6 +16,9 @@ public:
     GuiDrawList(const GuiDrawList&) = delete;
     GuiDrawList& operator=(const GuiDrawList&) = delete;
 
+    void addLayer();
+    void setLayer(unsigned layer);
+
     void addRectFilled(
         const Vector2& min,
         const Vector2& max,
@@ -26,6 +29,7 @@ public:
 
     void updateWindowPosition(const Vector2& amount);
     void updateWindowSize(const Vector2& amount);
+    void updateVertexPosition(const Vector2& amount, unsigned startIndex, unsigned stopIndex);
     const std::vector<GuiDrawCommand>& getDrawCommands() const;
     const std::vector<GuiVertex>& getVertexBuffer() const;
     const std::vector<unsigned short>& getIndexBuffer() const;
@@ -55,6 +59,10 @@ private:
     void primReserve(int idxCount, int vtxCount);
     void primRect(const Vector2& a, const Vector2& b, const Vector4& color);
 
+public:
+    static constexpr int COMMAND_WINDOW_INDEX = 0;
+    static constexpr int COMMAND_WIDGETS_INDEX = 1;
+
 private:
     GuiContext& mContext;
 
@@ -65,6 +73,5 @@ private:
 
     std::vector<Vector2> mPath;
     GuiDrawCommand mCommandHeader;
-
-    static constexpr int COMMAND_WINDOW_INDEX = 0;
+    unsigned mCurrentLayer;
 };

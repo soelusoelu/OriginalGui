@@ -105,6 +105,10 @@ void Game::initialize() {
 
     mGuiContext = std::make_unique<GuiContext>();
     mGuiWindow = Gui::createWindow("");
+    static int test = 0;
+    mGuiWindow->sliderInt("", test, 0, 100);
+    static float test2 = 0.f;
+    mGuiWindow->sliderFloat("", test2, -100.f, 100.f);
 }
 
 void Game::mainLoop() {
@@ -123,24 +127,24 @@ void Game::mainLoop() {
     {
         //ウィンドウ位置
         ImGui::SetNextWindowPos(ImVec2(0.f, 0.f), ImGuiCond_Once);
-        ////ウィンドウサイズ
-        //ImGui::SetNextWindowSize(ImVec2(256.f, 512.f), ImGuiCond_Once);
+        //ウィンドウサイズ
+        ImGui::SetNextWindowSize(ImVec2(256.f, 512.f), ImGuiCond_Once);
         ////ウィンドウを不透明に
         //ImGui::SetNextWindowBgAlpha(1.f);
 
         bool isOpen = false;
-        ImGui::Begin("OBBOption", &isOpen);
+        ImGui::Begin("Test", &isOpen);
         static int num = 0;
         ImGui::DragInt("drag", &num);
         static int num2 = 0;
-        ImGui::DragInt("drag2", &num2);
+        ImGui::SliderInt("slide", &num2, 0, 100);
         ImGui::End();
     }
 
     mSceneManager->update();
     mSceneManager->draw();
 
-    mGuiWindow->setPosition(InputManager::mouse().getMousePosition());
+    //mGuiWindow->setPosition(InputManager::mouse().getMousePosition());
     mGuiContext->update();
 
     InputManager::lateUpdate();
