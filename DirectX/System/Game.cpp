@@ -114,7 +114,7 @@ void Game::mainLoop() {
     ImGui::NewFrame();
 
     auto& dx = MyDirectX::DirectX::instance();
-    dx.clearRenderTarget();
+    dx.clearRenderTarget(0.1f, 0.1f, 0.1f);
     dx.clearDepthStencilView();
 
     InputManager::update();

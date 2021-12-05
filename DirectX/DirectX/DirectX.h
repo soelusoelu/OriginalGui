@@ -58,8 +58,6 @@ public:
     ) const;
     //レンダーターゲットをバックバッファに設定する
     void setRenderTarget() const;
-    //レンダーターゲットをデバッグ画面に設定する
-    void setDebugRenderTarget() const;
     //描画形状を設定する
     void setPrimitive(PrimitiveType primitive) const;
     //リソースを更新する
@@ -115,7 +113,6 @@ private:
     Microsoft::WRL::ComPtr<IDXGISwapChain4> mSwapChain;
 
     std::unique_ptr<RenderTargetView> mRenderTargetView;
-    std::unique_ptr<RenderTargetView> mDebugRenderTargetView;
     std::shared_ptr<BlendState> mBlendState;
     std::shared_ptr<DepthStencilState> mDepthStencilState;
     std::shared_ptr<DepthStencilView> mDepthStencilView;

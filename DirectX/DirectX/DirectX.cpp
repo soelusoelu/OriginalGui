@@ -16,7 +16,6 @@ DirectX::DirectX() :
     mDXGIFactory(nullptr),
     mSwapChain(nullptr),
     mRenderTargetView(nullptr),
-    mDebugRenderTargetView(nullptr),
     mBlendState(nullptr),
     mDepthStencilState(nullptr),
     mDepthStencilView(nullptr),
@@ -94,10 +93,6 @@ void DirectX::setRenderTarget() const {
     mRenderTargetView->setRenderTarget();
 }
 
-void DirectX::setDebugRenderTarget() const {
-    mDebugRenderTargetView->setRenderTarget();
-}
-
 void DirectX::setPrimitive(PrimitiveType primitive) const {
     mDeviceContext->IASetPrimitiveTopology(toPrimitiveMode(primitive));
 }
@@ -150,7 +145,6 @@ void DirectX::drawIndexedInstanced(
 
 void DirectX::clearRenderTarget(float r, float g, float b, float a) const {
     mRenderTargetView->clear(r, g, b, a);
-    mDebugRenderTargetView->clear(0.1f, 0.1f, 0.1f, 1.f);
 }
 
 void DirectX::clearDepthStencilView(bool depth, bool stencil) {
@@ -243,8 +237,6 @@ void DirectX::createRenderTargetView() {
     mSwapChain->GetBuffer(0, IID_PPV_ARGS(&backBuffer));
     auto tex = std::make_unique<Texture2D>(backBuffer);
     mRenderTargetView = std::make_unique<RenderTargetView>(*tex);
-
-    mDebugRenderTargetView = std::make_unique<RenderTargetView>(*tex);
 }
 
 void DirectX::createDepthStencilView() {

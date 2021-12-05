@@ -118,7 +118,6 @@ void Renderer::renderSprite3D() const {
 void Renderer::renderToDebug(Matrix4& proj) const {
     auto& dx = MyDirectX::DirectX::instance();
 
-    dx.setDebugRenderTarget();
     dx.setViewport(Window::standardWidth(), Window::standardHeight());
 
     //原点をスクリーン左上にするために平行移動
@@ -139,8 +138,6 @@ void Renderer::renderPointLight() const {
 void Renderer::renderGui(Matrix4& proj) const {
     auto& dx = MyDirectX::DirectX::instance();
 
-    //描画先指定
-    dx.setDebugRenderTarget();
     //ビューポートの設定
     dx.setViewport(Window::standardWidth(), Window::standardHeight());
     //プリミティブ・トポロジーをセット
