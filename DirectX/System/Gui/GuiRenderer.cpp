@@ -100,8 +100,7 @@ void GuiRenderer::drawSettings(const GuiContext& context) const {
     //描画設定
     Renderer renderer;
     GuiConstantBuffer cb{};
-    renderer.renderSprite();
-    renderer.renderSprite2D(cb.wp);
+    renderer.renderGui(cb.wp);
     mVertexBuffer->setVertexBuffer();
     mIndexBuffer->setIndexBuffer();
 

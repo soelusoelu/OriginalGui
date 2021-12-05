@@ -36,7 +36,7 @@
 				0.0,
 				1016.0
 			],
-			"spriteButtonFilePath": "System/add_mesh.png"
+			"spriteButtonFilePath": "System\\add_mesh.png"
 		},
 		"ModelViewerLight": {
 			"direction": [

@@ -135,3 +135,25 @@ void Renderer::renderToDebug(Matrix4& proj) const {
 void Renderer::renderPointLight() const {
     mGBuffer->setShaderResources();
 }
+
+void Renderer::renderGui(Matrix4& proj) const {
+    auto& dx = MyDirectX::DirectX::instance();
+
+    //描画先指定
+    dx.setDebugRenderTarget();
+    //ビューポートの設定
+    dx.setViewport(Window::standardWidth(), Window::standardHeight());
+    //プリミティブ・トポロジーをセット
+    dx.setPrimitive(PrimitiveType::TRIANGLE_LIST);
+    //半透明合成
+    dx.blendState().translucent();
+    //デプステスト無効化
+    MyDirectX::DirectX::instance().depthStencilState().depthTest(false);
+
+    //原点をスクリーン左上にするために平行移動
+    proj.m[3][0] = -1.f;
+    proj.m[3][1] = 1.f;
+    //ピクセル単位で扱うために
+    proj.m[0][0] = 2.f / Window::standardWidth();
+    proj.m[1][1] = -2.f / Window::standardHeight();
+}

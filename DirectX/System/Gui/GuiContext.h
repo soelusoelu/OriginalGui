@@ -16,7 +16,9 @@ public:
     GuiContext(const GuiContext&) = delete;
     GuiContext& operator=(const GuiContext&) = delete;
 
-    //すべてのGuiを描画する
+    //すべてのGUIを更新する
+    void update();
+    //すべてのGUIを描画する
     void draw();
     //ウィンドウの追加
     void addWindow(const std::shared_ptr<GuiWindow>& window);

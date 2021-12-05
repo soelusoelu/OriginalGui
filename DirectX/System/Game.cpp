@@ -121,8 +121,8 @@ void Game::mainLoop() {
     mWindow->update();
 
     {
-        ////ウィンドウ位置
-        //ImGui::SetNextWindowPos(ImVec2(800.f, 256.f), ImGuiCond_Once);
+        //ウィンドウ位置
+        ImGui::SetNextWindowPos(ImVec2(0.f, 0.f), ImGuiCond_Once);
         ////ウィンドウサイズ
         //ImGui::SetNextWindowSize(ImVec2(256.f, 512.f), ImGuiCond_Once);
         ////ウィンドウを不透明に
@@ -130,13 +130,18 @@ void Game::mainLoop() {
 
         bool isOpen = false;
         ImGui::Begin("OBBOption", &isOpen);
-        //static int num = 0;
-        //ImGui::DragInt("drag", &num);
+        static int num = 0;
+        ImGui::DragInt("drag", &num);
+        static int num2 = 0;
+        ImGui::DragInt("drag2", &num2);
         ImGui::End();
     }
 
     mSceneManager->update();
     mSceneManager->draw();
+
+    mGuiWindow->setPosition(InputManager::mouse().getMousePosition());
+    mGuiContext->update();
 
     InputManager::lateUpdate();
 

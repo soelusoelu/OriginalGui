@@ -15,6 +15,12 @@ public:
         bool endButton
     );
     ~GuiWindow();
+
+    void setPosition(const Vector2& pos);
+    const Vector2& getPosition() const;
+    void setSize(const Vector2& size);
+    const Vector2& getSize() const;
+
     GuiDrawList& getDrawList() const;
 
 private:

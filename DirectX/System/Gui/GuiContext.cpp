@@ -18,6 +18,10 @@ GuiContext::~GuiContext() {
     Gui::mContext = nullptr;
 }
 
+void GuiContext::update() {
+
+}
+
 void GuiContext::draw() {
     mGuiRenderer->draw(*this);
 }

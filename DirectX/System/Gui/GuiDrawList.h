@@ -24,6 +24,8 @@ public:
         DrawCornerFlags flag = DrawCornerFlags::NONE
     );
 
+    void updateWindowPosition(const Vector2& amount);
+    void updateWindowSize(const Vector2& amount);
     const std::vector<GuiDrawCommand>& getDrawCommands() const;
     const std::vector<GuiVertex>& getVertexBuffer() const;
     const std::vector<unsigned short>& getIndexBuffer() const;
@@ -63,4 +65,6 @@ private:
 
     std::vector<Vector2> mPath;
     GuiDrawCommand mCommandHeader;
+
+    static constexpr int COMMAND_WINDOW_INDEX = 0;
 };

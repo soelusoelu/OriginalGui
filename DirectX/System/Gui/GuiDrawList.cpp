@@ -31,6 +31,16 @@ void GuiDrawList::addRectFilled(
     }
 }
 
+void GuiDrawList::updateWindowPosition(const Vector2& amount) {
+    for (auto&& v : mVertexBuffer) {
+        v.pos += amount;
+    }
+}
+
+void GuiDrawList::updateWindowSize(const Vector2& amount) {
+
+}
+
 const std::vector<GuiDrawCommand>& GuiDrawList::getDrawCommands() const {
     return mCommandBuffer;
 }

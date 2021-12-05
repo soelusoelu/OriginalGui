@@ -41,6 +41,8 @@ public:
     void renderToDebug(Matrix4& proj) const;
     //ポイントライト処理
     void renderPointLight() const;
+    //GUI処理
+    void renderGui(Matrix4& proj) const;
 
 private:
     std::unique_ptr<GBuffer> mGBuffer;
