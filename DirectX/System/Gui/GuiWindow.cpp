@@ -1,4 +1,5 @@
 ﻿#include "GuiWindow.h"
+#include "DrawCornerFlags.h"
 #include "GuiContext.h"
 #include "GuiWidgetSlider.h"
 
@@ -20,9 +21,21 @@ GuiWindow::GuiWindow(
 {
     auto titleBarSize = Vector2(mSize.x, 13.f + mContext.getFramePadding().y * 2);
     //背景
-    mDrawList->addRectFilled(mPosition + Vector2(0.f, titleBarSize.y), mPosition + mSize, mBackgroundColor);
+    mDrawList->addRectFilled(
+        mPosition + Vector2(0.f, titleBarSize.y),
+        mPosition + mSize,
+        mBackgroundColor,
+        ROUNDING,
+        DrawCornerFlags::BOT
+    );
     //タイトルバー
-    mDrawList->addRectFilled(mPosition, mPosition + titleBarSize, mTitleBarColor);
+    mDrawList->addRectFilled(
+        mPosition,
+        mPosition + titleBarSize,
+        mTitleBarColor,
+        ROUNDING,
+        DrawCornerFlags::TOP
+    );
 
     mDrawList->setLayer(GuiDrawList::COMMAND_WIDGETS_INDEX);
 

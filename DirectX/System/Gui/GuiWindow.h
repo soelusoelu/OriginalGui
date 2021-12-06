@@ -55,4 +55,6 @@ private:
     Vector4 mTitleBarColor;
     //次のウィジェット軸表示位置
     Vector2 mNextWidgetPosition;
+
+    static constexpr float ROUNDING = 7.f;
 };

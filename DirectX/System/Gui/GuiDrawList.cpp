@@ -33,7 +33,9 @@ void GuiDrawList::addRectFilled(
     }
 
     if (rounding > 0.0f) {
-        pathRect(min, max, rounding, flag);
+        Flag f;
+        f.set(static_cast<unsigned>(flag));
+        pathRect(min, max, rounding, f);
         pathFillConvex(color);
     } else {
         primReserve(6, 4);
@@ -82,19 +84,19 @@ void GuiDrawList::addConvexPolyFilled(
     //アンチエイリアスなしの塗りつぶし
     auto pointCount = points.size();
     int idxCount = (pointCount - 2) * 3;
-    int vtxCount = pointCount;
-    primReserve(idxCount, vtxCount);
-    GuiVertex vertex = { Vector2::zero, uv, color };
-    for (int i = 0; i < vtxCount; ++i) {
-        vertex.pos = points[i];
-        mVertexBuffer.emplace_back(vertex);
-    }
+    primReserve(idxCount, pointCount);
 
     auto idx = static_cast<unsigned short>(mVertexBuffer.size());
     for (int i = 2; i < pointCount; ++i) {
         mIndexBuffer.emplace_back(idx);
         mIndexBuffer.emplace_back(idx + i - 1);
         mIndexBuffer.emplace_back(idx + i);
+    }
+
+    GuiVertex vertex = { Vector2::zero, uv, color };
+    for (const auto& p : points) {
+        vertex.pos = p;
+        mVertexBuffer.emplace_back(vertex);
     }
 }
 
@@ -111,25 +113,36 @@ void GuiDrawList::pathRect(
     const Vector2& rectMin,
     const Vector2& rectMax,
     float rounding,
-    DrawCornerFlags flag
+    const Flag& flag
 ) {
-    rounding = Math::Min(rounding, Math::abs(rectMax.x - rectMin.x) * ((flag == DrawCornerFlags::TOP) || (flag == DrawCornerFlags::BOT) ? 0.5f : 1.f) - 1.f);
-    rounding = Math::Min(rounding, Math::abs(rectMax.y - rectMin.y) * ((flag == DrawCornerFlags::LEFT) || (flag == DrawCornerFlags::RIGHT) ? 0.5f : 1.f) - 1.f);
-
-    if (rounding <= 0.f || flag == DrawCornerFlags::NONE) {
+    if (rounding <= 0.f || flag.check(static_cast<unsigned>(DrawCornerFlags::NONE))) {
         pathLineTo(rectMin);
         pathLineTo(Vector2(rectMax.x, rectMin.y));
         pathLineTo(rectMax);
         pathLineTo(Vector2(rectMin.x, rectMax.y));
     } else {
-        float rounding_tl = (flag == DrawCornerFlags::TOP_LEFT) ? rounding : 0.f;
-        float rounding_tr = (flag == DrawCornerFlags::TOP_RIGHT) ? rounding : 0.f;
-        float rounding_br = (flag == DrawCornerFlags::BOT_RIGHT) ? rounding : 0.f;
-        float rounding_bl = (flag == DrawCornerFlags::BOT_LEFT) ? rounding : 0.f;
-        pathArcToFast(Vector2(rectMin.x + rounding_tl, rectMin.y + rounding_tl), rounding_tl, 6, 9);
-        pathArcToFast(Vector2(rectMax.x - rounding_tr, rectMin.y + rounding_tr), rounding_tr, 9, 12);
-        pathArcToFast(Vector2(rectMax.x - rounding_br, rectMax.y - rounding_br), rounding_br, 0, 3);
-        pathArcToFast(Vector2(rectMin.x + rounding_bl, rectMax.y - rounding_bl), rounding_bl, 3, 6);
+        float roundingTL = 0.f;
+        float roundingTR = 0.f;
+        float roundingBR = 0.f;
+        float roundingBL = 0.f;
+        if (flag.check(static_cast<unsigned>(DrawCornerFlags::TOP_LEFT))) {
+            roundingTL = rounding;
+        }
+        if (flag.check(static_cast<unsigned>(DrawCornerFlags::TOP_RIGHT))) {
+            roundingTR = rounding;
+        }
+        if (flag.check(static_cast<unsigned>(DrawCornerFlags::BOT_RIGHT))) {
+            roundingBR = rounding;
+        }
+        if (flag.check(static_cast<unsigned>(DrawCornerFlags::BOT_LEFT))) {
+            roundingBL = rounding;
+        }
+
+        //指定された位置だけ丸める
+        pathArcToFast(Vector2(rectMin.x + roundingTL, rectMin.y + roundingTL), roundingTL, 6, 9);
+        pathArcToFast(Vector2(rectMax.x - roundingTR, rectMin.y + roundingTR), roundingTR, 9, 12);
+        pathArcToFast(Vector2(rectMax.x - roundingBR, rectMax.y - roundingBR), roundingBR, 0, 3);
+        pathArcToFast(Vector2(rectMin.x + roundingBL, rectMax.y - roundingBL), roundingBL, 3, 6);
     }
 }
 
@@ -139,15 +152,19 @@ void GuiDrawList::pathArcToFast(
     int minOf12,
     int maxOf12
 ) {
+    assert(0 <= minOf12 && minOf12 < 13);
+    assert(0 <= maxOf12 && maxOf12 < 13);
+
     if (radius == 0.f || minOf12 > maxOf12) {
-        mPath.emplace_back(center);
+        pathLineTo(center);
         return;
     }
 
     mPath.reserve(mPath.size() + (maxOf12 - minOf12 + 1));
-    for (int a = minOf12; a <= maxOf12; ++a) {
-        //const auto& c = data->ArcFastVtx[a % IM_ARRAYSIZE(_Data->ArcFastVtx)];
-        //path.emplace_back(Vector2(center.x + c.x * radius, center.y + c.y * radius));
+    const auto& arcFastVertex = mContext.getDrawListSharedData().arcFastVertex;
+    for (int i = minOf12; i <= maxOf12; ++i) {
+        const auto& c = arcFastVertex[i % arcFastVertex.size()];
+        pathLineTo(Vector2(center.x + c.x * radius, center.y + c.y * radius));
     }
 }
 
