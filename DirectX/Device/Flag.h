@@ -2,7 +2,7 @@
 
 class Flag {
 public:
-    Flag();
+    Flag(unsigned flags = 0);
     ~Flag();
     //フラグを立てる
     void set(unsigned value);

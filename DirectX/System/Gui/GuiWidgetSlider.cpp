@@ -2,7 +2,7 @@
 #include "GuiContext.h"
 #include "GuiDrawList.h"
 #include "GuiWindow.h"
-#include "../../Collision/Square.h"
+#include "../../Collision/Collision.h"
 #include "../../Input/Input.h"
 #include <cassert>
 
@@ -49,32 +49,25 @@ void GuiWidgetSlider::sliderScalar(
     //フレームの描画
     auto nextPos = mWindow.getNextWidgetPosition();
     auto& drawList = mWindow.getDrawList();
+    auto frameStart = static_cast<unsigned>(drawList.getVertexBuffer().size());
     drawList.addRectFilled(nextPos, nextPos + FRAME_SIZE, Vector4(0.15f, 0.25f, 0.35f, 0.8f));
 
     //グラブ描画前の頂点数を取得しておく
-    auto beforeSize = drawList.getVertexBuffer().size();
+    auto beforeSize = static_cast<unsigned>(drawList.getVertexBuffer().size());
 
     //グラブの描画
     auto p = nextPos + Vector2::one * GRAB_PADDING;
     drawList.addRectFilled(p, p + GRAB_SIZE, Vector4(0.15f, 0.3f, 0.75f, 0.9f));
 
     //グラブ描画後の頂点数を取得する
-    auto afterSize = drawList.getVertexBuffer().size();
-
-    //配列に追加
-    auto& s = mSliders.emplace_back();
-    s.label = label;
-    s.type = type;
-    s.data = v;
-    s.min = min;
-    s.max = max;
-    s.framePosition = nextPos;
-    s.grabVerticesIndexes[0] = beforeSize;
-    s.grabVerticesIndexes[1] = afterSize - 1;
+    auto afterSize = static_cast<unsigned>(drawList.getVertexBuffer().size());
 
     //描画位置をずらして設定
     nextPos.y += FRAME_SIZE.y + mWindow.getContext().getFramePadding().y;
     mWindow.setNextWidgetPosition(nextPos);
+
+    //配列に追加
+    mSliders.emplace_back(GuiSlider{ label, type, v, min, max, frameStart, beforeSize, afterSize - beforeSize });
 }
 
 void GuiWidgetSlider::selectSlider() {
@@ -82,8 +75,9 @@ void GuiWidgetSlider::selectSlider() {
     for (int i = 0; i < mSliders.size(); ++i) {
         //グラブの移動範囲(隙間なども考慮)
         auto& s = mSliders[i];
-        auto sqMin = Vector2(calcGrabbingPosXMin(s), s.framePosition.y);
-        auto sqMax = Vector2(calcGrabbingPosXMax(s), s.framePosition.y + FRAME_HEIGHT);
+        const auto& framePosition = getFramePosition(s);
+        auto sqMin = Vector2(calcGrabbingPosXMin(s), framePosition.y);
+        auto sqMax = Vector2(calcGrabbingPosXMax(s), framePosition.y + FRAME_HEIGHT);
         Square sq(sqMin, sqMax);
         if (!sq.contains(mousePos)) {
             continue;
@@ -137,22 +131,19 @@ void GuiWidgetSlider::updateGrabPosition(float f) {
 
     auto& s = getGrabbingSlider();
 
-    auto startIndex = s.grabVerticesIndexes[0];
-    auto stopIndex = s.grabVerticesIndexes[1];
-
     auto minX = calcGrabbingPosXMin(s);
     auto maxX = calcGrabbingPosXMax(s);
     float posX = Math::lerp(minX, maxX, f);
 
     auto& drawList = mWindow.getDrawList();
     const auto& vb = drawList.getVertexBuffer();
-    const auto& prevPos = vb[startIndex].pos;
+    const auto& prevPos = vb[s.grabVerticesStartIndex].pos;
     //マウス位置から求めた位置と前回の位置の差分から、次のグラブの位置を求める
     //求めた位置から、マウス位置をグラブの中心にするために、グラブの半分戻す
     drawList.updateVertexPosition(
         Vector2(posX - prevPos.x - GRAB_WIDTH_HALF, 0.f),
-        startIndex,
-        stopIndex
+        s.grabVerticesStartIndex,
+        s.grabVerticesNumPoints
     );
 }
 
@@ -166,9 +157,13 @@ bool GuiWidgetSlider::isGrabbing() const {
 }
 
 float GuiWidgetSlider::calcGrabbingPosXMin(const GuiSlider& slider) const {
-    return slider.framePosition.x + (GRAB_WIDTH_HALF + GRAB_PADDING);
+    return getFramePosition(slider).x + (GRAB_WIDTH_HALF + GRAB_PADDING);
 }
 
 float GuiWidgetSlider::calcGrabbingPosXMax(const GuiSlider& slider) const {
-    return slider.framePosition.x + FRAME_WIDTH - (GRAB_WIDTH_HALF + GRAB_PADDING);
+    return getFramePosition(slider).x + FRAME_WIDTH - (GRAB_WIDTH_HALF + GRAB_PADDING);
+}
+
+const Vector2& GuiWidgetSlider::getFramePosition(const GuiSlider& slider) const {
+    return mWindow.getDrawList().getVertexBuffer()[slider.frameVerticesStartIndex].pos;
 }

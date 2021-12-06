@@ -14,8 +14,9 @@ struct GuiSlider {
     void* data = nullptr;
     std::any min;
     std::any max;
-    Vector2 framePosition = Vector2::zero;
-    unsigned grabVerticesIndexes[2] = { 0, 0 }; //頂点配列の最初と最後のインデックス
+    unsigned frameVerticesStartIndex = 0;
+    unsigned grabVerticesStartIndex = 0;
+    unsigned grabVerticesNumPoints = 0;
 };
 
 class GuiWidgetSlider {
@@ -56,6 +57,9 @@ private:
     float calcGrabbingPosXMin(const GuiSlider& slider) const;
     //グラブの最大位置を求める
     float calcGrabbingPosXMax(const GuiSlider& slider) const;
+
+private:
+    const Vector2& getFramePosition(const GuiSlider& slider) const;
 
 private:
     GuiWindow& mWindow;

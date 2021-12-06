@@ -1,7 +1,7 @@
 {
 	"globalProperties": {
 		"Window": {
-			"title": "ModelViewer",
+			"title": "Gui",
 			"windowWidth": 1280,
 			"windowHeight": 720,
 			"windowStandardWidth": 1920,

@@ -1,7 +1,8 @@
 ﻿#include "Flag.h"
 
-Flag::Flag() :
-    mFlags(0) {
+Flag::Flag(unsigned flags)
+    : mFlags(flags)
+{
 }
 
 Flag::~Flag() = default;

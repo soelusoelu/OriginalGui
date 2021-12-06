@@ -105,10 +105,10 @@ void Game::initialize() {
 
     mGuiContext = std::make_unique<GuiContext>();
     mGuiWindow = Gui::createWindow("");
-    //static int test = 0;
-    //mGuiWindow->sliderInt("", test, 0, 100);
-    //static float test2 = 0.f;
-    //mGuiWindow->sliderFloat("", test2, -100.f, 100.f);
+    static int test = 0;
+    mGuiWindow->sliderInt("", test, 0, 100);
+    static float test2 = 0.f;
+    mGuiWindow->sliderFloat("", test2, -100.f, 100.f);
 }
 
 void Game::mainLoop() {
@@ -145,6 +145,7 @@ void Game::mainLoop() {
     mSceneManager->draw();
 
     //mGuiWindow->setPosition(InputManager::mouse().getMousePosition());
+    //mGuiWindow->setTitleBarColor(Vector4(1.f, 0.f, 0.f, 1.f));
     mGuiContext->update();
 
     InputManager::lateUpdate();

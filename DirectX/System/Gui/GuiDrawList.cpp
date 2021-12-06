@@ -20,6 +20,72 @@ void GuiDrawList::setLayer(unsigned layer) {
     mCurrentLayer = layer;
 }
 
+void GuiDrawList::addPolyline(
+    const std::vector<Vector2>& points,
+    const Vector4& color,
+    float thickness,
+    bool closed
+) {
+    auto pointsCount = points.size();
+    if (pointsCount < 2) {
+        return;
+    }
+
+    const auto& uv = mContext.getDrawListSharedData().texUvWhitePixel;
+    int lineCount = closed ? pointsCount : pointsCount - 1;
+
+    //ノンテクスチャベース、ノンアンチエイリアスのライン
+    int idxCount = lineCount * 6;
+    int vtxCount = lineCount * 4; //エッジを共有しない
+    primReserve(idxCount, vtxCount);
+
+    for (int i1 = 0; i1 < lineCount; ++i1) {
+        int i2 = (i1 + 1) % pointsCount;
+        const auto& p1 = points[i1];
+        const auto& p2 = points[i2];
+
+        //線の中心から太くするため
+        auto d = p2 - p1;
+        normalize2fOverZero(d);
+        d *= (thickness * 0.5f);
+
+        auto idx = static_cast<unsigned short>(mVertexBuffer.size());
+        mIndexBuffer.emplace_back(idx);
+        mIndexBuffer.emplace_back(idx + 1);
+        mIndexBuffer.emplace_back(idx + 2);
+        mIndexBuffer.emplace_back(idx);
+        mIndexBuffer.emplace_back(idx + 2);
+        mIndexBuffer.emplace_back(idx + 3);
+
+        GuiVertex vertex = { Vector2(p1.x + d.y, p1.y - d.x), uv, color };
+        mVertexBuffer.emplace_back(vertex);
+        vertex.pos = Vector2(p2.x + d.y, p2.y - d.x);
+        mVertexBuffer.emplace_back(vertex);
+        vertex.pos = Vector2(p2.x - d.y, p2.y + d.x);
+        mVertexBuffer.emplace_back(vertex);
+        vertex.pos = Vector2(p1.x - d.y, p1.y + d.x);
+        mVertexBuffer.emplace_back(vertex);
+    }
+}
+
+void GuiDrawList::addRect(
+    const Vector2& min,
+    const Vector2& max,
+    const Vector4& color,
+    float rounding,
+    DrawCornerFlags flag,
+    float thickness
+) {
+    //アルファ値0なら無視
+    if (color.w == 0) {
+        return;
+    }
+
+    Flag f(static_cast<unsigned>(flag));
+    pathRect(min + Vector2(0.5f, 0.5f), max - Vector2(0.49f, 0.49f), rounding, f);
+    pathStroke(color, thickness, true);
+}
+
 void GuiDrawList::addRectFilled(
     const Vector2& min,
     const Vector2& max,
@@ -33,8 +99,7 @@ void GuiDrawList::addRectFilled(
     }
 
     if (rounding > 0.0f) {
-        Flag f;
-        f.set(static_cast<unsigned>(flag));
+        Flag f(static_cast<unsigned>(flag));
         pathRect(min, max, rounding, f);
         pathFillConvex(color);
     } else {
@@ -53,9 +118,15 @@ void GuiDrawList::updateWindowSize(const Vector2& amount) {
 
 }
 
-void GuiDrawList::updateVertexPosition(const Vector2& amount, unsigned startIndex, unsigned stopIndex) {
-    for (unsigned i = startIndex; i <= stopIndex; ++i) {
-        mVertexBuffer[i].pos += amount;
+void GuiDrawList::updateVertexPosition(const Vector2& amount, unsigned startIndex, unsigned numPoints) {
+    for (unsigned i = 0; i < numPoints; ++i) {
+        mVertexBuffer[i + startIndex].pos += amount;
+    }
+}
+
+void GuiDrawList::setVertexColor(const Vector4& color, unsigned startIndex, unsigned numPoints) {
+    for (unsigned i = 0; i < numPoints; ++i) {
+        mVertexBuffer[i + startIndex].color = color;
     }
 }
 
@@ -75,19 +146,19 @@ void GuiDrawList::addConvexPolyFilled(
     const std::vector<Vector2>& points,
     const Vector4& color
 ) {
-    if (points.size() < 3) {
+    auto pointsCount = points.size();
+    if (pointsCount < 3) {
         return;
     }
 
-    auto uv = mContext.getDrawListSharedData().texUvWhitePixel;
+    const auto& uv = mContext.getDrawListSharedData().texUvWhitePixel;
 
     //アンチエイリアスなしの塗りつぶし
-    auto pointCount = points.size();
-    int idxCount = (pointCount - 2) * 3;
-    primReserve(idxCount, pointCount);
+    int idxCount = (pointsCount - 2) * 3;
+    primReserve(idxCount, pointsCount);
 
     auto idx = static_cast<unsigned short>(mVertexBuffer.size());
-    for (int i = 2; i < pointCount; ++i) {
+    for (int i = 2; i < pointsCount; ++i) {
         mIndexBuffer.emplace_back(idx);
         mIndexBuffer.emplace_back(idx + i - 1);
         mIndexBuffer.emplace_back(idx + i);
@@ -102,11 +173,6 @@ void GuiDrawList::addConvexPolyFilled(
 
 void GuiDrawList::pathLineTo(const Vector2& pos) {
     mPath.emplace_back(pos);
-}
-
-void GuiDrawList::pathFillConvex(const Vector4& color) {
-    addConvexPolyFilled(mPath, color);
-    mPath.clear();
 }
 
 void GuiDrawList::pathRect(
@@ -168,6 +234,16 @@ void GuiDrawList::pathArcToFast(
     }
 }
 
+void GuiDrawList::pathStroke(const Vector4& color, float thickness, bool closed) {
+    addPolyline(mPath, color, thickness, closed);
+    mPath.clear();
+}
+
+void GuiDrawList::pathFillConvex(const Vector4& color) {
+    addConvexPolyFilled(mPath, color);
+    mPath.clear();
+}
+
 void GuiDrawList::primReserve(int idxCount, int vtxCount) {
     assert(idxCount >= 0 && vtxCount >= 0);
 
@@ -198,4 +274,9 @@ void GuiDrawList::primRect(const Vector2& a, const Vector2& c, const Vector4& co
     mVertexBuffer.emplace_back(vertex);
     vertex.pos = d;
     mVertexBuffer.emplace_back(vertex);
+}
+
+void GuiDrawList::normalize2fOverZero(Vector2& v) const {
+    float invLen = 1.f / v.length();
+    v *= invLen;
 }
