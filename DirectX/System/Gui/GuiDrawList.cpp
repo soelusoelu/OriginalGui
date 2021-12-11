@@ -124,6 +124,36 @@ void GuiDrawList::addRectFilledMultiColor(
     primWriteVertex(Vector2(min.x, max.y), uv, bottomLeftColor);
 }
 
+void GuiDrawList::addCircle(
+    const Vector2& center,
+    float radius,
+    const Vector4& color,
+    float thickness
+) {
+    const auto& drawListSharedData = mContext.getDrawListSharedData();
+    const auto& circleSegmentCounts = drawListSharedData.circleSegmentCounts;
+
+    //半径の大きさによって区分数を決める
+    int numSegments = 0;
+    int radiusIdx = static_cast<int>(radius) - 1;
+    if (radiusIdx < circleSegmentCounts.size()) {
+        //事前に計算された値を使用
+        numSegments = circleSegmentCounts[radiusIdx];
+    } else {
+        //新たに計算して求める
+        numSegments = drawListSharedData.calcCircleAutoSegment(radius, drawListSharedData.circleSegmentMaxError);
+    }
+
+    if (numSegments == 12) {
+        pathArcToFast(center, radius - 0.5f, 0, 12 - 1);
+    } else {
+        float max = Math::TwoPI * (static_cast<float>(numSegments) - 1.f) / static_cast<float>(numSegments);
+        pathArcTo(center, radius - 0.5f, 0.f, max, numSegments - 1);
+    }
+
+    pathStroke(color, thickness, true);
+}
+
 void GuiDrawList::addCircleFilled(
     const Vector2& center,
     float radius,

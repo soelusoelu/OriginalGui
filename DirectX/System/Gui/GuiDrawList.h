@@ -55,7 +55,14 @@ public:
         const Vector4& bottomRightColor,
         const Vector4& bottomLeftColor
     );
-    //円をを追加し塗りつぶす
+    //円(枠のみ)を追加する
+    void addCircle(
+        const Vector2& center,
+        float radius,
+        const Vector4& color = Vector4(1.f, 1.f, 1.f, 1.f),
+        float thickness = 1.f
+    );
+    //円を追加し塗りつぶす
     void addCircleFilled(
         const Vector2& center,
         float radius,
@@ -97,6 +104,8 @@ private:
         float rounding,
         const Flag& flag
     );
+    //指定された分だけ丸め、パス配列に追加する
+    //逐次計算する分若干遅いが色々できる
     void pathArcTo(
         const Vector2& center,
         float radius,

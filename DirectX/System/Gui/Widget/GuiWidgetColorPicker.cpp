@@ -94,6 +94,7 @@ void GuiWidgetColorPicker::colorPicker(const std::string& label, void* color, bo
     //カーソル
     auto cursorStart = static_cast<unsigned>(vb.size());
     drawList.addCircleFilled(nextPos, CURSOR_RADIUS);
+    drawList.addCircle(nextPos, CURSOR_RADIUS + 1.f, Vector4(ColorPalette::black, 1.f));
     auto cursorNumPoints = static_cast<unsigned>(vb.size()) - cursorStart;
 
     //描画位置をずらして設定
@@ -166,6 +167,15 @@ void GuiWidgetColorPicker::updateColorPicker() {
         Vector4::lerp(c1_1, c1_2, fy) * Vector4::lerp(c2_1, c2_2, fy),
         fx
     );
+
+    //値更新
+    if (cp.isVec4) {
+        auto& data = *static_cast<Vector4*>(cp.color);
+        data = color;
+    } else {
+        auto& data = *static_cast<Vector3*>(cp.color);
+        data = Vector3(color.x, color.y, color.z);
+    }
 }
 
 void GuiWidgetColorPicker::selectHueBar() {
