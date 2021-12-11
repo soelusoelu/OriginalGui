@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "GuiDrawList.h"
-#include "GuiWidgets.h"
+#include "Widget/GuiWidgets.h"
 #include "../../Math/Math.h"
 #include <memory>
 #include <string>
@@ -42,6 +42,9 @@ public:
 
     void sliderInt(const std::string& label, int& v, int min, int max);
     void sliderFloat(const std::string& label, float& v, float min, float max);
+
+    void colorPicker3(const std::string& label, Vector3& color);
+    void colorPicker4(const std::string& label, Vector4& color);
 
     GuiContext& getContext() const;
     GuiDrawList& getDrawList() const;

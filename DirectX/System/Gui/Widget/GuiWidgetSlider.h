@@ -1,7 +1,8 @@
 ﻿#pragma once
 
 #include "GuiDataType.h"
-#include "../../Math/Math.h"
+#include "GuiWidgetConstant.h"
+#include "../../../Math/Math.h"
 #include <any>
 #include <string>
 #include <vector>
@@ -49,6 +50,8 @@ private:
     //選択中のスライダーのグラブ位置を更新する
     void updateGrabPosition(float f);
 
+    //sliderのフレーム一を取得する
+    const Vector2& getFramePosition(const GuiSlider& slider) const;
     //掴んでいるグラブを取得する
     const GuiSlider& getGrabbingSlider() const;
     //掴んでいるか
@@ -59,22 +62,14 @@ private:
     float calcGrabbingPosXMax(const GuiSlider& slider) const;
 
 private:
-    const Vector2& getFramePosition(const GuiSlider& slider) const;
-
-private:
     GuiWindow& mWindow;
     std::vector<GuiSlider> mSliders;
     //マウスで掴んでいるグラブのインデックス
     //-1なら掴んでいない
     int mGrabbingIndex;
 
-    static constexpr float FRAME_WIDTH = 256.f;
-    static constexpr float FRAME_HEIGHT = 24.f;
-    static const inline Vector2 FRAME_SIZE = Vector2(FRAME_WIDTH, FRAME_HEIGHT);
-
-    static constexpr float GRAB_PADDING = 2.f;
     static constexpr float GRAB_WIDTH = 16.f;
     static constexpr float GRAB_WIDTH_HALF = GRAB_WIDTH / 2;
-    static constexpr float GRAB_HEIGHT = FRAME_HEIGHT - GRAB_PADDING * 2;
+    static constexpr float GRAB_HEIGHT = GuiWidgetConstant::FRAME_HEIGHT - GuiWidgetConstant::PADDING * 2;
     static const inline Vector2 GRAB_SIZE = Vector2(GRAB_WIDTH, GRAB_HEIGHT);
 };

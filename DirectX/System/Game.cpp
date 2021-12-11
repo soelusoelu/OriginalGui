@@ -109,6 +109,8 @@ void Game::initialize() {
     mGuiWindow->sliderInt("", test, 0, 100);
     static float test2 = 0.f;
     mGuiWindow->sliderFloat("", test2, -100.f, 100.f);
+    static Vector4 test3 = Vector4(1.f, 1.f, 1.f, 1.f);
+    mGuiWindow->colorPicker4("", test3);
 }
 
 void Game::mainLoop() {
@@ -131,6 +133,9 @@ void Game::mainLoop() {
         ImGui::SetNextWindowSize(ImVec2(256.f, 512.f), ImGuiCond_Once);
         ////ウィンドウを不透明に
         //ImGui::SetNextWindowBgAlpha(1.f);
+        auto mousePos = InputManager::mouse().getMousePosition();
+        ImGui::GetIO().MousePos.x = mousePos.x;
+        ImGui::GetIO().MousePos.y = mousePos.y;
 
         bool isOpen = false;
         ImGui::Begin("Test", &isOpen);
@@ -138,6 +143,14 @@ void Game::mainLoop() {
         ImGui::DragInt("drag", &num);
         static int num2 = 0;
         ImGui::SliderInt("slide", &num2, 0, 100);
+        //static ImVec4 col(1.f, 1.f, 1.f, 1.f);
+        static float col[4] = { 1.f, 1.f, 1.f, 1.f };
+        //ImGui::ColorEdit4("colorEdit", col);
+        ImGui::ColorPicker4("colorPicker", col);
+        static float col3[4] = { 1.f, 1.f, 1.f };
+        ImGui::ColorPicker3("colorPicker3", col3);
+        //ImVec4 c(col[0], col[1], col[2], col[3]);
+        //ImGui::ColorButton("colorButton", c);
         ImGui::End();
     }
 

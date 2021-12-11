@@ -280,8 +280,9 @@
     <ClCompile Include="System\Gui\GuiDrawList.cpp" />
     <ClCompile Include="System\Gui\GuiRenderer.cpp" />
     <ClCompile Include="System\Gui\Gui.cpp" />
-    <ClCompile Include="System\Gui\GuiWidgetSlider.cpp" />
-    <ClCompile Include="System\Gui\GuiWidgets.cpp" />
+    <ClCompile Include="System\Gui\Widget\GuiWidgetSlider.cpp" />
+    <ClCompile Include="System\Gui\Widget\GuiWidgets.cpp" />
+    <ClCompile Include="System\Gui\Widget\GuiWidgetColorPicker.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Component\ComponentManager.h" />
@@ -644,9 +645,11 @@
     <ClInclude Include="System\Gui\GuiRenderer.h" />
     <ClInclude Include="System\Gui\GuiVertex.h" />
     <ClInclude Include="System\Gui\Gui.h" />
-    <ClInclude Include="System\Gui\GuiWidgetSlider.h" />
-    <ClInclude Include="System\Gui\GuiDataType.h" />
-    <ClInclude Include="System\Gui\GuiWidgets.h" />
+    <ClInclude Include="System\Gui\Widget\GuiWidgetSlider.h" />
+    <ClInclude Include="System\Gui\Widget\GuiDataType.h" />
+    <ClInclude Include="System\Gui\Widget\GuiWidgets.h" />
+    <ClInclude Include="System\Gui\Widget\GuiWidgetColorPicker.h" />
+    <ClInclude Include="System\Gui\Widget\GuiWidgetConstant.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\MeshCommonHeader.hlsli" />

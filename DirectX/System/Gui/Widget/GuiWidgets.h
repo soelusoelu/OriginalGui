@@ -4,6 +4,7 @@
 
 class GuiWindow;
 class GuiWidgetSlider;
+class GuiWidgetColorPicker;
 
 class GuiWidgets {
 public:
@@ -14,7 +15,9 @@ public:
 
     void update();
     GuiWidgetSlider& getSlider() const;
+    GuiWidgetColorPicker& getColorPicker() const;
 
 private:
     std::unique_ptr<GuiWidgetSlider> mSlider;
+    std::unique_ptr<GuiWidgetColorPicker> mColorPicker;
 };

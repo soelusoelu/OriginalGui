@@ -22,7 +22,7 @@ public:
     //レイヤーを指定する
     void setLayer(unsigned layer);
 
-    //ラインを追加する
+    //四角ポリゴンで形成したラインを追加する
     void addPolyline(
         const std::vector<Vector2>& points,
         const Vector4& color,
@@ -46,6 +46,15 @@ public:
         float rounding = 0.f,
         DrawCornerFlags flag = DrawCornerFlags::NONE
     );
+    //それぞれの頂点の色を指定した矩形を追加し塗りつぶす
+    void addRectFilledMultiColor(
+        const Vector2& min,
+        const Vector2& max,
+        const Vector4& upperLeftColor,
+        const Vector4& upperRightColor,
+        const Vector4& bottomRightColor,
+        const Vector4& bottomLeftColor
+    );
 
     //ウィンドウ位置を更新する
     void updateWindowPosition(const Vector2& amount);
@@ -54,8 +63,10 @@ public:
     void updateWindowSize(const Vector2& amount);
     //指定された範囲の頂点位置を更新する
     void updateVertexPosition(const Vector2& amount, unsigned startIndex, unsigned numPoints);
+    //指定された頂点の頂点色を変更する
+    void setVertexColor(const Vector4& color, unsigned index);
     //指定された範囲の頂点色を変更する
-    void setVertexColor(const Vector4& color, unsigned startIndex, unsigned numPoints);
+    void setVertexColors(const Vector4& color, unsigned startIndex, unsigned numPoints);
 
     //描画コマンドを取得する
     const std::vector<GuiDrawCommand>& getDrawCommands() const;
@@ -95,8 +106,10 @@ private:
 
     //頂点・インデックス配列の容量を確保する
     void primReserve(int idxCount, int vtxCount);
+    //頂点配列に追加する
+    void primWriteVertex(const Vector2& pos, const Vector2& uv, const Vector4& color);
     //単純な矩形を頂点・インデックス配列に追加する
-    void primRect(const Vector2& a, const Vector2& b, const Vector4& color);
+    void primRect(const Vector2& min, const Vector2& max, const Vector4& color);
 
     void normalize2fOverZero(Vector2& v) const;
 

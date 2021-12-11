@@ -108,6 +108,32 @@ void GuiDrawList::addRectFilled(
     }
 }
 
+void GuiDrawList::addRectFilledMultiColor(
+    const Vector2& min,
+    const Vector2& max,
+    const Vector4& upperLeftColor,
+    const Vector4& upperRightColor,
+    const Vector4& bottomRightColor,
+    const Vector4& bottomLeftColor
+) {
+    primReserve(6, 4);
+
+    const auto& uv = mContext.getDrawListSharedData().texUvWhitePixel;
+
+    auto idx = static_cast<unsigned short>(mVertexBuffer.size());
+    mIndexBuffer.emplace_back(idx);
+    mIndexBuffer.emplace_back(idx + 1);
+    mIndexBuffer.emplace_back(idx + 2);
+    mIndexBuffer.emplace_back(idx);
+    mIndexBuffer.emplace_back(idx + 2);
+    mIndexBuffer.emplace_back(idx + 3);
+
+    primWriteVertex(min, uv, upperLeftColor);
+    primWriteVertex(Vector2(max.x, min.y), uv, upperRightColor);
+    primWriteVertex(max, uv, bottomRightColor);
+    primWriteVertex(Vector2(min.x, max.y), uv, bottomLeftColor);
+}
+
 void GuiDrawList::updateWindowPosition(const Vector2& amount) {
     for (auto&& v : mVertexBuffer) {
         v.pos += amount;
@@ -124,7 +150,11 @@ void GuiDrawList::updateVertexPosition(const Vector2& amount, unsigned startInde
     }
 }
 
-void GuiDrawList::setVertexColor(const Vector4& color, unsigned startIndex, unsigned numPoints) {
+void GuiDrawList::setVertexColor(const Vector4& color, unsigned index) {
+    mVertexBuffer[index].color = color;
+}
+
+void GuiDrawList::setVertexColors(const Vector4& color, unsigned startIndex, unsigned numPoints) {
     for (unsigned i = 0; i < numPoints; ++i) {
         mVertexBuffer[i + startIndex].color = color;
     }
@@ -254,10 +284,13 @@ void GuiDrawList::primReserve(int idxCount, int vtxCount) {
     mIndexBuffer.reserve(mIndexBuffer.size() + idxCount);
 }
 
-void GuiDrawList::primRect(const Vector2& a, const Vector2& c, const Vector4& color) {
-    Vector2 b(c.x, a.y);
-    Vector2 d(a.x, c.y);
-    Vector2 uv(mContext.getDrawListSharedData().texUvWhitePixel);
+void GuiDrawList::primWriteVertex(const Vector2& pos, const Vector2& uv, const Vector4& color) {
+    mVertexBuffer.emplace_back(GuiVertex{ pos, uv, color });
+}
+
+void GuiDrawList::primRect(const Vector2& min, const Vector2& max, const Vector4& color) {
+    const auto& uv = mContext.getDrawListSharedData().texUvWhitePixel;
+
     auto idx = static_cast<unsigned short>(mVertexBuffer.size());
     mIndexBuffer.emplace_back(idx);
     mIndexBuffer.emplace_back(idx + 1);
@@ -266,14 +299,10 @@ void GuiDrawList::primRect(const Vector2& a, const Vector2& c, const Vector4& co
     mIndexBuffer.emplace_back(idx + 2);
     mIndexBuffer.emplace_back(idx + 3);
 
-    GuiVertex vertex = { a, uv, color };
-    mVertexBuffer.emplace_back(vertex);
-    vertex.pos = b;
-    mVertexBuffer.emplace_back(vertex);
-    vertex.pos = c;
-    mVertexBuffer.emplace_back(vertex);
-    vertex.pos = d;
-    mVertexBuffer.emplace_back(vertex);
+    primWriteVertex(min, uv, color);
+    primWriteVertex(Vector2(max.x, min.y), uv, color);
+    primWriteVertex(max, uv, color);
+    primWriteVertex(Vector2(min.x, max.y), uv, color);
 }
 
 void GuiDrawList::normalize2fOverZero(Vector2& v) const {

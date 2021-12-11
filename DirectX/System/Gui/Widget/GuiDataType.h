@@ -11,4 +11,7 @@ enum class GuiDataType {
     UNSIGNED_LONG_LONG,
     FLOAT,
     DOUBLE,
+    VECTOR2,
+    VECTOR3,
+    VECTOR4
 };

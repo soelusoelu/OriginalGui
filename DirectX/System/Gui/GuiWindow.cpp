@@ -1,7 +1,8 @@
 ﻿#include "GuiWindow.h"
 #include "DrawCornerFlags.h"
 #include "GuiContext.h"
-#include "GuiWidgetSlider.h"
+#include "Widget/GuiWidgetColorPicker.h"
+#include "Widget/GuiWidgetSlider.h"
 #include "../../Collision/Collision.h"
 #include "../../Input/Input.h"
 
@@ -116,7 +117,7 @@ const Vector2& GuiWindow::getSize() const {
 }
 
 void GuiWindow::setBackgroundColor(const Vector4& color) {
-    mDrawList->setVertexColor(color, mBackgroundVerticesStartIndex, mBackgroundVerticesNumPoints);
+    mDrawList->setVertexColors(color, mBackgroundVerticesStartIndex, mBackgroundVerticesNumPoints);
     mBackgroundColor = color;
 }
 
@@ -155,6 +156,14 @@ void GuiWindow::sliderFloat(const std::string& label, float& v, float min, float
     mWidgets.getSlider().sliderFloat(label, v, min, max);
 }
 
+void GuiWindow::colorPicker3(const std::string& label, Vector3& color) {
+    mWidgets.getColorPicker().colorPicker3(label, color);
+}
+
+void GuiWindow::colorPicker4(const std::string& label, Vector4& color) {
+    mWidgets.getColorPicker().colorPicker4(label, color);
+}
+
 GuiContext& GuiWindow::getContext() const {
     return mContext;
 }
@@ -172,5 +181,5 @@ const Vector2& GuiWindow::getNextWidgetPosition() const {
 }
 
 void GuiWindow::setTitleBarVertexColor(const Vector4& color) {
-    mDrawList->setVertexColor(color, mTitleBarVerticesStartIndex, mTitleBarVerticesNumPoints);
+    mDrawList->setVertexColors(color, mTitleBarVerticesStartIndex, mTitleBarVerticesNumPoints);
 }
