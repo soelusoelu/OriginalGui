@@ -22,7 +22,7 @@ public:
     Vector3 operator-() const;
     friend Vector3 operator+(const Vector3& a, const Vector3& b);
     friend Vector3 operator-(const Vector3& a, const Vector3& b);
-    friend Vector3 operator*(const Vector3& left, const Vector3& right);
+    friend Vector3 operator*(const Vector3& a, const Vector3& b);
     friend Vector3 operator*(const Vector3& vec, float scalar);
     friend Vector3 operator*(float scalar, const Vector3& vec);
     friend Vector3 operator/(const Vector3& vec, float scalar);

@@ -47,8 +47,8 @@ Vector3 operator-(const Vector3& a, const Vector3& b) {
     return Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
 }
 
-Vector3 operator*(const Vector3& left, const Vector3& right) {
-    return Vector3(left.x * right.x, left.y * right.y, left.z * right.z);
+Vector3 operator*(const Vector3& a, const Vector3& b) {
+    return Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
 }
 
 Vector3 operator*(const Vector3& vec, float scalar) {

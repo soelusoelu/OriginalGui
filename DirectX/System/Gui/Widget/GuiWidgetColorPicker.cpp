@@ -7,6 +7,7 @@
 
 GuiWidgetColorPicker::GuiWidgetColorPicker(GuiWindow& window)
     : mWindow(window)
+    , mColorPickerIndex(-1)
     , mHueBarIndex(-1)
 {
 }
@@ -20,12 +21,15 @@ void GuiWidgetColorPicker::update() {
 
     const auto& mouse = Input::mouse();
     if (mouse.getMouseButtonUp(MouseCode::LeftButton)) {
+        mColorPickerIndex = -1;
         mHueBarIndex = -1;
     } else if (mouse.getMouseButtonDown(MouseCode::LeftButton)) {
+        selectColorPicker();
         selectHueBar();
     }
 
     if (mouse.getMouseButton(MouseCode::LeftButton)) {
+        updateColorPicker();
         updateHueBar();
     }
 }
@@ -62,13 +66,12 @@ void GuiWidgetColorPicker::colorPicker(const std::string& label, void* color, bo
         Vector4(ColorPalette::black, 1.f)
     );
 
-
-    //色彩バー
+    //色相バー
     auto hueBarStart = static_cast<unsigned>(drawList.getVertexBuffer().size());
     const auto& framePadding = mWindow.getContext().getFramePadding();
 
     constexpr int HUE_BAR_COLORS_SIZE = HUE_BAR_COLORS.size();
-    constexpr float SY = COLOR_PICKER_HEIGHT / HUE_BAR_COLORS_SIZE;
+    constexpr float SY = HUE_BAR_HEIGHT / HUE_BAR_COLORS_SIZE;
     auto hueBarWidth = GuiWidgetConstant::FRAME_WIDTH - COLOR_PICKER_WIDTH - framePadding.x;
     auto huePos = nextPos;
     huePos.x += COLOR_PICKER_WIDTH + framePadding.x;
@@ -94,12 +97,62 @@ void GuiWidgetColorPicker::colorPicker(const std::string& label, void* color, bo
     mColorPickers.emplace_back(GuiColorPicker{ label, color, isVec4, hueBarWidth, colorPickerStart, hueBarStart });
 }
 
+void GuiWidgetColorPicker::selectColorPicker() {
+    const auto& mousePos = Input::mouse().getMousePosition();
+    for (int i = 0; i < mColorPickers.size(); ++i) {
+        auto& cp = mColorPickers[i];
+        const auto& colorPickerPos = getColorPickerPosition(cp);
+        Square sq(colorPickerPos, colorPickerPos + COLOR_PICKER_SIZE);
+        if (!sq.contains(mousePos)) {
+            continue;
+        }
+
+        mColorPickerIndex = i;
+        return;
+    }
+}
+
+void GuiWidgetColorPicker::updateColorPicker() {
+    if (!isSelectingColorPicker()) {
+        return;
+    }
+
+    const auto& cp = getSelectingColorPicker();
+    const auto& colorPickerPos = getColorPickerPosition(cp);
+    const auto& mousePos = Input::mouse().getMousePosition();
+    auto clampMousePos = Vector2::clamp(mousePos, colorPickerPos, colorPickerPos + COLOR_PICKER_SIZE);
+
+    //カラーピッカー内におけるマウス位置の割合
+    float fx = (clampMousePos.x - colorPickerPos.x) / COLOR_PICKER_WIDTH;
+    float fy = (clampMousePos.y - colorPickerPos.y) / COLOR_PICKER_HEIGHT;
+
+    //線形補間で色を求める
+    //頂点4つの矩形2つ想定
+    const auto& vb = mWindow.getDrawList().getVertexBuffer();
+    auto idx = cp.colorPickerVerticesStartIndex;
+    const auto& c1_0 = vb[idx].color;     //1つ目左上
+    const auto& c1_1 = vb[idx + 1].color; //1つ目右上
+    const auto& c1_2 = vb[idx + 2].color; //1つ目右下
+    const auto& c1_3 = vb[idx + 3].color; //1つ目左下
+    const auto& c2_0 = vb[idx + 4].color; //2つ目左上
+    const auto& c2_1 = vb[idx + 5].color; //2つ目右上
+    const auto& c2_2 = vb[idx + 6].color; //2つ目右下
+    const auto& c2_3 = vb[idx + 7].color; //2つ目左下
+
+    //2つの矩形から色を求める
+    auto color = Vector4::lerp(
+        Vector4::lerp(c1_0, c1_3, fy) * Vector4::lerp(c2_0, c2_3, fy),
+        Vector4::lerp(c1_1, c1_2, fy) * Vector4::lerp(c2_1, c2_2, fy),
+        fx
+    );
+}
+
 void GuiWidgetColorPicker::selectHueBar() {
     const auto& mousePos = Input::mouse().getMousePosition();
     for (int i = 0; i < mColorPickers.size(); ++i) {
         auto& cp = mColorPickers[i];
         const auto& hueBarPos = getHueBarPosition(cp);
-        Square sq(hueBarPos, hueBarPos + Vector2(cp.hueBarWidth, COLOR_PICKER_HEIGHT));
+        Square sq(hueBarPos, hueBarPos + Vector2(cp.hueBarWidth, HUE_BAR_HEIGHT));
         if (!sq.contains(mousePos)) {
             continue;
         }
@@ -117,10 +170,10 @@ void GuiWidgetColorPicker::updateHueBar() {
     const auto& cp = getSelectingColorPicker();
     const auto& hueBarPosY = getHueBarPosition(cp).y;
     auto mousePosY = Input::mouse().getMousePosition().y;
-    auto clampMousePosY = Math::clamp(mousePosY, hueBarPosY, hueBarPosY + COLOR_PICKER_HEIGHT);
+    auto clampMousePosY = Math::clamp(mousePosY, hueBarPosY, hueBarPosY + HUE_BAR_HEIGHT);
 
-    //色彩バー矩形内におけるマウス位置の割合
-    float f = (clampMousePosY - hueBarPosY) / COLOR_PICKER_HEIGHT;
+    //色相バー矩形内におけるマウス位置の割合
+    float f = (clampMousePosY - hueBarPosY) / HUE_BAR_HEIGHT;
 
     //マウス位置の割合を6つの色相(矩形6つで構成されているから)に対応できるように変更
     constexpr float RATIO = 1.f / HUE_BAR_COLORS.size();
@@ -151,8 +204,11 @@ const Vector2& GuiWidgetColorPicker::getHueBarPosition(const GuiColorPicker& col
 }
 
 const GuiColorPicker& GuiWidgetColorPicker::getSelectingColorPicker() const {
-    assert(isSelectingHueBar());
-    return mColorPickers[mHueBarIndex];
+    return (isSelectingColorPicker()) ? mColorPickers[mColorPickerIndex] : mColorPickers[mHueBarIndex];
+}
+
+bool GuiWidgetColorPicker::isSelectingColorPicker() const {
+    return (mColorPickerIndex != -1);
 }
 
 bool GuiWidgetColorPicker::isSelectingHueBar() const {
