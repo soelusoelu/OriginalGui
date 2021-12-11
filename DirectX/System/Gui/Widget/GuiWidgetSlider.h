@@ -50,7 +50,7 @@ private:
     //選択中のスライダーのグラブ位置を更新する
     void updateGrabPosition(float f);
 
-    //sliderのフレーム一を取得する
+    //sliderのフレーム位置を取得する
     const Vector2& getFramePosition(const GuiSlider& slider) const;
     //掴んでいるグラブを取得する
     const GuiSlider& getGrabbingSlider() const;
