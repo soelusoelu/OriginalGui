@@ -76,11 +76,6 @@ void GuiDrawList::addRect(
     DrawCornerFlags flag,
     float thickness
 ) {
-    //アルファ値0なら無視
-    if (color.w == 0) {
-        return;
-    }
-
     Flag f(static_cast<unsigned>(flag));
     pathRect(min + Vector2(0.5f, 0.5f), max - Vector2(0.49f, 0.49f), rounding, f);
     pathStroke(color, thickness, true);
@@ -93,11 +88,6 @@ void GuiDrawList::addRectFilled(
     float rounding,
     DrawCornerFlags flag
 ) {
-    //アルファ値0なら無視
-    if (color.w == 0) {
-        return;
-    }
-
     if (rounding > 0.0f) {
         Flag f(static_cast<unsigned>(flag));
         pathRect(min, max, rounding, f);
@@ -132,6 +122,35 @@ void GuiDrawList::addRectFilledMultiColor(
     primWriteVertex(Vector2(max.x, min.y), uv, upperRightColor);
     primWriteVertex(max, uv, bottomRightColor);
     primWriteVertex(Vector2(min.x, max.y), uv, bottomLeftColor);
+}
+
+void GuiDrawList::addCircleFilled(
+    const Vector2& center,
+    float radius,
+    const Vector4& color
+) {
+    const auto& drawListSharedData = mContext.getDrawListSharedData();
+    const auto& circleSegmentCounts = drawListSharedData.circleSegmentCounts;
+
+    //半径の大きさによって区分数を決める
+    int numSegments = 0;
+    int radiusIdx = static_cast<int>(radius) - 1;
+    if (radiusIdx < circleSegmentCounts.size()) {
+        //事前に計算された値を使用
+        numSegments = circleSegmentCounts[radiusIdx];
+    } else {
+        //新たに計算して求める
+        numSegments = drawListSharedData.calcCircleAutoSegment(radius, drawListSharedData.circleSegmentMaxError);
+    }
+
+    if (numSegments == 12) {
+        pathArcToFast(center, radius, 0, 12 - 1);
+    } else {
+        float max = Math::TwoPI * (static_cast<float>(numSegments) - 1.f) / static_cast<float>(numSegments);
+        pathArcTo(center, radius, 0.f, max, numSegments - 1);
+    }
+
+    pathFillConvex(color);
 }
 
 void GuiDrawList::updateWindowPosition(const Vector2& amount) {
@@ -239,6 +258,25 @@ void GuiDrawList::pathRect(
         pathArcToFast(Vector2(rectMax.x - roundingTR, rectMin.y + roundingTR), roundingTR, 9, 12);
         pathArcToFast(Vector2(rectMax.x - roundingBR, rectMax.y - roundingBR), roundingBR, 0, 3);
         pathArcToFast(Vector2(rectMin.x + roundingBL, rectMax.y - roundingBL), roundingBL, 3, 6);
+    }
+}
+
+void GuiDrawList::pathArcTo(
+    const Vector2& center,
+    float radius,
+    float min,
+    float max,
+    int numSegments
+) {
+    if (radius == 0.f) {
+        pathLineTo(center);
+        return;
+    }
+
+    mPath.reserve(mPath.size() + (numSegments + 1));
+    for (int i = 0; i <= numSegments; ++i) {
+        float a = min + (static_cast<float>(i) / static_cast<float>(numSegments)) * (max - min);
+        pathLineTo(Vector2(center.x + cosf(a) * radius, center.y + sinf(a) * radius));
     }
 }
 

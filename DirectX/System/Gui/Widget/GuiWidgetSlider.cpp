@@ -46,21 +46,23 @@ void GuiWidgetSlider::sliderScalar(
     const std::any& min,
     const std::any& max
 ) {
-    //フレームの描画
     auto nextPos = mWindow.getNextWidgetPosition();
     auto& drawList = mWindow.getDrawList();
-    auto frameStart = static_cast<unsigned>(drawList.getVertexBuffer().size());
+    const auto& vb = drawList.getVertexBuffer();
+
+    //フレームの描画
+    auto frameStart = static_cast<unsigned>(vb.size());
     drawList.addRectFilled(nextPos, nextPos + GuiWidgetConstant::FRAME_SIZE, Vector4(0.15f, 0.25f, 0.35f, 0.8f));
 
     //グラブ描画前の頂点数を取得しておく
-    auto beforeSize = static_cast<unsigned>(drawList.getVertexBuffer().size());
+    auto beforeSize = static_cast<unsigned>(vb.size());
 
     //グラブの描画
     auto p = nextPos + Vector2::one * GRAB_PADDING;
     drawList.addRectFilled(p, p + GRAB_SIZE, Vector4(0.15f, 0.3f, 0.75f, 0.9f));
 
     //グラブ描画後の頂点数を取得する
-    auto afterSize = static_cast<unsigned>(drawList.getVertexBuffer().size());
+    auto afterSize = static_cast<unsigned>(vb.size());
 
     //描画位置をずらして設定
     nextPos.y += GuiWidgetConstant::FRAME_HEIGHT + mWindow.getContext().getFramePadding().y;

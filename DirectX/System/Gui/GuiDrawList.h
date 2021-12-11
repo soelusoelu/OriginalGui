@@ -55,6 +55,12 @@ public:
         const Vector4& bottomRightColor,
         const Vector4& bottomLeftColor
     );
+    //円をを追加し塗りつぶす
+    void addCircleFilled(
+        const Vector2& center,
+        float radius,
+        const Vector4& color = Vector4(1.f, 1.f, 1.f, 1.f)
+    );
 
     //ウィンドウ位置を更新する
     void updateWindowPosition(const Vector2& amount);
@@ -90,6 +96,13 @@ private:
         const Vector2& rectMax,
         float rounding,
         const Flag& flag
+    );
+    void pathArcTo(
+        const Vector2& center,
+        float radius,
+        float min,
+        float max,
+        int numSegments
     );
     //指定された分だけ丸め、パス配列に追加する
     //速いが雑

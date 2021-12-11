@@ -16,6 +16,8 @@ struct GuiColorPicker {
     float hueBarWidth = 0.f;
     unsigned colorPickerVerticesStartIndex = 0;
     unsigned hueBarVerticesStartIndex = 0;
+    unsigned cursorVerticesStartIndex = 0;
+    unsigned cursorVerticesNumPoints = 0;
 };
 
 class GuiWidgetColorPicker {
@@ -69,6 +71,8 @@ private:
     static const inline Vector2 COLOR_PICKER_SIZE = Vector2(COLOR_PICKER_WIDTH, COLOR_PICKER_HEIGHT);
 
     static constexpr float HUE_BAR_HEIGHT = COLOR_PICKER_HEIGHT;
+
+    static constexpr float CURSOR_RADIUS = 6.f;
 
     static const inline std::array<Vector3, 6> HUE_BAR_COLORS = {
         Vector3(1.f, 0.f, 0.f),

@@ -43,10 +43,12 @@ void GuiWidgetColorPicker::colorPicker4(const std::string& label, Vector4& color
 }
 
 void GuiWidgetColorPicker::colorPicker(const std::string& label, void* color, bool isVec4) {
-    //カラーピッカーの描画
     auto nextPos = mWindow.getNextWidgetPosition();
     auto& drawList = mWindow.getDrawList();
-    auto colorPickerStart = static_cast<unsigned>(drawList.getVertexBuffer().size());
+    const auto& vb = drawList.getVertexBuffer();
+
+    //カラーピッカーの描画
+    auto colorPickerStart = static_cast<unsigned>(vb.size());
     //最初は赤
     drawList.addRectFilledMultiColor(
         nextPos,
@@ -67,7 +69,7 @@ void GuiWidgetColorPicker::colorPicker(const std::string& label, void* color, bo
     );
 
     //色相バー
-    auto hueBarStart = static_cast<unsigned>(drawList.getVertexBuffer().size());
+    auto hueBarStart = static_cast<unsigned>(vb.size());
     const auto& framePadding = mWindow.getContext().getFramePadding();
 
     constexpr int HUE_BAR_COLORS_SIZE = HUE_BAR_COLORS.size();
@@ -89,12 +91,26 @@ void GuiWidgetColorPicker::colorPicker(const std::string& label, void* color, bo
         huePos.y += SY;
     }
 
+    //カーソル
+    auto cursorStart = static_cast<unsigned>(vb.size());
+    drawList.addCircleFilled(nextPos, CURSOR_RADIUS);
+    auto cursorNumPoints = static_cast<unsigned>(vb.size()) - cursorStart;
+
     //描画位置をずらして設定
     nextPos.y += GuiWidgetConstant::FRAME_HEIGHT + framePadding.y;
     mWindow.setNextWidgetPosition(nextPos);
 
     //配列に追加
-    mColorPickers.emplace_back(GuiColorPicker{ label, color, isVec4, hueBarWidth, colorPickerStart, hueBarStart });
+    mColorPickers.emplace_back(GuiColorPicker{
+        label,
+        color,
+        isVec4,
+        hueBarWidth,
+        colorPickerStart,
+        hueBarStart,
+        cursorStart,
+        cursorNumPoints
+    });
 }
 
 void GuiWidgetColorPicker::selectColorPicker() {
@@ -122,13 +138,18 @@ void GuiWidgetColorPicker::updateColorPicker() {
     const auto& mousePos = Input::mouse().getMousePosition();
     auto clampMousePos = Vector2::clamp(mousePos, colorPickerPos, colorPickerPos + COLOR_PICKER_SIZE);
 
+    //カーソル位置更新
+    auto& drawList = mWindow.getDrawList();
+    const auto& vb = drawList.getVertexBuffer();
+    auto velocity = clampMousePos - vb[cp.cursorVerticesStartIndex].pos + Vector2(CURSOR_RADIUS, 0.f);
+    drawList.updateVertexPosition(velocity, cp.cursorVerticesStartIndex, cp.cursorVerticesNumPoints);
+
     //カラーピッカー内におけるマウス位置の割合
     float fx = (clampMousePos.x - colorPickerPos.x) / COLOR_PICKER_WIDTH;
     float fy = (clampMousePos.y - colorPickerPos.y) / COLOR_PICKER_HEIGHT;
 
     //線形補間で色を求める
     //頂点4つの矩形2つ想定
-    const auto& vb = mWindow.getDrawList().getVertexBuffer();
     auto idx = cp.colorPickerVerticesStartIndex;
     const auto& c1_0 = vb[idx].color;     //1つ目左上
     const auto& c1_1 = vb[idx + 1].color; //1つ目右上
