@@ -37,10 +37,6 @@ private:
     static constexpr float COLOR_PICKER_HEIGHT = COLOR_PICKER_WIDTH;
     static const inline Vector2 COLOR_PICKER_SIZE = Vector2(COLOR_PICKER_WIDTH, COLOR_PICKER_HEIGHT);
 
-    static constexpr float HUE_BAR_WIDTH = GuiWidgetConstant::FRAME_WIDTH - COLOR_PICKER_WIDTH - GuiWidgetConstant::PADDING;
-    static constexpr float HUE_BAR_HEIGHT = COLOR_PICKER_HEIGHT;
-    static const inline Vector2 HUE_BAR_SIZE = Vector2(HUE_BAR_WIDTH, HUE_BAR_HEIGHT);
-
     static const inline std::array<Vector3, 6> HUE_BAR_COLORS = {
         Vector3(1.f, 0.f, 0.f),
         Vector3(1.f, 1.f, 0.f),

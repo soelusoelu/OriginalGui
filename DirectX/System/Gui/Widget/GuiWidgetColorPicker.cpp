@@ -42,10 +42,13 @@ void GuiWidgetColorPicker::colorPicker(const std::string& label, void* color, bo
     );
 
     //色彩バー
+    const auto& framePadding = mWindow.getContext().getFramePadding();
+
     constexpr int HUE_BAR_COLORS_SIZE = HUE_BAR_COLORS.size();
-    constexpr float SY = HUE_BAR_HEIGHT / HUE_BAR_COLORS_SIZE;
+    constexpr float SY = COLOR_PICKER_HEIGHT / HUE_BAR_COLORS_SIZE;
+    const float HUE_BAR_WIDTH = GuiWidgetConstant::FRAME_WIDTH - COLOR_PICKER_WIDTH - framePadding.x;
     auto huePos = nextPos;
-    huePos.x += COLOR_PICKER_WIDTH + GuiWidgetConstant::PADDING;
+    huePos.x += COLOR_PICKER_WIDTH + framePadding.x;
     //全色グラデーションするために6回に分ける
     for (int i = 0; i < HUE_BAR_COLORS_SIZE; ++i) {
         drawList.addRectFilledMultiColor(
@@ -61,7 +64,7 @@ void GuiWidgetColorPicker::colorPicker(const std::string& label, void* color, bo
     }
 
     //描画位置をずらして設定
-    nextPos.y += GuiWidgetConstant::FRAME_HEIGHT + mWindow.getContext().getFramePadding().y;
+    nextPos.y += GuiWidgetConstant::FRAME_HEIGHT + framePadding.y;
     mWindow.setNextWidgetPosition(nextPos);
 
     //配列に追加

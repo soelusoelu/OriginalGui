@@ -70,6 +70,7 @@ private:
 
     static constexpr float GRAB_WIDTH = 16.f;
     static constexpr float GRAB_WIDTH_HALF = GRAB_WIDTH / 2;
-    static constexpr float GRAB_HEIGHT = GuiWidgetConstant::FRAME_HEIGHT - GuiWidgetConstant::PADDING * 2;
+    static constexpr float GRAB_PADDING = 2.f;
+    static constexpr float GRAB_HEIGHT = GuiWidgetConstant::FRAME_HEIGHT - GRAB_PADDING * 2;
     static const inline Vector2 GRAB_SIZE = Vector2(GRAB_WIDTH, GRAB_HEIGHT);
 };

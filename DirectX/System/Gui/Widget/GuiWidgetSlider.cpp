@@ -56,7 +56,7 @@ void GuiWidgetSlider::sliderScalar(
     auto beforeSize = static_cast<unsigned>(drawList.getVertexBuffer().size());
 
     //グラブの描画
-    auto p = nextPos + Vector2::one * GuiWidgetConstant::PADDING;
+    auto p = nextPos + Vector2::one * GRAB_PADDING;
     drawList.addRectFilled(p, p + GRAB_SIZE, Vector4(0.15f, 0.3f, 0.75f, 0.9f));
 
     //グラブ描画後の頂点数を取得する
@@ -161,9 +161,9 @@ bool GuiWidgetSlider::isGrabbing() const {
 }
 
 float GuiWidgetSlider::calcGrabbingPosXMin(const GuiSlider& slider) const {
-    return getFramePosition(slider).x + (GRAB_WIDTH_HALF + GuiWidgetConstant::PADDING);
+    return getFramePosition(slider).x + (GRAB_WIDTH_HALF + GRAB_PADDING);
 }
 
 float GuiWidgetSlider::calcGrabbingPosXMax(const GuiSlider& slider) const {
-    return getFramePosition(slider).x + GuiWidgetConstant::FRAME_WIDTH - (GRAB_WIDTH_HALF + GuiWidgetConstant::PADDING);
+    return getFramePosition(slider).x + GuiWidgetConstant::FRAME_WIDTH - (GRAB_WIDTH_HALF + GRAB_PADDING);
 }
