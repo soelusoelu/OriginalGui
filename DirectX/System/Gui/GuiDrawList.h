@@ -29,6 +29,21 @@ public:
         float thickness,
         bool closed
     );
+    //三角形(枠のみ)を追加する
+    void addTriangle(
+        const Vector2& p1,
+        const Vector2& p2,
+        const Vector2& p3,
+        const Vector4& color = Vector4(1.f, 1.f, 1.f, 1.f),
+        float thickness = 1.f
+    );
+    //三角形を追加し塗りつぶす
+    void addTriangleFilled(
+        const Vector2& p1,
+        const Vector2& p2,
+        const Vector2& p3,
+        const Vector4& color = Vector4(1.f, 1.f, 1.f, 1.f)
+    );
     //丸みを考慮した矩形(枠のみ)を追加する
     void addRect(
         const Vector2& min,

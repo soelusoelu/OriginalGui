@@ -91,11 +91,39 @@ void GuiWidgetColorPicker::colorPicker(const std::string& label, void* color, bo
         huePos.y += SY;
     }
 
-    //カーソル
-    auto cursorStart = static_cast<unsigned>(vb.size());
+    //カラーピッカーのカーソル
+    auto colorPickerCursorStart = static_cast<unsigned>(vb.size());
     drawList.addCircleFilled(nextPos, CURSOR_RADIUS);
     drawList.addCircle(nextPos, CURSOR_RADIUS + 1.f, Vector4(ColorPalette::black, 1.f));
-    auto cursorNumPoints = static_cast<unsigned>(vb.size()) - cursorStart;
+    auto colorPickerCursorNumPoints = static_cast<unsigned>(vb.size()) - colorPickerCursorStart;
+
+    //色相バーのカーソル
+    auto hueBarCursorStart = static_cast<unsigned>(vb.size());
+    auto hueBarPos = vb[hueBarStart].pos;
+    drawList.addTriangleFilled(
+        hueBarPos + Vector2(HUE_BAR_CURSOR_HALF_SIZE, 0.f), //右
+        hueBarPos + Vector2(-HUE_BAR_CURSOR_HALF_SIZE, HUE_BAR_CURSOR_HALF_SIZE), //下
+        hueBarPos + Vector2(-HUE_BAR_CURSOR_HALF_SIZE, -HUE_BAR_CURSOR_HALF_SIZE) //上
+    );
+    drawList.addTriangle(
+        hueBarPos + Vector2(HUE_BAR_CURSOR_HALF_SIZE, 0.f), //右
+        hueBarPos + Vector2(-HUE_BAR_CURSOR_HALF_SIZE, HUE_BAR_CURSOR_HALF_SIZE), //下
+        hueBarPos + Vector2(-HUE_BAR_CURSOR_HALF_SIZE, -HUE_BAR_CURSOR_HALF_SIZE), //上
+        Vector4(ColorPalette::black, 1.f)
+    );
+    hueBarPos.x += hueBarWidth;
+    drawList.addTriangleFilled(
+        hueBarPos + Vector2(-HUE_BAR_CURSOR_HALF_SIZE, 0.f), //左
+        hueBarPos + Vector2(HUE_BAR_CURSOR_HALF_SIZE, -HUE_BAR_CURSOR_HALF_SIZE), //上
+        hueBarPos + Vector2(HUE_BAR_CURSOR_HALF_SIZE, HUE_BAR_CURSOR_HALF_SIZE) //下
+    );
+    drawList.addTriangle(
+        hueBarPos + Vector2(-HUE_BAR_CURSOR_HALF_SIZE, 0.f), //左
+        hueBarPos + Vector2(HUE_BAR_CURSOR_HALF_SIZE, -HUE_BAR_CURSOR_HALF_SIZE), //上
+        hueBarPos + Vector2(HUE_BAR_CURSOR_HALF_SIZE, HUE_BAR_CURSOR_HALF_SIZE), //下
+        Vector4(ColorPalette::black, 1.f)
+    );
+    auto hueBarCursorNumPoints = static_cast<unsigned>(vb.size()) - hueBarCursorStart;
 
     //描画位置をずらして設定
     nextPos.y += GuiWidgetConstant::FRAME_HEIGHT + framePadding.y;
@@ -109,8 +137,10 @@ void GuiWidgetColorPicker::colorPicker(const std::string& label, void* color, bo
         hueBarWidth,
         colorPickerStart,
         hueBarStart,
-        cursorStart,
-        cursorNumPoints
+        colorPickerCursorStart,
+        colorPickerCursorNumPoints,
+        hueBarCursorStart,
+        hueBarCursorNumPoints
     });
 }
 
@@ -142,8 +172,8 @@ void GuiWidgetColorPicker::updateColorPicker() {
     //カーソル位置更新
     auto& drawList = mWindow.getDrawList();
     const auto& vb = drawList.getVertexBuffer();
-    auto velocity = clampMousePos - vb[cp.cursorVerticesStartIndex].pos + Vector2(CURSOR_RADIUS, 0.f);
-    drawList.updateVertexPosition(velocity, cp.cursorVerticesStartIndex, cp.cursorVerticesNumPoints);
+    auto velocity = clampMousePos - vb[cp.colorPickerCursorVerticesStartIndex].pos + Vector2(CURSOR_RADIUS, 0.f);
+    drawList.updateVertexPosition(velocity, cp.colorPickerCursorVerticesStartIndex, cp.colorPickerCursorVerticesNumPoints);
 
     //カラーピッカー内におけるマウス位置の割合
     float fx = (clampMousePos.x - colorPickerPos.x) / COLOR_PICKER_WIDTH;
@@ -224,6 +254,14 @@ void GuiWidgetColorPicker::updateHueBar() {
     auto& drawList = mWindow.getDrawList();
     drawList.setVertexColor(Vector4(selectColor, 1.f), cp.colorPickerVerticesStartIndex + 1);
     drawList.setVertexColor(Vector4(selectColor, 1.f), cp.colorPickerVerticesStartIndex + 2);
+
+    //色相バーのカーソル位置を変更する
+    auto prevPos = drawList.getVertexBuffer()[cp.hueBarCursorVerticesStartIndex].pos.y;
+    drawList.updateVertexPosition(
+        Vector2(0.f, clampMousePosY - prevPos),
+        cp.hueBarCursorVerticesStartIndex,
+        cp.hueBarCursorVerticesNumPoints
+    );
 }
 
 const Vector2& GuiWidgetColorPicker::getColorPickerPosition(const GuiColorPicker& colorPicker) const {

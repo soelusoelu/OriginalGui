@@ -68,6 +68,31 @@ void GuiDrawList::addPolyline(
     }
 }
 
+void GuiDrawList::addTriangle(
+    const Vector2& p1,
+    const Vector2& p2,
+    const Vector2& p3,
+    const Vector4& color,
+    float thickness
+) {
+    pathLineTo(p1);
+    pathLineTo(p2);
+    pathLineTo(p3);
+    pathStroke(color, thickness, true);
+}
+
+void GuiDrawList::addTriangleFilled(
+    const Vector2& p1,
+    const Vector2& p2,
+    const Vector2& p3,
+    const Vector4& color
+) {
+    pathLineTo(p1);
+    pathLineTo(p2);
+    pathLineTo(p3);
+    pathFillConvex(color);
+}
+
 void GuiDrawList::addRect(
     const Vector2& min,
     const Vector2& max,
