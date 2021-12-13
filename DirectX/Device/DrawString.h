@@ -83,22 +83,24 @@ private:
     void drawInt(const ParamInt& param, const Matrix4& proj) const;
     void drawFloat(const ParamFloat& param, const Matrix4& proj) const;
     void drawString(const ParamString& param, const Matrix4& proj) const;
-    //ピボットから描画位置を調整
-    void computePositionFromPivot(Vector2& pos, const Vector2& size, Pivot pivot) const;
 
 public:
-    static constexpr int WIDTH = 32; //画像1文字の横幅
-    static constexpr int HEIGHT = 64; //画像1文字の縦幅
+    static constexpr int CHAR_WIDTH = 32; //画像1文字の横幅
+    static constexpr int CHAR_HEIGHT = 64; //画像1文字の縦幅
+    static const inline Vector2 CHAR_SIZE = Vector2(CHAR_WIDTH, CHAR_HEIGHT);
 
     static constexpr int SPRITE_WIDTH = 512; //画像横幅
-    static constexpr float WIDTH_RATE = static_cast<float>(WIDTH) / static_cast<float>(SPRITE_WIDTH); //画像横幅に対する1文字の比率
-    static constexpr int PERIOD_WIDTH = WIDTH; //ピリオドの横幅
-    static constexpr float PERIOD_RATE = static_cast<float>(PERIOD_WIDTH) / static_cast<float>(SPRITE_WIDTH); //画像横幅に対する1文字の比率
-
     static constexpr int SPRITE_HEIGHT = 512; //画像の縦幅
-    static constexpr int WIDTH_CHAR_COUNT = SPRITE_WIDTH / WIDTH; //フォント画像の画像横の文字数
-    static constexpr int HEIGHT_CHAR_COUNT = SPRITE_HEIGHT / HEIGHT;
-    static constexpr float HEIGHT_RATE = static_cast<float>(HEIGHT) / static_cast<float>(SPRITE_HEIGHT);
+
+    static constexpr int WIDTH_CHAR_COUNT = SPRITE_WIDTH / CHAR_WIDTH; //フォント画像の画像横の文字数
+    static constexpr int HEIGHT_CHAR_COUNT = SPRITE_HEIGHT / CHAR_HEIGHT;
+
+    static constexpr float CHAR_WIDTH_RATE = 1.f / static_cast<float>(WIDTH_CHAR_COUNT); //画像横幅に対する1文字の比率
+    static constexpr float CHAR_HEIGHT_RATE = 1.f / static_cast<float>(HEIGHT_CHAR_COUNT); //画像縦幅に対する1文字の比率
+    static const inline Vector2 CHAR_RATE = Vector2(CHAR_WIDTH_RATE, CHAR_HEIGHT_RATE);
+
+    static constexpr int PERIOD_WIDTH = CHAR_WIDTH; //ピリオドの横幅
+    static constexpr float PERIOD_RATE = static_cast<float>(PERIOD_WIDTH) / static_cast<float>(SPRITE_WIDTH); //画像横幅に対する1文字の比率
 
 private:
     std::unique_ptr<Sprite> mNumberSprite;

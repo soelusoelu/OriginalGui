@@ -1,6 +1,8 @@
 ﻿#include "GuiDrawList.h"
 #include "GuiContext.h"
 #include "../../Device/DrawString.h"
+#include "../../Utility/AsciiHelper.h"
+#include "../../Utility/StringUtil.h"
 #include <cassert>
 
 GuiDrawList::GuiDrawList(GuiContext& context)
@@ -213,36 +215,38 @@ void GuiDrawList::addText(
     const std::string& text,
     const Vector2& pos,
     float pixelSizeY,
-    const Vector4& color
+    const Vector4& color,
+    Pivot pivot
 ) {
     //文字数分容量確保
     auto len = static_cast<unsigned>(text.length());
     primReserve(len * 6, len * 4);
 
     //指定のピクセルサイズから実際の描画サイズを求める
-    auto scaleY = pixelSizeY / DrawString::HEIGHT;
-    auto pixelSizeX = DrawString::WIDTH * scaleY;
+    auto scaleY = pixelSizeY / DrawString::CHAR_HEIGHT;
+    auto pixelSizeX = DrawString::CHAR_WIDTH * scaleY;
     auto size = Vector2(pixelSizeX, pixelSizeY);
 
     //全文字を配列に追加していく
     auto drawPos = pos;
     for (const auto& c : text) {
-        int t = static_cast<int>(c);
-        t = Math::clamp<int>(t, 32, 127);
-        t -= 32;
-
-        float left = static_cast<float>(t % DrawString::WIDTH_CHAR_COUNT);
-        left /= DrawString::WIDTH_CHAR_COUNT;
-        float top = static_cast<float>(t / DrawString::WIDTH_CHAR_COUNT);
-        top /= DrawString::HEIGHT_CHAR_COUNT;
-        auto uvMin = Vector2(left, top);
+        char t = AsciiHelper::clampCharToAscii(c);
+        auto leftTop = AsciiHelper::calcPositionRateToAscii(
+            t,
+            DrawString::WIDTH_CHAR_COUNT,
+            DrawString::HEIGHT_CHAR_COUNT
+        );
+        auto rightBottom = leftTop + AsciiHelper::calcSizeRateToAscii(
+            DrawString::WIDTH_CHAR_COUNT,
+            DrawString::HEIGHT_CHAR_COUNT
+        );
 
         //文字追加
         primRectUV(
             drawPos,
             drawPos + size,
-            uvMin,
-            uvMin + Vector2(DrawString::WIDTH_RATE, DrawString::HEIGHT_RATE),
+            leftTop,
+            rightBottom,
             color
         );
 
@@ -282,6 +286,10 @@ const std::vector<GuiDrawCommand>& GuiDrawList::getDrawCommands() const {
 
 const std::vector<GuiVertex>& GuiDrawList::getVertexBuffer() const {
     return mVertexBuffer;
+}
+
+unsigned GuiDrawList::getVertexCount() const {
+    return static_cast<unsigned>(mVertexBuffer.size());
 }
 
 const std::vector<unsigned short>& GuiDrawList::getIndexBuffer() const {
@@ -460,8 +468,8 @@ void GuiDrawList::primRect(
 void GuiDrawList::primRectUV(
     const Vector2& posMin,
     const Vector2& posMax,
-    const Vector2& uvMin,
-    const Vector2& uvMax,
+    const Vector2& uvLeftTop,
+    const Vector2& uvRightBottom,
     const Vector4& color
 ) {
     auto idx = static_cast<unsigned short>(mVertexBuffer.size());
@@ -472,10 +480,10 @@ void GuiDrawList::primRectUV(
     mIndexBuffer.emplace_back(idx + 2);
     mIndexBuffer.emplace_back(idx + 3);
 
-    primWriteVertex(posMin, uvMin, color);
-    primWriteVertex(Vector2(posMax.x, posMin.y), Vector2(uvMax.x, uvMin.y), color);
-    primWriteVertex(posMax, uvMax, color);
-    primWriteVertex(Vector2(posMin.x, posMax.y), Vector2(uvMin.x, uvMax.y), color);
+    primWriteVertex(posMin, uvLeftTop, color);
+    primWriteVertex(Vector2(posMax.x, posMin.y), Vector2(uvRightBottom.x, uvLeftTop.y), color);
+    primWriteVertex(posMax, uvRightBottom, color);
+    primWriteVertex(Vector2(posMin.x, posMax.y), Vector2(uvLeftTop.x, uvRightBottom.y), color);
 }
 
 void GuiDrawList::normalize2fOverZero(Vector2& v) const {

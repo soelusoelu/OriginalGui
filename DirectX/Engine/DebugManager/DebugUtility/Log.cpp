@@ -17,7 +17,7 @@ void Log::saveAndLoad(JsonObject& inObj, FileMode mode) {
 }
 
 void Log::initialize() {
-    mNumRowsToDisplay = (Window::standardHeight() - Window::height() - DRAW_OFFSET_Y) / (DrawString::HEIGHT * mScale.y);
+    mNumRowsToDisplay = (Window::standardHeight() - Window::height() - DRAW_OFFSET_Y) / (DrawString::CHAR_HEIGHT * mScale.y);
 }
 
 void Log::log(const std::string& message) {
@@ -37,7 +37,7 @@ void Log::clear() {
 }
 
 void Log::drawLogs(DrawString& drawString) const {
-    const float height = DrawString::HEIGHT * mScale.y;
+    const float height = DrawString::CHAR_HEIGHT * mScale.y;
     auto pos = Vector2(0.f, Window::standardHeight() - height - DRAW_OFFSET_Y);
     for (const auto& log : mLogs) {
         drawString.drawString(log.first, pos, mScale, log.second);

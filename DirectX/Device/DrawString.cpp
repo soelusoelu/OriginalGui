@@ -3,6 +3,7 @@
 #include "../Sprite/SpriteInstancingDrawer.h"
 #include "../System/Texture/Texture.h"
 #include "../Transform/Transform2D.h"
+#include "../Utility/AsciiHelper.h"
 #include "../Utility/JsonHelper.h"
 #include "../Utility/StringUtil.h"
 
@@ -100,15 +101,13 @@ void DrawString::drawInt(const ParamInt& param, const Matrix4& proj) const {
     //桁数計算
     int digit = 1;
     for (int i = number; i >= 10; i /= 10) {
-        digit++;
+        ++digit;
     }
 
     //描画する文字の横幅
-    const float OFFSET_X = WIDTH * scale.x;
-    //描画する文字列のサイズを計算
-    auto size = Vector2(digit * OFFSET_X, HEIGHT * scale.y);
+    const float OFFSET_X = CHAR_WIDTH * scale.x;
     //ピボットから描画位置を調整
-    computePositionFromPivot(pos, size, pivot);
+    StringUtil::calcPositionFromPivot(pos, Vector2(OFFSET_X, CHAR_HEIGHT * scale.y), digit, pivot);
 
     //数字を文字列化し、1文字ずつ取り出す
     auto& t = mNumberSprite->transform();
@@ -119,9 +118,9 @@ void DrawString::drawInt(const ParamInt& param, const Matrix4& proj) const {
         t.setPosition(pos);
         //数字のテクスチャが数字1つにつき幅32高さ64
         //文字と文字を引き算し、整数値を取得している
-        float num = (n - '0') * WIDTH;
+        float num = (n - '0') * CHAR_WIDTH;
         num /= SPRITE_WIDTH;
-        mNumberSprite->setUV(num, 0.f, num + WIDTH_RATE, 1.f);
+        mNumberSprite->setUV(num, 0.f, num + CHAR_WIDTH_RATE, 1.f);
 
         //ワールド座標を更新し、描画
         t.computeWorldTransform();
@@ -151,12 +150,10 @@ void DrawString::drawFloat(const ParamFloat& param, const Matrix4& proj) const {
     auto num = StringUtil::floatToString(number, decimalDigits);
 
     //描画する文字の横幅
-    const float OFFSET_X = WIDTH * scale.x;
+    const float OFFSET_X = CHAR_WIDTH * scale.x;
     const float OFFSET_PERIOD_X = PERIOD_WIDTH * scale.x;
-    //描画する文字列のサイズを計算
-    auto size = Vector2((num.length() - 1) * OFFSET_X + OFFSET_PERIOD_X, HEIGHT * scale.y);
     //ピボットから描画位置を調整
-    computePositionFromPivot(pos, size, pivot);
+    StringUtil::calcPositionFromPivot(pos, Vector2(OFFSET_X, CHAR_HEIGHT * scale.y), num.length(), pivot);
 
     //数字を文字列化し、1文字ずつ取り出す
     auto& t = mNumberSprite->transform();
@@ -169,15 +166,15 @@ void DrawString::drawFloat(const ParamFloat& param, const Matrix4& proj) const {
         //文字と文字を引き算し、整数値を取得している
         float offsetX = 0.f;
         if (n == '.') {
-            constexpr float num = 10 * WIDTH_RATE; //ピリオドは画像の10番目
+            constexpr float num = 10 * CHAR_WIDTH_RATE; //ピリオドは画像の10番目
             mNumberSprite->setUV(num, 0.f, num + PERIOD_RATE, 1.f);
 
             //「.」のときは1文字の半分ずらす
             offsetX = PERIOD_WIDTH;
         } else {
-            float num = (n - '0') * WIDTH;
+            float num = (n - '0') * CHAR_WIDTH;
             num /= SPRITE_WIDTH;
-            mNumberSprite->setUV(num, 0.f, num + WIDTH_RATE, 1.f);
+            mNumberSprite->setUV(num, 0.f, num + CHAR_WIDTH_RATE, 1.f);
 
             //1文字描画したら1桁分右にずらす
             offsetX = OFFSET_X;
@@ -201,11 +198,9 @@ void DrawString::drawString(const ParamString& param, const Matrix4& proj) const
     auto pivot = param.pivot;
 
     //描画する文字の横幅
-    const float OFFSET_X = WIDTH * scale.x;
-    //描画する文字列のサイズを計算
-    auto size = Vector2(alphabet.length() * OFFSET_X, HEIGHT * scale.y);
+    const float OFFSET_X = CHAR_WIDTH * scale.x;
     //ピボットから描画位置を調整
-    computePositionFromPivot(pos, size, pivot);
+    StringUtil::calcPositionFromPivot(pos, alphabet, Vector2(OFFSET_X, CHAR_HEIGHT * scale.y), pivot);
 
     auto& trans = mFontSprite->transform();
     trans.setScale(scale);
@@ -214,15 +209,10 @@ void DrawString::drawString(const ParamString& param, const Matrix4& proj) const
     for (const auto& c : alphabet) {
         trans.setPosition(pos);
 
-        int t = static_cast<int>(c);
-        t = Math::clamp<int>(t, 32, 127);
-        t -= 32;
+        char t = AsciiHelper::clampCharToAscii(c);
+        auto leftTop = AsciiHelper::calcPositionRateToAscii(t, WIDTH_CHAR_COUNT, HEIGHT_CHAR_COUNT);
 
-        float left = static_cast<float>(t % WIDTH_CHAR_COUNT);
-        left /= WIDTH_CHAR_COUNT;
-        float top = static_cast<float>(t / WIDTH_CHAR_COUNT);
-        top /= HEIGHT_CHAR_COUNT;
-        mFontSprite->setUV(left, top, left + WIDTH_RATE, top + HEIGHT_RATE);
+        mFontSprite->setUV(leftTop.x, leftTop.y, leftTop.x + CHAR_WIDTH_RATE, leftTop.y + CHAR_HEIGHT_RATE);
 
         //ワールド座標を更新し、描画
         trans.computeWorldTransform();
@@ -230,38 +220,5 @@ void DrawString::drawString(const ParamString& param, const Matrix4& proj) const
 
         //描画位置を1文字分ずらす
         pos.x += OFFSET_X;
-    }
-}
-
-void DrawString::computePositionFromPivot(Vector2& pos, const Vector2& size, Pivot pivot) const {
-    switch (pivot) {
-    case Pivot::CENTER_TOP:
-        pos.x -= size.x / 2.f;
-        break;
-    case Pivot::RIGHT_TOP:
-        pos.x -= size.x;
-        break;
-    case Pivot::CENTER_LEFT:
-        pos.y -= size.y / 2.f;
-        break;
-    case Pivot::CENTER:
-        pos -= size / 2.f;
-        break;
-    case Pivot::CENTER_RIGHT:
-        pos.x -= size.x;
-        pos.y -= size.y / 2.f;
-        break;
-    case Pivot::LEFT_BOTTOM:
-        pos.y -= size.y;
-        break;
-    case Pivot::CETNER_BOTTOM:
-        pos.x -= size.x / 2.f;
-        pos.y -= size.y;
-        break;
-    case Pivot::RIGHT_BOTTOM:
-        pos -= size;
-        break;
-    default:
-        break;
     }
 }

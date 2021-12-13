@@ -284,6 +284,7 @@
     <ClCompile Include="System\Gui\Widget\GuiWidgets.cpp" />
     <ClCompile Include="System\Gui\Widget\GuiWidgetColorPicker.cpp" />
     <ClCompile Include="System\Gui\Widget\GuiWidgetColorBase.cpp" />
+    <ClCompile Include="Utility\AsciiHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Component\ComponentManager.h" />
@@ -652,6 +653,7 @@
     <ClInclude Include="System\Gui\Widget\GuiWidgetColorPicker.h" />
     <ClInclude Include="System\Gui\Widget\GuiWidgetConstant.h" />
     <ClInclude Include="System\Gui\Widget\GuiWidgetColorBase.h" />
+    <ClInclude Include="Utility\AsciiHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\MeshCommonHeader.hlsli" />

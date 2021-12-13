@@ -15,9 +15,11 @@ struct GuiSlider {
     void* data = nullptr;
     std::any min;
     std::any max;
-    unsigned frameVerticesStartIndex = 0;
-    unsigned grabVerticesStartIndex = 0;
-    unsigned grabVerticesNumPoints = 0;
+    unsigned frameStartIndex = 0;
+    unsigned grabStartIndex = 0;
+    unsigned grabNumPoints = 0;
+    unsigned valueTextStartIndex = 0;
+    unsigned valueTextNumPoints = 0;
 };
 
 class GuiWidgetSlider {

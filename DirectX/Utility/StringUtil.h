@@ -4,6 +4,7 @@
 #define TO_STRING(X) # X;
 
 #include "../Math/Math.h"
+#include "../Transform/Pivot.h"
 #include <any>
 #include <string>
 #include <vector>
@@ -41,4 +42,8 @@ public:
     static std::string utf8ToShitJIS(const std::string& utf8);
     //ShiftJISからUTF8への変換
     static std::string shitJISToUtf8(const std::string& shiftJIS);
+
+    //ピボットから位置を調整する
+    static void calcPositionFromPivot(Vector2& pos, const std::string& str, const Vector2& size, Pivot pivot);
+    static void calcPositionFromPivot(Vector2& pos, const Vector2& size, int charCount, Pivot pivot);
 };

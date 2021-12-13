@@ -52,32 +52,48 @@ void GuiWidgetSlider::sliderScalar(
     const auto& framePadding = mWindow.getContext().getFramePadding();
 
     //フレームの描画
-    auto frameStart = static_cast<unsigned>(vb.size());
+    auto frameStart = dl.getVertexCount();
     dl.addRectFilled(nextPos, nextPos + GuiWidgetConstant::FRAME_SIZE, GuiWidgetConstant::FRAME_COLOR);
 
-    //グラブ描画前の頂点数を取得しておく
-    auto beforeSize = static_cast<unsigned>(vb.size());
-
     //グラブの描画
+    auto grabStart = dl.getVertexCount();
     auto p = nextPos + Vector2::one * GRAB_PADDING;
     dl.addRectFilled(p, p + GRAB_SIZE, GRAB_COLOR);
+    auto grabNumPoints = dl.getVertexCount() - grabStart;
 
-    //グラブ描画後の頂点数を取得する
-    auto afterSize = static_cast<unsigned>(vb.size());
-
-    //文字列の描画
+    //ラベルの描画
     dl.addText(
         label,
         nextPos + Vector2(GuiWidgetConstant::FRAME_WIDTH + framePadding.x, GuiWidgetConstant::TEXT_HEIGHT_PADDING),
         GuiWidgetConstant::TEXT_HEIGHT
     );
 
+    //値を文字列で描画
+    auto textStart = dl.getVertexCount();
+    dl.addText(
+        label,
+        nextPos + Vector2(GuiWidgetConstant::FRAME_WIDTH + framePadding.x, GuiWidgetConstant::TEXT_HEIGHT_PADDING),
+        GuiWidgetConstant::TEXT_HEIGHT
+    );
+    auto textNumPoints = dl.getVertexCount() - textStart;
+
     //描画位置をずらして設定
     nextPos.y += GuiWidgetConstant::FRAME_HEIGHT + framePadding.y;
     mWindow.setNextWidgetPosition(nextPos);
 
     //配列に追加
-    mSliders.emplace_back(GuiSlider{ label, type, v, min, max, frameStart, beforeSize, afterSize - beforeSize });
+    mSliders.emplace_back(GuiSlider{
+        label,
+        type,
+        v,
+        min,
+        max,
+        frameStart,
+        grabStart,
+        grabNumPoints,
+        textStart,
+        textNumPoints
+    });
 }
 
 void GuiWidgetSlider::selectSlider() {
@@ -147,18 +163,18 @@ void GuiWidgetSlider::updateGrabPosition(float f) {
 
     auto& dl = mWindow.getDrawList();
     const auto& vb = dl.getVertexBuffer();
-    const auto& prevPos = vb[s.grabVerticesStartIndex].pos;
+    const auto& prevPos = vb[s.grabStartIndex].pos;
     //マウス位置から求めた位置と前回の位置の差分から、次のグラブの位置を求める
     //求めた位置から、マウス位置をグラブの中心にするために、グラブの半分戻す
     dl.updateVertexPosition(
         Vector2(posX - prevPos.x - GRAB_WIDTH_HALF, 0.f),
-        s.grabVerticesStartIndex,
-        s.grabVerticesNumPoints
+        s.grabStartIndex,
+        s.grabNumPoints
     );
 }
 
 const Vector2& GuiWidgetSlider::getFramePosition(const GuiSlider& slider) const {
-    return mWindow.getDrawList().getVertexBuffer()[slider.frameVerticesStartIndex].pos;
+    return mWindow.getDrawList().getVertexBuffer()[slider.frameStartIndex].pos;
 }
 
 const GuiSlider& GuiWidgetSlider::getGrabbingSlider() const {

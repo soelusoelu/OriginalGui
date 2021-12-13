@@ -24,7 +24,7 @@ void Text::lateUpdate() {
 
     for (const auto& s : split) {
         mDrawString->drawString(s, pos, mScale, mColor, mAlpha, mPivot);
-        pos.y += DrawString::HEIGHT * mScale.y;
+        pos.y += DrawString::CHAR_HEIGHT * mScale.y;
     }
 }
 

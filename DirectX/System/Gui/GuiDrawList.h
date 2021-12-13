@@ -6,6 +6,7 @@
 #include "GuiVertex.h"
 #include "../../Device/Flag.h"
 #include "../../Math/Math.h"
+#include "../../Transform/Pivot.h"
 #include <string>
 #include <vector>
 
@@ -89,7 +90,8 @@ public:
         const std::string& text,
         const Vector2& pos,
         float pixelSizeY,
-        const Vector4& color = Vector4(1.f, 1.f, 1.f, 1.f)
+        const Vector4& color = Vector4(1.f, 1.f, 1.f, 1.f),
+        Pivot pivot = Pivot::LEFT_TOP
     );
 
     //ウィンドウ位置を更新する
@@ -108,6 +110,8 @@ public:
     const std::vector<GuiDrawCommand>& getDrawCommands() const;
     //頂点配列を取得する
     const std::vector<GuiVertex>& getVertexBuffer() const;
+    //頂点配列の要素数を取得する
+    unsigned getVertexCount() const;
     //インデックス配列を取得する
     const std::vector<unsigned short>& getIndexBuffer() const;
 
@@ -176,8 +180,8 @@ private:
     void primRectUV(
         const Vector2& posMin,
         const Vector2& posMax,
-        const Vector2& uvMin,
-        const Vector2& uvMax,
+        const Vector2& uvLeftTop,
+        const Vector2& uvRightBottom,
         const Vector4& color
     );
 
