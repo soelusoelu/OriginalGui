@@ -3,7 +3,10 @@
 #include "../GuiDrawList.h"
 #include "../GuiWindow.h"
 #include "../../../Collision/Collision.h"
+#include "../../../Device/DrawString.h"
 #include "../../../Input/Input.h"
+#include "../../../Utility/AsciiHelper.h"
+#include "../../../Utility/StringUtil.h"
 #include <cassert>
 
 GuiWidgetSlider::GuiWidgetSlider(GuiWindow& window)
@@ -27,7 +30,7 @@ void GuiWidgetSlider::update() {
     }
 
     if (mouse.getMouseButton(MouseCode::LeftButton)) {
-        updateNumber();
+        updateSlider();
     }
 }
 
@@ -71,9 +74,12 @@ void GuiWidgetSlider::sliderScalar(
     //値を文字列で描画
     auto textStart = dl.getVertexCount();
     dl.addText(
-        label,
-        nextPos + Vector2(GuiWidgetConstant::FRAME_WIDTH + framePadding.x, GuiWidgetConstant::TEXT_HEIGHT_PADDING),
-        GuiWidgetConstant::TEXT_HEIGHT
+        "0",
+        nextPos + (GuiWidgetConstant::FRAME_SIZE / 2.f),
+        GuiWidgetConstant::TEXT_HEIGHT - 2.f,
+        GuiWidgetConstant::DIGITS,
+        Vector4(ColorPalette::white, 1.f),
+        Pivot::CENTER
     );
     auto textNumPoints = dl.getVertexCount() - textStart;
 
@@ -114,7 +120,7 @@ void GuiWidgetSlider::selectSlider() {
     }
 }
 
-void GuiWidgetSlider::updateNumber() {
+void GuiWidgetSlider::updateSlider() {
     if (!isGrabbing()) {
         return;
     }
@@ -127,30 +133,83 @@ void GuiWidgetSlider::updateNumber() {
     auto clampMousePosX = Math::clamp(mousePos.x, minX, maxX);
 
     //フレーム矩形内におけるマウス位置の割合
-    float f = (clampMousePosX - minX) / (maxX - minX);
+    float t = (clampMousePosX - minX) / (maxX - minX);
 
     //タイプごとの数値処理
+    updateNumber(t);
+    //文字列更新
+    updateNumberText();
+    //グラブ移動処理
+    updateGrabPosition(t);
+}
+
+void GuiWidgetSlider::updateNumber(float t) {
+    if (!isGrabbing()) {
+        return;
+    }
+
+    auto& s = getGrabbingSlider();
     if (s.type == GuiDataType::INT) {
         auto& v = *static_cast<int*>(s.data);
         auto min = std::any_cast<int>(s.min);
         auto max = std::any_cast<int>(s.max);
 
-        v = Math::lerp(min, max, f);
+        v = Math::lerp(min, max, t);
     } else if (s.type == GuiDataType::FLOAT) {
         auto& v = *static_cast<float*>(s.data);
         auto min = std::any_cast<float>(s.min);
         auto max = std::any_cast<float>(s.max);
 
-        v = Math::lerp(min, max, f);
+        v = Math::lerp(min, max, t);
     } else {
         assert(false);
     }
-
-    //グラブ移動処理
-    updateGrabPosition(f);
 }
 
-void GuiWidgetSlider::updateGrabPosition(float f) {
+void GuiWidgetSlider::updateNumberText() {
+    if (!isGrabbing()) {
+        return;
+    }
+
+    auto& s = getGrabbingSlider();
+
+    //一旦全文字空白にする
+    clearTextNumber(s);
+
+    //タイプごとの処理
+    auto str = numberToText(s);
+
+    auto& dl = mWindow.getDrawList();
+    auto start = s.valueTextStartIndex;
+    const auto& frameCenter = getFramePosition(s) + (GuiWidgetConstant::FRAME_SIZE / 2.f);
+    const auto& size = getNumberTextSize(s);
+    auto pos = StringUtil::calcPositionFromPivot(frameCenter, str, size, Pivot::CENTER);
+
+    int len = static_cast<int>(str.length());
+    for (int i = 0; i < len; ++i) {
+        auto leftTop = AsciiHelper::calcPositionRateToAscii(
+            str[i],
+            DrawString::WIDTH_CHAR_COUNT,
+            DrawString::HEIGHT_CHAR_COUNT
+        );
+
+        //文字更新
+        int idx = start + i * 4;
+        dl.setVertexPosition(pos, idx);
+        dl.setVertexPosition(pos + Vector2(size.x, 0.f), idx + 1);
+        dl.setVertexPosition(pos + size, idx + 2);
+        dl.setVertexPosition(pos + Vector2(0.f, size.y), idx + 3);
+
+        dl.setVertexUV(leftTop, idx);
+        dl.setVertexUV(leftTop + Vector2(DrawString::CHAR_WIDTH_RATE, 0.f), idx + 1);
+        dl.setVertexUV(leftTop + DrawString::CHAR_RATE, idx + 2);
+        dl.setVertexUV(leftTop + Vector2(0.f, DrawString::CHAR_HEIGHT_RATE), idx + 3);
+
+        pos.x += size.x;
+    }
+}
+
+void GuiWidgetSlider::updateGrabPosition(float t) {
     if (!isGrabbing()) {
         return;
     }
@@ -159,7 +218,7 @@ void GuiWidgetSlider::updateGrabPosition(float f) {
 
     auto minX = calcGrabbingPosXMin(s);
     auto maxX = calcGrabbingPosXMax(s);
-    float posX = Math::lerp(minX, maxX, f);
+    float posX = Math::lerp(minX, maxX, t);
 
     auto& dl = mWindow.getDrawList();
     const auto& vb = dl.getVertexBuffer();
@@ -173,8 +232,36 @@ void GuiWidgetSlider::updateGrabPosition(float f) {
     );
 }
 
+void GuiWidgetSlider::clearTextNumber(const GuiSlider& slider) {
+    mWindow.getDrawList().setVertexUVs(
+        mWindow.getContext().getDrawListSharedData().texUvTransparentPixel,
+        slider.valueTextStartIndex,
+        slider.valueTextNumPoints
+    );
+}
+
+std::string GuiWidgetSlider::numberToText(const GuiSlider& slider) {
+    std::string str;
+    if (slider.type == GuiDataType::INT) {
+        auto v = *static_cast<int*>(slider.data);
+        str = StringUtil::intToString(v);
+    } else if (slider.type == GuiDataType::FLOAT) {
+        auto v = *static_cast<float*>(slider.data);
+        str = StringUtil::floatToString(v);
+    } else {
+        assert(false);
+    }
+
+    return str;
+}
+
 const Vector2& GuiWidgetSlider::getFramePosition(const GuiSlider& slider) const {
     return mWindow.getDrawList().getVertexBuffer()[slider.frameStartIndex].pos;
+}
+
+const Vector2& GuiWidgetSlider::getNumberTextSize(const GuiSlider& slider) const {
+    const auto& vb = mWindow.getDrawList().getVertexBuffer();
+    return (vb[slider.valueTextStartIndex + 2].pos - vb[slider.valueTextStartIndex].pos);
 }
 
 const GuiSlider& GuiWidgetSlider::getGrabbingSlider() const {

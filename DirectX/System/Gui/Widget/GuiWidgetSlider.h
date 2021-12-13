@@ -47,13 +47,23 @@ private:
     );
     //マウス位置からスライダーを選択する
     void selectSlider();
+    //選択中のスライダーを更新する
+    void updateSlider();
     //選択中のスライダーの数値を更新する
-    void updateNumber();
+    void updateNumber(float t);
+    //選択中のスライダーの数値文字列を更新する
+    void updateNumberText();
     //選択中のスライダーのグラブ位置を更新する
-    void updateGrabPosition(float f);
+    void updateGrabPosition(float t);
+    //数値文字列を削除する
+    void clearTextNumber(const GuiSlider& slider);
+    //保有している数値を文字列に変換する
+    std::string numberToText(const GuiSlider& slider);
 
     //sliderのフレーム位置を取得する
     const Vector2& getFramePosition(const GuiSlider& slider) const;
+    //数値文字のサイズを取得する
+    const Vector2& getNumberTextSize(const GuiSlider& slider) const;
     //掴んでいるグラブを取得する
     const GuiSlider& getGrabbingSlider() const;
     //掴んでいるか

@@ -44,6 +44,6 @@ public:
     static std::string shitJISToUtf8(const std::string& shiftJIS);
 
     //ピボットから位置を調整する
-    static void calcPositionFromPivot(Vector2& pos, const std::string& str, const Vector2& size, Pivot pivot);
-    static void calcPositionFromPivot(Vector2& pos, const Vector2& size, int charCount, Pivot pivot);
+    static Vector2 calcPositionFromPivot(const Vector2& pos, const std::string& str, const Vector2& size, Pivot pivot);
+    static Vector2 calcPositionFromPivot(const Vector2& pos, const Vector2& size, int charCount, Pivot pivot);
 };

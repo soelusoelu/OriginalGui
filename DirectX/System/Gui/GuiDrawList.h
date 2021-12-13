@@ -19,8 +19,6 @@ public:
     GuiDrawList(const GuiDrawList&) = delete;
     GuiDrawList& operator=(const GuiDrawList&) = delete;
 
-    //描画レイヤーを増やす
-    void addLayer();
     //レイヤーを指定する
     void setLayer(unsigned layer);
 
@@ -86,10 +84,12 @@ public:
         const Vector4& color = Vector4(1.f, 1.f, 1.f, 1.f)
     );
     //文字列を追加する
+    //capacityは後の文字追加のために余分に容量を確保する(-1で自動)
     void addText(
         const std::string& text,
         const Vector2& pos,
         float pixelSizeY,
+        int capacity = -1,
         const Vector4& color = Vector4(1.f, 1.f, 1.f, 1.f),
         Pivot pivot = Pivot::LEFT_TOP
     );
@@ -101,6 +101,12 @@ public:
     void updateWindowSize(const Vector2& amount);
     //指定された範囲の頂点位置を更新する
     void updateVertexPosition(const Vector2& amount, unsigned startIndex, unsigned numPoints);
+    //指定された頂点位置を変更する
+    void setVertexPosition(const Vector2& pos, unsigned index);
+    //指定された頂点のUVを変更する
+    void setVertexUV(const Vector2& uv, unsigned index);
+    //指定された範囲のUVを変更する
+    void setVertexUVs(const Vector2& uv, unsigned startIndex, unsigned numPoints);
     //指定された頂点の頂点色を変更する
     void setVertexColor(const Vector4& color, unsigned index);
     //指定された範囲の頂点色を変更する
@@ -193,13 +199,11 @@ public:
 
 private:
     GuiContext& mContext;
+    unsigned mCurrentLayer;
+    std::vector<Vector2> mPath;
 
     //描画に必要なもの
     std::vector<GuiDrawCommand> mCommandBuffer;
     std::vector<GuiVertex> mVertexBuffer;
     std::vector<unsigned short> mIndexBuffer;
-
-    std::vector<Vector2> mPath;
-    GuiDrawCommand mCommandHeader;
-    unsigned mCurrentLayer;
 };

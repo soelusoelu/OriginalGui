@@ -107,7 +107,7 @@ void DrawString::drawInt(const ParamInt& param, const Matrix4& proj) const {
     //描画する文字の横幅
     const float OFFSET_X = CHAR_WIDTH * scale.x;
     //ピボットから描画位置を調整
-    StringUtil::calcPositionFromPivot(pos, Vector2(OFFSET_X, CHAR_HEIGHT * scale.y), digit, pivot);
+    pos = StringUtil::calcPositionFromPivot(pos, Vector2(OFFSET_X, CHAR_HEIGHT * scale.y), digit, pivot);
 
     //数字を文字列化し、1文字ずつ取り出す
     auto& t = mNumberSprite->transform();
@@ -153,7 +153,7 @@ void DrawString::drawFloat(const ParamFloat& param, const Matrix4& proj) const {
     const float OFFSET_X = CHAR_WIDTH * scale.x;
     const float OFFSET_PERIOD_X = PERIOD_WIDTH * scale.x;
     //ピボットから描画位置を調整
-    StringUtil::calcPositionFromPivot(pos, Vector2(OFFSET_X, CHAR_HEIGHT * scale.y), num.length(), pivot);
+    pos = StringUtil::calcPositionFromPivot(pos, Vector2(OFFSET_X, CHAR_HEIGHT * scale.y), num.length(), pivot);
 
     //数字を文字列化し、1文字ずつ取り出す
     auto& t = mNumberSprite->transform();
@@ -200,7 +200,7 @@ void DrawString::drawString(const ParamString& param, const Matrix4& proj) const
     //描画する文字の横幅
     const float OFFSET_X = CHAR_WIDTH * scale.x;
     //ピボットから描画位置を調整
-    StringUtil::calcPositionFromPivot(pos, alphabet, Vector2(OFFSET_X, CHAR_HEIGHT * scale.y), pivot);
+    pos = StringUtil::calcPositionFromPivot(pos, alphabet, Vector2(OFFSET_X, CHAR_HEIGHT * scale.y), pivot);
 
     auto& trans = mFontSprite->transform();
     trans.setScale(scale);

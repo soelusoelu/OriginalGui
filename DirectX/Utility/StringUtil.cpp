@@ -188,42 +188,45 @@ std::string StringUtil::shitJISToUtf8(const std::string& shiftJIS) {
     return strUTF8;
 }
 
-void StringUtil::calcPositionFromPivot(Vector2& pos, const std::string& str, const Vector2& size, Pivot pivot) {
-    calcPositionFromPivot(pos, size, static_cast<int>(str.length()), pivot);
+Vector2 StringUtil::calcPositionFromPivot(const Vector2& pos, const std::string& str, const Vector2& size, Pivot pivot) {
+    return calcPositionFromPivot(pos, size, static_cast<int>(str.length()), pivot);
 }
 
-void StringUtil::calcPositionFromPivot(Vector2& pos, const Vector2& size, int charCount, Pivot pivot) {
+Vector2 StringUtil::calcPositionFromPivot(const Vector2& pos, const Vector2& size, int charCount, Pivot pivot) {
     auto allSize = size;
     allSize.x *= charCount;
 
+    Vector2 ret = pos;
     switch (pivot) {
         case Pivot::CENTER_TOP:
-            pos.x -= allSize.x / 2.f;
+            ret.x -= allSize.x / 2.f;
             break;
         case Pivot::RIGHT_TOP:
-            pos.x -= allSize.x;
+            ret.x -= allSize.x;
             break;
         case Pivot::CENTER_LEFT:
-            pos.y -= allSize.y / 2.f;
+            ret.y -= allSize.y / 2.f;
             break;
         case Pivot::CENTER:
-            pos -= allSize / 2.f;
+            ret -= allSize / 2.f;
             break;
         case Pivot::CENTER_RIGHT:
-            pos.x -= allSize.x;
-            pos.y -= allSize.y / 2.f;
+            ret.x -= allSize.x;
+            ret.y -= allSize.y / 2.f;
             break;
         case Pivot::LEFT_BOTTOM:
-            pos.y -= allSize.y;
+            ret.y -= allSize.y;
             break;
         case Pivot::CETNER_BOTTOM:
-            pos.x -= allSize.x / 2.f;
-            pos.y -= allSize.y;
+            ret.x -= allSize.x / 2.f;
+            ret.y -= allSize.y;
             break;
         case Pivot::RIGHT_BOTTOM:
-            pos -= allSize;
+            ret -= allSize;
             break;
         default:
             break;
     }
+
+    return ret;
 }

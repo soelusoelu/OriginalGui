@@ -7,16 +7,12 @@
 
 GuiDrawList::GuiDrawList(GuiContext& context)
     : mContext(context)
-    , mCommandBuffer(2) //0: ウィンドウ, 1: ウィジェット
     , mCurrentLayer(0)
+    , mCommandBuffer(2) //0: ウィンドウ, 1: ウィジェット
 {
 }
 
 GuiDrawList::~GuiDrawList() = default;
-
-void GuiDrawList::addLayer() {
-    mCommandBuffer.emplace_back(GuiDrawCommand());
-}
 
 void GuiDrawList::setLayer(unsigned layer) {
     assert(layer < mCommandBuffer.size());
@@ -215,20 +211,26 @@ void GuiDrawList::addText(
     const std::string& text,
     const Vector2& pos,
     float pixelSizeY,
+    int capacity,
     const Vector4& color,
     Pivot pivot
 ) {
-    //文字数分容量確保
-    auto len = static_cast<unsigned>(text.length());
-    primReserve(len * 6, len * 4);
+    //容量確保
+    auto len = static_cast<int>(text.length());
+    if (len > capacity) {
+        capacity = len;
+    }
+    primReserve(capacity * 6, capacity * 4);
 
     //指定のピクセルサイズから実際の描画サイズを求める
     auto scaleY = pixelSizeY / DrawString::CHAR_HEIGHT;
     auto pixelSizeX = DrawString::CHAR_WIDTH * scaleY;
     auto size = Vector2(pixelSizeX, pixelSizeY);
 
+    //ピボットから描画位置を調整する
+    auto drawPos = StringUtil::calcPositionFromPivot(pos, text, size, pivot);
+
     //全文字を配列に追加していく
-    auto drawPos = pos;
     for (const auto& c : text) {
         char t = AsciiHelper::clampCharToAscii(c);
         auto leftTop = AsciiHelper::calcPositionRateToAscii(
@@ -236,19 +238,19 @@ void GuiDrawList::addText(
             DrawString::WIDTH_CHAR_COUNT,
             DrawString::HEIGHT_CHAR_COUNT
         );
-        auto rightBottom = leftTop + AsciiHelper::calcSizeRateToAscii(
-            DrawString::WIDTH_CHAR_COUNT,
-            DrawString::HEIGHT_CHAR_COUNT
-        );
 
         //文字追加
-        primRectUV(
-            drawPos,
-            drawPos + size,
-            leftTop,
-            rightBottom,
-            color
-        );
+        primRectUV(drawPos, drawPos + size, leftTop, leftTop + DrawString::CHAR_RATE, color);
+
+        drawPos.x += size.x;
+    }
+
+    //文字数より容量が多ければ空白を描画しとく
+    auto remain = capacity - len;
+    const auto& uv = mContext.getDrawListSharedData().texUvTransparentPixel;
+    for (int i = 0; i < remain; ++i) {
+        //文字追加
+        primRectUV(drawPos, drawPos + size, uv, uv, color);
 
         drawPos.x += size.x;
     }
@@ -267,6 +269,20 @@ void GuiDrawList::updateWindowSize(const Vector2& amount) {
 void GuiDrawList::updateVertexPosition(const Vector2& amount, unsigned startIndex, unsigned numPoints) {
     for (unsigned i = 0; i < numPoints; ++i) {
         mVertexBuffer[i + startIndex].pos += amount;
+    }
+}
+
+void GuiDrawList::setVertexPosition(const Vector2& pos, unsigned index) {
+    mVertexBuffer[index].pos = pos;
+}
+
+void GuiDrawList::setVertexUV(const Vector2& uv, unsigned index) {
+    mVertexBuffer[index].uv = uv;
+}
+
+void GuiDrawList::setVertexUVs(const Vector2& uv, unsigned startIndex, unsigned numPoints) {
+    for (unsigned i = 0; i < numPoints; ++i) {
+        mVertexBuffer[i + startIndex].uv = uv;
     }
 }
 
