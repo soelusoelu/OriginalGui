@@ -19,5 +19,5 @@ constexpr float TEXT_HEIGHT_PADDING = 2.f;
 constexpr float TEXT_HEIGHT = FRAME_HEIGHT - (TEXT_HEIGHT_PADDING * 2);
 
 //有効桁数
-constexpr int DIGITS = 8;
+constexpr int DIGITS = 9;
 }

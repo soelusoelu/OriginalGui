@@ -50,11 +50,11 @@ private:
     //選択中のスライダーを更新する
     void updateSlider();
     //選択中のスライダーの数値を更新する
-    void updateNumber(float t);
+    void updateNumber(const GuiSlider& slider, float t);
     //選択中のスライダーの数値文字列を更新する
-    void updateNumberText();
+    void updateNumberText(const GuiSlider& slider);
     //選択中のスライダーのグラブ位置を更新する
-    void updateGrabPosition(float t);
+    void updateGrabPosition(const GuiSlider& slider, float t);
     //数値文字列を削除する
     void clearTextNumber(const GuiSlider& slider);
     //保有している数値を文字列に変換する

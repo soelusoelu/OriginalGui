@@ -105,7 +105,7 @@ void Game::initialize() {
 
     mGuiContext = std::make_unique<GuiContext>();
     mGuiWindow = Gui::createWindow("");
-    static int test = 0;
+    static int test = 25;
     mGuiWindow->sliderInt("sliderInt", test, 0, 100);
     static float test2 = 0.f;
     mGuiWindow->sliderFloat("sliderFloat", test2, -100.f, 100.f);

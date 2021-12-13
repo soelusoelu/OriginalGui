@@ -36,10 +36,24 @@ void GuiWidgetSlider::update() {
 
 void GuiWidgetSlider::sliderInt(const std::string& label, int& v, int min, int max) {
     sliderScalar(label, GuiDataType::INT, &v, min, max);
+
+    //現在の値からグラブと数値を変更する
+    v = Math::clamp(v, min, max);
+    float t = static_cast<float>(v - min) / static_cast<float>(max - min);
+    const auto& s = mSliders.back();
+    updateGrabPosition(s, t);
+    updateNumberText(s);
 }
 
 void GuiWidgetSlider::sliderFloat(const std::string& label, float& v, float min, float max) {
     sliderScalar(label, GuiDataType::FLOAT, &v, min, max);
+
+    //現在の値からグラブと数値を変更する
+    v = Math::clamp(v, min, max);
+    float t = (v - min) / (max - min);
+    const auto& s = mSliders.back();
+    updateGrabPosition(s, t);
+    updateNumberText(s);
 }
 
 void GuiWidgetSlider::sliderScalar(
@@ -136,29 +150,24 @@ void GuiWidgetSlider::updateSlider() {
     float t = (clampMousePosX - minX) / (maxX - minX);
 
     //タイプごとの数値処理
-    updateNumber(t);
+    updateNumber(s, t);
     //文字列更新
-    updateNumberText();
+    updateNumberText(s);
     //グラブ移動処理
-    updateGrabPosition(t);
+    updateGrabPosition(s, t);
 }
 
-void GuiWidgetSlider::updateNumber(float t) {
-    if (!isGrabbing()) {
-        return;
-    }
-
-    auto& s = getGrabbingSlider();
-    if (s.type == GuiDataType::INT) {
-        auto& v = *static_cast<int*>(s.data);
-        auto min = std::any_cast<int>(s.min);
-        auto max = std::any_cast<int>(s.max);
+void GuiWidgetSlider::updateNumber(const GuiSlider& slider, float t) {
+    if (slider.type == GuiDataType::INT) {
+        auto& v = *static_cast<int*>(slider.data);
+        auto min = std::any_cast<int>(slider.min);
+        auto max = std::any_cast<int>(slider.max);
 
         v = Math::lerp(min, max, t);
-    } else if (s.type == GuiDataType::FLOAT) {
-        auto& v = *static_cast<float*>(s.data);
-        auto min = std::any_cast<float>(s.min);
-        auto max = std::any_cast<float>(s.max);
+    } else if (slider.type == GuiDataType::FLOAT) {
+        auto& v = *static_cast<float*>(slider.data);
+        auto min = std::any_cast<float>(slider.min);
+        auto max = std::any_cast<float>(slider.max);
 
         v = Math::lerp(min, max, t);
     } else {
@@ -166,23 +175,17 @@ void GuiWidgetSlider::updateNumber(float t) {
     }
 }
 
-void GuiWidgetSlider::updateNumberText() {
-    if (!isGrabbing()) {
-        return;
-    }
-
-    auto& s = getGrabbingSlider();
-
+void GuiWidgetSlider::updateNumberText(const GuiSlider& slider) {
     //一旦全文字空白にする
-    clearTextNumber(s);
+    clearTextNumber(slider);
 
     //タイプごとの処理
-    auto str = numberToText(s);
+    auto str = numberToText(slider);
 
     auto& dl = mWindow.getDrawList();
-    auto start = s.valueTextStartIndex;
-    const auto& frameCenter = getFramePosition(s) + (GuiWidgetConstant::FRAME_SIZE / 2.f);
-    const auto& size = getNumberTextSize(s);
+    auto start = slider.valueTextStartIndex;
+    const auto& frameCenter = getFramePosition(slider) + (GuiWidgetConstant::FRAME_SIZE / 2.f);
+    const auto& size = getNumberTextSize(slider);
     auto pos = StringUtil::calcPositionFromPivot(frameCenter, str, size, Pivot::CENTER);
 
     int len = static_cast<int>(str.length());
@@ -209,26 +212,20 @@ void GuiWidgetSlider::updateNumberText() {
     }
 }
 
-void GuiWidgetSlider::updateGrabPosition(float t) {
-    if (!isGrabbing()) {
-        return;
-    }
-
-    auto& s = getGrabbingSlider();
-
-    auto minX = calcGrabbingPosXMin(s);
-    auto maxX = calcGrabbingPosXMax(s);
+void GuiWidgetSlider::updateGrabPosition(const GuiSlider& slider, float t) {
+    auto minX = calcGrabbingPosXMin(slider);
+    auto maxX = calcGrabbingPosXMax(slider);
     float posX = Math::lerp(minX, maxX, t);
 
     auto& dl = mWindow.getDrawList();
     const auto& vb = dl.getVertexBuffer();
-    const auto& prevPos = vb[s.grabStartIndex].pos;
+    const auto& prevPos = vb[slider.grabStartIndex].pos;
     //マウス位置から求めた位置と前回の位置の差分から、次のグラブの位置を求める
     //求めた位置から、マウス位置をグラブの中心にするために、グラブの半分戻す
     dl.updateVertexPosition(
         Vector2(posX - prevPos.x - GRAB_WIDTH_HALF, 0.f),
-        s.grabStartIndex,
-        s.grabNumPoints
+        slider.grabStartIndex,
+        slider.grabNumPoints
     );
 }
 
