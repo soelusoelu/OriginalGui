@@ -1,5 +1,6 @@
 ﻿#include "GuiDrawList.h"
 #include "GuiContext.h"
+#include "../../Device/DrawString.h"
 #include <cassert>
 
 GuiDrawList::GuiDrawList(GuiContext& context)
@@ -208,6 +209,47 @@ void GuiDrawList::addCircleFilled(
     pathFillConvex(color);
 }
 
+void GuiDrawList::addText(
+    const std::string& text,
+    const Vector2& pos,
+    float pixelSizeY,
+    const Vector4& color
+) {
+    //文字数分容量確保
+    auto len = static_cast<unsigned>(text.length());
+    primReserve(len * 6, len * 4);
+
+    //指定のピクセルサイズから実際の描画サイズを求める
+    auto scaleY = pixelSizeY / DrawString::HEIGHT;
+    auto pixelSizeX = DrawString::WIDTH * scaleY;
+    auto size = Vector2(pixelSizeX, pixelSizeY);
+
+    //全文字を配列に追加していく
+    auto drawPos = pos;
+    for (const auto& c : text) {
+        int t = static_cast<int>(c);
+        t = Math::clamp<int>(t, 32, 127);
+        t -= 32;
+
+        float left = static_cast<float>(t % DrawString::WIDTH_CHAR_COUNT);
+        left /= DrawString::WIDTH_CHAR_COUNT;
+        float top = static_cast<float>(t / DrawString::WIDTH_CHAR_COUNT);
+        top /= DrawString::HEIGHT_CHAR_COUNT;
+        auto uvMin = Vector2(left, top);
+
+        //文字追加
+        primRectUV(
+            drawPos,
+            drawPos + size,
+            uvMin,
+            uvMin + Vector2(DrawString::WIDTH_RATE, DrawString::HEIGHT_RATE),
+            color
+        );
+
+        drawPos.x += size.x;
+    }
+}
+
 void GuiDrawList::updateWindowPosition(const Vector2& amount) {
     for (auto&& v : mVertexBuffer) {
         v.pos += amount;
@@ -357,17 +399,26 @@ void GuiDrawList::pathArcToFast(
     }
 }
 
-void GuiDrawList::pathStroke(const Vector4& color, float thickness, bool closed) {
+void GuiDrawList::pathStroke(
+    const Vector4& color,
+    float thickness,
+    bool closed
+) {
     addPolyline(mPath, color, thickness, closed);
     mPath.clear();
 }
 
-void GuiDrawList::pathFillConvex(const Vector4& color) {
+void GuiDrawList::pathFillConvex(
+    const Vector4& color
+) {
     addConvexPolyFilled(mPath, color);
     mPath.clear();
 }
 
-void GuiDrawList::primReserve(int idxCount, int vtxCount) {
+void GuiDrawList::primReserve(
+    int idxCount,
+    int vtxCount
+) {
     assert(idxCount >= 0 && vtxCount >= 0);
 
     auto& drawCmd = mCommandBuffer[mCurrentLayer];
@@ -377,11 +428,19 @@ void GuiDrawList::primReserve(int idxCount, int vtxCount) {
     mIndexBuffer.reserve(mIndexBuffer.size() + idxCount);
 }
 
-void GuiDrawList::primWriteVertex(const Vector2& pos, const Vector2& uv, const Vector4& color) {
+void GuiDrawList::primWriteVertex(
+    const Vector2& pos,
+    const Vector2& uv,
+    const Vector4& color
+) {
     mVertexBuffer.emplace_back(GuiVertex{ pos, uv, color });
 }
 
-void GuiDrawList::primRect(const Vector2& min, const Vector2& max, const Vector4& color) {
+void GuiDrawList::primRect(
+    const Vector2& min,
+    const Vector2& max,
+    const Vector4& color
+) {
     const auto& uv = mContext.getDrawListSharedData().texUvWhitePixel;
 
     auto idx = static_cast<unsigned short>(mVertexBuffer.size());
@@ -396,6 +455,27 @@ void GuiDrawList::primRect(const Vector2& min, const Vector2& max, const Vector4
     primWriteVertex(Vector2(max.x, min.y), uv, color);
     primWriteVertex(max, uv, color);
     primWriteVertex(Vector2(min.x, max.y), uv, color);
+}
+
+void GuiDrawList::primRectUV(
+    const Vector2& posMin,
+    const Vector2& posMax,
+    const Vector2& uvMin,
+    const Vector2& uvMax,
+    const Vector4& color
+) {
+    auto idx = static_cast<unsigned short>(mVertexBuffer.size());
+    mIndexBuffer.emplace_back(idx);
+    mIndexBuffer.emplace_back(idx + 1);
+    mIndexBuffer.emplace_back(idx + 2);
+    mIndexBuffer.emplace_back(idx);
+    mIndexBuffer.emplace_back(idx + 2);
+    mIndexBuffer.emplace_back(idx + 3);
+
+    primWriteVertex(posMin, uvMin, color);
+    primWriteVertex(Vector2(posMax.x, posMin.y), Vector2(uvMax.x, uvMin.y), color);
+    primWriteVertex(posMax, uvMax, color);
+    primWriteVertex(Vector2(posMin.x, posMax.y), Vector2(uvMin.x, uvMax.y), color);
 }
 
 void GuiDrawList::normalize2fOverZero(Vector2& v) const {

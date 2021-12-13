@@ -15,7 +15,7 @@ GuiRenderer::GuiRenderer()
     , mIndexBuffer(nullptr)
     , mVertexBufferSize(INIT_VERTEX_BUFFER_SIZE)
     , mIndexBufferSize(INIT_INDEX_BUFFER_SIZE)
-    , mTextureID(AssetsManager::instance().createTexture("System\\pixel.png"))
+    , mTextureID(AssetsManager::instance().createTexture("System\\font.png"))
     , mShaderID(AssetsManager::instance().createShader("Gui.hlsl"))
 {
 }

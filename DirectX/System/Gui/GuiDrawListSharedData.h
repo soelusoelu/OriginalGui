@@ -4,7 +4,7 @@
 #include <array>
 
 struct GuiDrawListSharedData {
-    Vector2 texUvWhitePixel = Vector2::zero;
+    Vector2 texUvWhitePixel = Vector2(0.09375f, 0.03125f);
     float circleSegmentMaxError = 1.6f;
     std::array<Vector2, 12> arcFastVertex;
     std::array<unsigned char, 64> circleSegmentCounts = { 0 };

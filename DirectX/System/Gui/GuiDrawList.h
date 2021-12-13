@@ -6,6 +6,7 @@
 #include "GuiVertex.h"
 #include "../../Device/Flag.h"
 #include "../../Math/Math.h"
+#include <string>
 #include <vector>
 
 class GuiContext;
@@ -83,6 +84,13 @@ public:
         float radius,
         const Vector4& color = Vector4(1.f, 1.f, 1.f, 1.f)
     );
+    //文字列を追加する
+    void addText(
+        const std::string& text,
+        const Vector2& pos,
+        float pixelSizeY,
+        const Vector4& color = Vector4(1.f, 1.f, 1.f, 1.f)
+    );
 
     //ウィンドウ位置を更新する
     void updateWindowPosition(const Vector2& amount);
@@ -137,16 +145,41 @@ private:
         int maxOf12
     );
     //パス配列からラインを形成し、終わったら空にする
-    void pathStroke(const Vector4& color, float thickness, bool closed);
+    void pathStroke(
+        const Vector4& color,
+        float thickness,
+        bool closed
+    );
     //パス配列からポリゴンを形成し、終わったら空にする
-    void pathFillConvex(const Vector4& color);
+    void pathFillConvex(
+        const Vector4& color
+    );
 
     //頂点・インデックス配列の容量を確保する
-    void primReserve(int idxCount, int vtxCount);
+    void primReserve(
+        int idxCount,
+        int vtxCount
+    );
     //頂点配列に追加する
-    void primWriteVertex(const Vector2& pos, const Vector2& uv, const Vector4& color);
-    //単純な矩形を頂点・インデックス配列に追加する
-    void primRect(const Vector2& min, const Vector2& max, const Vector4& color);
+    void primWriteVertex(
+        const Vector2& pos,
+        const Vector2& uv,
+        const Vector4& color
+    );
+    //矩形を頂点・インデックス配列に追加する
+    void primRect(
+        const Vector2& min,
+        const Vector2& max,
+        const Vector4& color
+    );
+    //UV指定の矩形を頂点・インデックス配列に追加する
+    void primRectUV(
+        const Vector2& posMin,
+        const Vector2& posMax,
+        const Vector2& uvMin,
+        const Vector2& uvMax,
+        const Vector4& color
+    );
 
     void normalize2fOverZero(Vector2& v) const;
 

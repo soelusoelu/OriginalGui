@@ -47,25 +47,33 @@ void GuiWidgetSlider::sliderScalar(
     const std::any& max
 ) {
     auto nextPos = mWindow.getNextWidgetPosition();
-    auto& drawList = mWindow.getDrawList();
-    const auto& vb = drawList.getVertexBuffer();
+    auto& dl = mWindow.getDrawList();
+    const auto& vb = dl.getVertexBuffer();
+    const auto& framePadding = mWindow.getContext().getFramePadding();
 
     //フレームの描画
     auto frameStart = static_cast<unsigned>(vb.size());
-    drawList.addRectFilled(nextPos, nextPos + GuiWidgetConstant::FRAME_SIZE, Vector4(0.15f, 0.25f, 0.35f, 0.8f));
+    dl.addRectFilled(nextPos, nextPos + GuiWidgetConstant::FRAME_SIZE, GuiWidgetConstant::FRAME_COLOR);
 
     //グラブ描画前の頂点数を取得しておく
     auto beforeSize = static_cast<unsigned>(vb.size());
 
     //グラブの描画
     auto p = nextPos + Vector2::one * GRAB_PADDING;
-    drawList.addRectFilled(p, p + GRAB_SIZE, Vector4(0.15f, 0.3f, 0.75f, 0.9f));
+    dl.addRectFilled(p, p + GRAB_SIZE, GRAB_COLOR);
 
     //グラブ描画後の頂点数を取得する
     auto afterSize = static_cast<unsigned>(vb.size());
 
+    //文字列の描画
+    dl.addText(
+        label,
+        nextPos + Vector2(GuiWidgetConstant::FRAME_WIDTH + framePadding.x, GuiWidgetConstant::TEXT_HEIGHT_PADDING),
+        GuiWidgetConstant::TEXT_HEIGHT
+    );
+
     //描画位置をずらして設定
-    nextPos.y += GuiWidgetConstant::FRAME_HEIGHT + mWindow.getContext().getFramePadding().y;
+    nextPos.y += GuiWidgetConstant::FRAME_HEIGHT + framePadding.y;
     mWindow.setNextWidgetPosition(nextPos);
 
     //配列に追加
@@ -137,12 +145,12 @@ void GuiWidgetSlider::updateGrabPosition(float f) {
     auto maxX = calcGrabbingPosXMax(s);
     float posX = Math::lerp(minX, maxX, f);
 
-    auto& drawList = mWindow.getDrawList();
-    const auto& vb = drawList.getVertexBuffer();
+    auto& dl = mWindow.getDrawList();
+    const auto& vb = dl.getVertexBuffer();
     const auto& prevPos = vb[s.grabVerticesStartIndex].pos;
     //マウス位置から求めた位置と前回の位置の差分から、次のグラブの位置を求める
     //求めた位置から、マウス位置をグラブの中心にするために、グラブの半分戻す
-    drawList.updateVertexPosition(
+    dl.updateVertexPosition(
         Vector2(posX - prevPos.x - GRAB_WIDTH_HALF, 0.f),
         s.grabVerticesStartIndex,
         s.grabVerticesNumPoints

@@ -90,6 +90,16 @@ public:
     static constexpr int WIDTH = 32; //画像1文字の横幅
     static constexpr int HEIGHT = 64; //画像1文字の縦幅
 
+    static constexpr int SPRITE_WIDTH = 512; //画像横幅
+    static constexpr float WIDTH_RATE = static_cast<float>(WIDTH) / static_cast<float>(SPRITE_WIDTH); //画像横幅に対する1文字の比率
+    static constexpr int PERIOD_WIDTH = WIDTH; //ピリオドの横幅
+    static constexpr float PERIOD_RATE = static_cast<float>(PERIOD_WIDTH) / static_cast<float>(SPRITE_WIDTH); //画像横幅に対する1文字の比率
+
+    static constexpr int SPRITE_HEIGHT = 512; //画像の縦幅
+    static constexpr int WIDTH_CHAR_COUNT = SPRITE_WIDTH / WIDTH; //フォント画像の画像横の文字数
+    static constexpr int HEIGHT_CHAR_COUNT = SPRITE_HEIGHT / HEIGHT;
+    static constexpr float HEIGHT_RATE = static_cast<float>(HEIGHT) / static_cast<float>(SPRITE_HEIGHT);
+
 private:
     std::unique_ptr<Sprite> mNumberSprite;
     std::unique_ptr<Sprite> mFontSprite;
@@ -99,14 +109,4 @@ private:
     std::string mNumberFileName;
     std::string mFontFileName;
     std::unique_ptr<SpriteInstancingDrawer> mDrawer;
-
-    static constexpr int SPRITE_WIDTH = 512; //画像横幅
-    static constexpr float WIDTH_RATE = static_cast<float>(WIDTH) / static_cast<float>(SPRITE_WIDTH); //画像横幅に対する1文字の比率
-    static constexpr int PERIOD_WIDTH = WIDTH; //ピリオドの横幅
-    static constexpr float PERIOD_RATE = static_cast<float>(PERIOD_WIDTH) / static_cast<float>(SPRITE_WIDTH); //画像横幅に対する1文字の比率
-
-    static constexpr int FONT_HEIGHT = 512; //フォント画像の縦幅
-    static constexpr int WIDTH_CHAR_COUNT = SPRITE_WIDTH / WIDTH; //フォント画像の画像横の文字数
-    static constexpr int HEIGHT_CHAR_COUNT = FONT_HEIGHT / HEIGHT;
-    static constexpr float FONT_HEIGHT_RATE = static_cast<float>(HEIGHT) / static_cast<float>(FONT_HEIGHT);
 };

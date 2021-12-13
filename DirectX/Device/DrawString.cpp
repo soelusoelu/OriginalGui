@@ -222,7 +222,7 @@ void DrawString::drawString(const ParamString& param, const Matrix4& proj) const
         left /= WIDTH_CHAR_COUNT;
         float top = static_cast<float>(t / WIDTH_CHAR_COUNT);
         top /= HEIGHT_CHAR_COUNT;
-        mFontSprite->setUV(left, top, left + WIDTH_RATE, top + FONT_HEIGHT_RATE);
+        mFontSprite->setUV(left, top, left + WIDTH_RATE, top + HEIGHT_RATE);
 
         //ワールド座標を更新し、描画
         trans.computeWorldTransform();

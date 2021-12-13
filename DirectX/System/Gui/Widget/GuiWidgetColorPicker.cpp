@@ -40,11 +40,11 @@ void GuiWidgetColorPicker::colorPicker(const std::string& label, void* color, bo
     //カラーピッカーの描画
     createColorPicker(mWindow.getNextWidgetPosition());
 
-    //カラーピッカーのカーソル
-    createColorPickerCursor();
-
     //色相バー
     createHueBar();
+
+    //カラーピッカーのカーソル
+    createColorPickerCursor();
 
     //色相バーのカーソル
     createHueBarCursor();

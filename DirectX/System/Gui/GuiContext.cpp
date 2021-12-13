@@ -10,7 +10,7 @@ GuiContext::GuiContext()
     : mFontAtlas(nullptr)
     , mGuiRenderer(std::make_unique<GuiRenderer>())
     , mDrawListSharedData()
-    , mFramePadding(Vector2(8.f, 8.f))
+    , mFramePadding(Vector2(4.f, 4.f))
 {
     Gui::mContext = this;
 }

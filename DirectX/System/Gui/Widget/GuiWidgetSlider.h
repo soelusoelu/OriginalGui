@@ -68,9 +68,10 @@ private:
     //-1なら掴んでいない
     int mGrabbingIndex;
 
-    static constexpr float GRAB_WIDTH = 16.f;
+    static constexpr float GRAB_WIDTH = GuiWidgetConstant::FRAME_WIDTH / 16.f;
     static constexpr float GRAB_WIDTH_HALF = GRAB_WIDTH / 2;
     static constexpr float GRAB_PADDING = 2.f;
     static constexpr float GRAB_HEIGHT = GuiWidgetConstant::FRAME_HEIGHT - GRAB_PADDING * 2;
     static const inline Vector2 GRAB_SIZE = Vector2(GRAB_WIDTH, GRAB_HEIGHT);
+    static const inline Vector4 GRAB_COLOR = Vector4(0.15f, 0.3f, 0.75f, 0.9f);
 };

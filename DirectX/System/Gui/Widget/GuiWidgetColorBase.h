@@ -79,11 +79,11 @@ protected:
     int mColorPickerIndex;
     int mHueBarIndex;
 
-    static constexpr float COLOR_PICKER_WIDTH = GuiWidgetConstant::FRAME_WIDTH - 32.f;
+    static constexpr float COLOR_PICKER_WIDTH = GuiWidgetConstant::FRAME_WIDTH / 1.15f;
     static constexpr float COLOR_PICKER_HEIGHT = COLOR_PICKER_WIDTH;
     static const inline Vector2 COLOR_PICKER_SIZE = Vector2(COLOR_PICKER_WIDTH, COLOR_PICKER_HEIGHT);
 
-    static constexpr float COLOR_PICKER_CURSOR_RADIUS = 6.f;
+    static constexpr float COLOR_PICKER_CURSOR_RADIUS = COLOR_PICKER_WIDTH / 32.f;
 
     static constexpr float HUE_BAR_HEIGHT = COLOR_PICKER_HEIGHT;
 

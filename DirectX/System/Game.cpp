@@ -106,11 +106,11 @@ void Game::initialize() {
     mGuiContext = std::make_unique<GuiContext>();
     mGuiWindow = Gui::createWindow("");
     static int test = 0;
-    mGuiWindow->sliderInt("", test, 0, 100);
+    mGuiWindow->sliderInt("sliderInt", test, 0, 100);
     static float test2 = 0.f;
-    mGuiWindow->sliderFloat("", test2, -100.f, 100.f);
+    mGuiWindow->sliderFloat("sliderFloat", test2, -100.f, 100.f);
     static Vector4 test3 = Vector4(1.f, 1.f, 1.f, 1.f);
-    mGuiWindow->colorPicker4("", test3);
+    mGuiWindow->colorPicker4("colorPicker", test3);
 }
 
 void Game::mainLoop() {
@@ -133,7 +133,7 @@ void Game::mainLoop() {
         ImGui::SetNextWindowSize(ImVec2(256.f, 512.f), ImGuiCond_Once);
         ////ウィンドウを不透明に
         //ImGui::SetNextWindowBgAlpha(1.f);
-        auto mousePos = InputManager::mouse().getMousePosition();
+        const auto& mousePos = InputManager::mouse().getMousePosition();
         ImGui::GetIO().MousePos.x = mousePos.x;
         ImGui::GetIO().MousePos.y = mousePos.y;
 
