@@ -28,7 +28,7 @@ public:
     GuiWidgetSlider& operator=(const GuiWidgetSlider&) = delete;
 
     virtual void update() override;
-    virtual void onUpdateFrame(const GuiFrameInfo& frame) override;
+    virtual void onUpdateSelectFrame(const GuiFrameInfo& frame) override;
 
     //各種スライダー
     void sliderInt(const std::string& label, int& v, int min, int max);
@@ -45,6 +45,8 @@ private:
     );
     //選択中のスライダーの数値を更新する
     void updateNumber(const GuiSlider& slider, float t);
+    //スライダーのグラブ位置を更新する
+    void updateGrabPosition(const GuiSlider& slider, const GuiFrameInfo& frame);
     //選択中のスライダーのグラブ位置を更新する
     void updateGrabPosition(const GuiSlider& slider, const GuiFrameInfo& frame, float t);
     //数値をクランプする

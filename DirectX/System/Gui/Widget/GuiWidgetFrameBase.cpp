@@ -30,7 +30,7 @@ void GuiWidgetFrameBase::baseUpdate() {
     }
 
     if (isSelectingFrame() && mouse.getMouseButton(MouseCode::LeftButton)) {
-        onUpdateFrame(getSelectingFrame());
+        onUpdateSelectFrame(getSelectingFrame());
     }
 
     //毎フレーム更新

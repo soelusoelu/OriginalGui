@@ -29,7 +29,7 @@ public:
     void baseUpdate();
     virtual void update() {};
     virtual void onSelectFrame(const GuiFrameInfo& frame) {};
-    virtual void onUpdateFrame(const GuiFrameInfo& frame) {};
+    virtual void onUpdateSelectFrame(const GuiFrameInfo& frame) {};
 
 protected:
     //1本の基本的なフレームを作成する

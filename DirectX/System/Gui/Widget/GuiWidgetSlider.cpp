@@ -18,15 +18,15 @@ GuiWidgetSlider::GuiWidgetSlider(GuiWindow& window)
 GuiWidgetSlider::~GuiWidgetSlider() = default;
 
 void GuiWidgetSlider::update() {
-    //for (const auto& s : mSliders) {
-    //    clamp(s.data, s.min, s.max, s.type);
-    //    float t = static_cast<float>(s.data - min) / static_cast<float>(max - min);
-    //    updateNumber(slider, t);
-    //    updateGrabPosition(mSliders.back(), mFrames.back(), t);
-    //}
+    assert(mSliders.size() == mFrames.size());
+    for (int i = 0; i < mSliders.size(); ++i) {
+        auto& s = mSliders[i];
+        clamp(s.data, s.min, s.max, s.type);
+        updateGrabPosition(s, mFrames[i]);
+    }
 }
 
-void GuiWidgetSlider::onUpdateFrame(const GuiFrameInfo& frame) {
+void GuiWidgetSlider::onUpdateSelectFrame(const GuiFrameInfo& frame) {
     //事前計算
     const auto& mousePos = Input::mouse().getMousePosition();
     auto minX = calcGrabbingPosXMin(frame);
@@ -36,27 +36,19 @@ void GuiWidgetSlider::onUpdateFrame(const GuiFrameInfo& frame) {
     //フレーム矩形内におけるマウス位置の割合
     float t = (clampMousePosX - minX) / (maxX - minX);
 
-    const auto& slider = mSliders[mFrameIndex];
+    const auto& s = mSliders[mFrameIndex];
     //タイプごとの数値処理
-    updateNumber(slider, t);
+    updateNumber(s, t);
     //グラブ移動処理
-    updateGrabPosition(slider, frame, t);
+    updateGrabPosition(s, frame, t);
 }
 
 void GuiWidgetSlider::sliderInt(const std::string& label, int& v, int min, int max) {
     sliderScalar(label, GuiDataType::INT, &v, min, max);
-
-    //現在の値からグラブと変更する
-    float t = static_cast<float>(v - min) / static_cast<float>(max - min);
-    updateGrabPosition(mSliders.back(), mFrames.back(), t);
 }
 
 void GuiWidgetSlider::sliderFloat(const std::string& label, float& v, float min, float max) {
     sliderScalar(label, GuiDataType::FLOAT, &v, min, max);
-
-    //現在の値からグラブと変更する
-    float t = (v - min) / (max - min);
-    updateGrabPosition(mSliders.back(), mFrames.back(), t);
 }
 
 void GuiWidgetSlider::sliderScalar(
@@ -81,9 +73,6 @@ void GuiWidgetSlider::sliderScalar(
     //値テキストの描画
     createFrameText(frameIdx, type, v);
 
-    //初期値が範囲を超えてる場合のためにクランプする
-    clamp(v, min, max, type);
-
     //配列に追加
     mSliders.emplace_back(GuiSlider{
         type,
@@ -93,6 +82,11 @@ void GuiWidgetSlider::sliderScalar(
         grabStart,
         grabNumPoints
     });
+
+    //初期値が範囲を超えてる場合のためにクランプする
+    clamp(v, min, max, type);
+    //初期値をグラブに反映する
+    updateGrabPosition(mSliders.back(), mFrames.back());
 }
 
 void GuiWidgetSlider::updateNumber(const GuiSlider& slider, float t) {
@@ -100,17 +94,34 @@ void GuiWidgetSlider::updateNumber(const GuiSlider& slider, float t) {
         auto& v = *static_cast<int*>(slider.data);
         auto min = std::any_cast<int>(slider.min);
         auto max = std::any_cast<int>(slider.max);
-
         v = Math::lerp(min, max, t);
     } else if (slider.type == GuiDataType::FLOAT) {
         auto& v = *static_cast<float*>(slider.data);
         auto min = std::any_cast<float>(slider.min);
         auto max = std::any_cast<float>(slider.max);
-
         v = Math::lerp(min, max, t);
     } else {
         assert(false);
     }
+}
+
+void GuiWidgetSlider::updateGrabPosition(const GuiSlider& slider, const GuiFrameInfo& frame) {
+    float t = 0.f;
+    if (slider.type == GuiDataType::INT) {
+        auto& v = *static_cast<int*>(slider.data);
+        auto min = std::any_cast<int>(slider.min);
+        auto max = std::any_cast<int>(slider.max);
+        t = static_cast<float>(v - min) / static_cast<float>(max - min);
+    } else if (slider.type == GuiDataType::FLOAT) {
+        auto& v = *static_cast<float*>(slider.data);
+        auto min = std::any_cast<float>(slider.min);
+        auto max = std::any_cast<float>(slider.max);
+        t = (v - min) / (max - min);
+    } else {
+        assert(false);
+    }
+
+    updateGrabPosition(slider, frame, t);
 }
 
 void GuiWidgetSlider::updateGrabPosition(const GuiSlider& slider, const GuiFrameInfo& frame, float t) {
