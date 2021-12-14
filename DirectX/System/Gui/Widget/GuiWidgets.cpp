@@ -15,7 +15,7 @@ GuiWidgets::~GuiWidgets() = default;
 void GuiWidgets::update() {
     mSlider->update();
     mColorPicker->baseUpdate();
-    mText->updateBase();
+    mText->update();
 }
 
 GuiWidgetSlider& GuiWidgets::getSlider() const {

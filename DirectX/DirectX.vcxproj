@@ -170,7 +170,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="System\Gui\Widget\GuiWidgetTextBase.cpp" />
     <ClCompile Include="System\Gui\Widget\GuiWidgetText.cpp" />
     <ClCompile Include="Utility\AsciiHelper.cpp" />
     <ClCompile Include="System\Gui\Widget\GuiWidgetColorBase.cpp" />
@@ -436,7 +435,6 @@
     <ClCompile Include="Engine\ModelViewer\VertexSelector.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="System\Gui\Widget\GuiWidgetTextBase.h" />
     <ClInclude Include="System\Gui\Widget\GuiWidgetText.h" />
     <ClInclude Include="Utility\AsciiHelper.h" />
     <ClInclude Include="System\Gui\Widget\GuiWidgetColorBase.h" />

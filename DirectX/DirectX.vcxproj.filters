@@ -286,7 +286,6 @@
     <ClCompile Include="System\Gui\Widget\GuiWidgetColorBase.cpp" />
     <ClCompile Include="Utility\AsciiHelper.cpp" />
     <ClCompile Include="System\Gui\Widget\GuiWidgetText.cpp" />
-    <ClCompile Include="System\Gui\Widget\GuiWidgetTextBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Component\ComponentManager.h" />
@@ -657,7 +656,6 @@
     <ClInclude Include="System\Gui\Widget\GuiWidgetColorBase.h" />
     <ClInclude Include="Utility\AsciiHelper.h" />
     <ClInclude Include="System\Gui\Widget\GuiWidgetText.h" />
-    <ClInclude Include="System\Gui\Widget\GuiWidgetTextBase.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\MeshCommonHeader.hlsli" />
