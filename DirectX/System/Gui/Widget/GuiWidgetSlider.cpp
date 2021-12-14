@@ -12,11 +12,19 @@
 
 GuiWidgetSlider::GuiWidgetSlider(GuiWindow& window)
     : GuiWidgetFrameBase(window)
-    , mText(std::make_unique<GuiWidgetText>(window))
 {
 }
 
 GuiWidgetSlider::~GuiWidgetSlider() = default;
+
+void GuiWidgetSlider::update() {
+    //for (const auto& s : mSliders) {
+    //    clamp(s.data, s.min, s.max, s.type);
+    //    float t = static_cast<float>(s.data - min) / static_cast<float>(max - min);
+    //    updateNumber(slider, t);
+    //    updateGrabPosition(mSliders.back(), mFrames.back(), t);
+    //}
+}
 
 void GuiWidgetSlider::onUpdateFrame(const GuiFrameInfo& frame) {
     //事前計算
@@ -31,8 +39,6 @@ void GuiWidgetSlider::onUpdateFrame(const GuiFrameInfo& frame) {
     const auto& slider = mSliders[mFrameIndex];
     //タイプごとの数値処理
     updateNumber(slider, t);
-    //文字列更新
-    updateNumberText(slider);
     //グラブ移動処理
     updateGrabPosition(slider, frame, t);
 }
@@ -64,7 +70,7 @@ void GuiWidgetSlider::sliderScalar(
     const auto& framePadding = mWindow.getContext().getFramePadding();
 
     //フレームの描画
-    auto frameIdx = createSingleFrame();
+    auto frameIdx = createSingleFrame(label);
 
     //グラブの描画
     auto grabStart = dl.getVertexCount();
@@ -72,39 +78,20 @@ void GuiWidgetSlider::sliderScalar(
     dl.addRectFilled(pos, pos + GRAB_SIZE, GRAB_COLOR);
     auto grabNumPoints = dl.getVertexCount() - grabStart;
 
-    //ラベルの描画
-    auto offsetX = GuiWidgetConstant::FRAME_WIDTH + framePadding.x;
-    auto offsetY = GuiWidgetConstant::TEXT_HEIGHT_PADDING;
-    mText->text(
-        label,
-        getFramePosition(frameIdx) + Vector2(offsetX, offsetY),
-        GuiWidgetConstant::TEXT_HEIGHT
-    );
-
-    //値を文字列で描画
-    auto textIdx = mText->text(
-        numberToText(v, type),
-        getFramePosition(frameIdx) + (GuiWidgetConstant::FRAME_SIZE / 2.f),
-        GuiWidgetConstant::TEXT_HEIGHT - 2.f,
-        GuiWidgetConstant::DIGITS,
-        Vector4(ColorPalette::white, 1.f),
-        Pivot::CENTER
-    );
+    //値テキストの描画
+    createFrameText(frameIdx, type, v);
 
     //初期値が範囲を超えてる場合のためにクランプする
     clamp(v, min, max, type);
 
     //配列に追加
     mSliders.emplace_back(GuiSlider{
-        label,
         type,
         v,
         min,
         max,
         grabStart,
-        grabNumPoints,
-        frameIdx,
-        textIdx
+        grabNumPoints
     });
 }
 
@@ -126,11 +113,6 @@ void GuiWidgetSlider::updateNumber(const GuiSlider& slider, float t) {
     }
 }
 
-void GuiWidgetSlider::updateNumberText(const GuiSlider& slider) {
-    auto str = numberToText(slider);
-    mText->changeText(slider.valueTextIndex, str);
-}
-
 void GuiWidgetSlider::updateGrabPosition(const GuiSlider& slider, const GuiFrameInfo& frame, float t) {
     auto minX = calcGrabbingPosXMin(frame);
     auto maxX = calcGrabbingPosXMax(frame);
@@ -146,25 +128,6 @@ void GuiWidgetSlider::updateGrabPosition(const GuiSlider& slider, const GuiFrame
         slider.grabStartIndex,
         slider.grabNumPoints
     );
-}
-
-std::string GuiWidgetSlider::numberToText(const GuiSlider& slider) {
-    return numberToText(slider.data, slider.type);
-}
-
-std::string GuiWidgetSlider::numberToText(const void* data, GuiDataType type) {
-    std::string str;
-    if (type == GuiDataType::INT) {
-        auto v = *static_cast<const int*>(data);
-        str = StringUtil::intToString(v);
-    } else if (type == GuiDataType::FLOAT) {
-        auto v = *static_cast<const float*>(data);
-        str = StringUtil::floatToString(v);
-    } else {
-        assert(false);
-    }
-
-    return str;
 }
 
 void GuiWidgetSlider::clamp(void* data, const std::any& min, const std::any& max, GuiDataType type) {
