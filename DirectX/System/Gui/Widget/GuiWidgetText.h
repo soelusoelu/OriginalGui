@@ -9,7 +9,7 @@ class GuiWindow;
 
 struct GuiTextInfo {
     std::string text = "";
-    Vector2 startPos = Vector2::zero;
+    Vector2 origin = Vector2::zero;
     Pivot pivot = Pivot::LEFT_TOP;
     unsigned capacity = 0;
     unsigned startIndex = 0;
@@ -43,6 +43,8 @@ public:
     );
     //テキストを削除する
     void clearText(GuiTextInfo& info);
+    //テキストの位置を取得する
+    Vector2 getPosition(const GuiTextInfo& info) const;
     //文字のサイズを取得する
     Vector2 getSize(const GuiTextInfo& info) const;
 

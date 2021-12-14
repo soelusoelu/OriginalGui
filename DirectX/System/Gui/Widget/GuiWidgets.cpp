@@ -13,7 +13,7 @@ GuiWidgets::GuiWidgets(GuiWindow& window)
 GuiWidgets::~GuiWidgets() = default;
 
 void GuiWidgets::update() {
-    mSlider->update();
+    mSlider->baseUpdate();
     mColorPicker->baseUpdate();
     mText->update();
 }

@@ -56,7 +56,7 @@ unsigned GuiWidgetText::text(
     );
     auto numPoints = dl.getVertexCount() - start;
 
-    mTexts.emplace_back(GuiTextInfo{ text, pos, pivot, numPoints / 4, start, numPoints });
+    mTexts.emplace_back(GuiTextInfo{ text, pos - mWindow.getPosition(), pivot, numPoints / 4, start, numPoints});
 
     return (mTexts.size() - 1);
 }
@@ -73,7 +73,7 @@ void GuiWidgetText::changeText(
     //文字を変更していく
     auto& dl = mWindow.getDrawList();
     auto size = getSize(info);
-    auto pos = StringUtil::calcPositionFromPivot(info.startPos, text, size, info.pivot);
+    auto pos = StringUtil::calcPositionFromPivot(getPosition(info), text, size, info.pivot);
     auto len = static_cast<unsigned>(text.length());
     len = Math::Min(len, info.capacity);
     for (unsigned i = 0; i < len; ++i) {
@@ -107,6 +107,10 @@ void GuiWidgetText::clearText(GuiTextInfo& info) {
         info.startIndex,
         info.numPoints
     );
+}
+
+Vector2 GuiWidgetText::getPosition(const GuiTextInfo& info) const {
+    return info.origin + mWindow.getPosition();
 }
 
 Vector2 GuiWidgetText::getSize(const GuiTextInfo& info) const {
