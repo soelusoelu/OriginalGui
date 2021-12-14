@@ -111,6 +111,7 @@ void Game::initialize() {
     mGuiWindow->sliderFloat("sliderFloat", test2, -100.f, 100.f);
     static Vector4 test3 = Vector4(1.f, 1.f, 1.f, 1.f);
     mGuiWindow->colorPicker4("colorPicker", test3);
+    mGuiWindow->text("text");
 }
 
 void Game::mainLoop() {

@@ -63,7 +63,7 @@ private:
     //sliderのフレーム位置を取得する
     const Vector2& getFramePosition(const GuiSlider& slider) const;
     //数値文字のサイズを取得する
-    const Vector2& getNumberTextSize(const GuiSlider& slider) const;
+    Vector2 getNumberTextSize(const GuiSlider& slider) const;
     //掴んでいるグラブを取得する
     const GuiSlider& getGrabbingSlider() const;
     //掴んでいるか

@@ -64,8 +64,6 @@ private:
     //色相バーの選択色を更新する
     void updateHueBar();
 
-    //頂点バッファのサイズを取得する
-    unsigned getVertexBufferSize() const;
     //次のプリミティブの始まりのインデックスを求める
     void calcStartIndex(unsigned& startIndex) const;
     //現在のプリミティブの頂点数を求める

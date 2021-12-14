@@ -46,6 +46,8 @@ public:
     void colorPicker3(const std::string& label, Vector3& color);
     void colorPicker4(const std::string& label, Vector4& color);
 
+    void text(const std::string& text);
+
     GuiContext& getContext() const;
     GuiDrawList& getDrawList() const;
 

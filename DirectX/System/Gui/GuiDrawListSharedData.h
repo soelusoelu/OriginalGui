@@ -20,13 +20,13 @@ struct GuiDrawListSharedData {
     static constexpr int CIRCLE_AUTO_SEGMENT_MAX = 512;
 
     GuiDrawListSharedData() {
-        int size = arcFastVertex.size();
+        int size = static_cast<int>(arcFastVertex.size());
         for (int i = 0; i < size; ++i) {
             float a = (i * Math::TwoPI) / static_cast<float>(size);
             arcFastVertex[i] = Vector2(cosf(a), sinf(a));
         }
 
-        size = circleSegmentCounts.size();
+        size = static_cast<int>(circleSegmentCounts.size());
         for (int i = 0; i < size; ++i) {
             float radius = i + 1.f;
             int segmentCount = calcCircleAutoSegment(radius, circleSegmentMaxError);

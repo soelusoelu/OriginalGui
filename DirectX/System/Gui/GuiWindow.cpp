@@ -3,6 +3,7 @@
 #include "GuiContext.h"
 #include "Widget/GuiWidgetColorPicker.h"
 #include "Widget/GuiWidgetSlider.h"
+#include "Widget/GuiWidgetText.h"
 #include "../../Collision/Collision.h"
 #include "../../Input/Input.h"
 
@@ -162,6 +163,10 @@ void GuiWindow::colorPicker3(const std::string& label, Vector3& color) {
 
 void GuiWindow::colorPicker4(const std::string& label, Vector4& color) {
     mWidgets.getColorPicker().colorPicker4(label, color);
+}
+
+void GuiWindow::text(const std::string& text) {
+    mWidgets.getText().text(text);
 }
 
 GuiContext& GuiWindow::getContext() const {

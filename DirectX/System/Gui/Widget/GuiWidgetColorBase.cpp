@@ -291,14 +291,10 @@ void GuiWidgetColorBase::updateHueBar() {
     onUpdateHueBar(color);
 }
 
-unsigned GuiWidgetColorBase::getVertexBufferSize() const {
-    return static_cast<unsigned>(mWindow.getDrawList().getVertexBuffer().size());
-}
-
 void GuiWidgetColorBase::calcStartIndex(unsigned& startIndex) const {
-    startIndex = getVertexBufferSize();
+    startIndex = mWindow.getDrawList().getVertexCount();
 }
 
 void GuiWidgetColorBase::calcNumPoints(unsigned& numPoints, unsigned startIndex) const {
-    numPoints = getVertexBufferSize() - startIndex;
+    numPoints = mWindow.getDrawList().getVertexCount() - startIndex;
 }

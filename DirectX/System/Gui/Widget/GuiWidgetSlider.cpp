@@ -65,7 +65,6 @@ void GuiWidgetSlider::sliderScalar(
 ) {
     auto nextPos = mWindow.getNextWidgetPosition();
     auto& dl = mWindow.getDrawList();
-    const auto& vb = dl.getVertexBuffer();
     const auto& framePadding = mWindow.getContext().getFramePadding();
 
     //フレームの描画
@@ -185,7 +184,7 @@ void GuiWidgetSlider::updateNumberText(const GuiSlider& slider) {
     auto& dl = mWindow.getDrawList();
     auto start = slider.valueTextStartIndex;
     const auto& frameCenter = getFramePosition(slider) + (GuiWidgetConstant::FRAME_SIZE / 2.f);
-    const auto& size = getNumberTextSize(slider);
+    auto size = getNumberTextSize(slider);
     auto pos = StringUtil::calcPositionFromPivot(frameCenter, str, size, Pivot::CENTER);
 
     int len = static_cast<int>(str.length());
@@ -256,7 +255,7 @@ const Vector2& GuiWidgetSlider::getFramePosition(const GuiSlider& slider) const 
     return mWindow.getDrawList().getVertexBuffer()[slider.frameStartIndex].pos;
 }
 
-const Vector2& GuiWidgetSlider::getNumberTextSize(const GuiSlider& slider) const {
+Vector2 GuiWidgetSlider::getNumberTextSize(const GuiSlider& slider) const {
     const auto& vb = mWindow.getDrawList().getVertexBuffer();
     return (vb[slider.valueTextStartIndex + 2].pos - vb[slider.valueTextStartIndex].pos);
 }
