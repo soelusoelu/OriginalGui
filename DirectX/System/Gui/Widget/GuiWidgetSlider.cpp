@@ -1,4 +1,5 @@
 ﻿#include "GuiWidgetSlider.h"
+#include "GuiWidgetText.h"
 #include "../GuiContext.h"
 #include "../GuiDrawList.h"
 #include "../GuiWindow.h"
@@ -11,6 +12,7 @@
 
 GuiWidgetSlider::GuiWidgetSlider(GuiWindow& window)
     : mWindow(window)
+    , mText(std::make_unique<GuiWidgetText>(window))
     , mGrabbingIndex(-1)
 {
 }
@@ -37,23 +39,19 @@ void GuiWidgetSlider::update() {
 void GuiWidgetSlider::sliderInt(const std::string& label, int& v, int min, int max) {
     sliderScalar(label, GuiDataType::INT, &v, min, max);
 
-    //現在の値からグラブと数値を変更する
-    v = Math::clamp(v, min, max);
+    //現在の値からグラブと変更する
     float t = static_cast<float>(v - min) / static_cast<float>(max - min);
     const auto& s = mSliders.back();
     updateGrabPosition(s, t);
-    updateNumberText(s);
 }
 
 void GuiWidgetSlider::sliderFloat(const std::string& label, float& v, float min, float max) {
     sliderScalar(label, GuiDataType::FLOAT, &v, min, max);
 
-    //現在の値からグラブと数値を変更する
-    v = Math::clamp(v, min, max);
+    //現在の値からグラブと変更する
     float t = (v - min) / (max - min);
     const auto& s = mSliders.back();
     updateGrabPosition(s, t);
-    updateNumberText(s);
 }
 
 void GuiWidgetSlider::sliderScalar(
@@ -78,23 +76,24 @@ void GuiWidgetSlider::sliderScalar(
     auto grabNumPoints = dl.getVertexCount() - grabStart;
 
     //ラベルの描画
-    dl.addText(
+    mText->text(
         label,
         nextPos + Vector2(GuiWidgetConstant::FRAME_WIDTH + framePadding.x, GuiWidgetConstant::TEXT_HEIGHT_PADDING),
         GuiWidgetConstant::TEXT_HEIGHT
     );
 
     //値を文字列で描画
-    auto textStart = dl.getVertexCount();
-    dl.addText(
-        "0",
+    auto textIdx = mText->text(
+        numberToText(v, type),
         nextPos + (GuiWidgetConstant::FRAME_SIZE / 2.f),
         GuiWidgetConstant::TEXT_HEIGHT - 2.f,
         GuiWidgetConstant::DIGITS,
         Vector4(ColorPalette::white, 1.f),
         Pivot::CENTER
     );
-    auto textNumPoints = dl.getVertexCount() - textStart;
+
+    //初期値が範囲を超えてる場合のためにクランプする
+    clamp(v, min, max, type);
 
     //描画位置をずらして設定
     nextPos.y += GuiWidgetConstant::FRAME_HEIGHT + framePadding.y;
@@ -110,8 +109,7 @@ void GuiWidgetSlider::sliderScalar(
         frameStart,
         grabStart,
         grabNumPoints,
-        textStart,
-        textNumPoints
+        textIdx
     });
 }
 
@@ -175,40 +173,8 @@ void GuiWidgetSlider::updateNumber(const GuiSlider& slider, float t) {
 }
 
 void GuiWidgetSlider::updateNumberText(const GuiSlider& slider) {
-    //一旦全文字空白にする
-    clearTextNumber(slider);
-
-    //タイプごとの処理
     auto str = numberToText(slider);
-
-    auto& dl = mWindow.getDrawList();
-    auto start = slider.valueTextStartIndex;
-    const auto& frameCenter = getFramePosition(slider) + (GuiWidgetConstant::FRAME_SIZE / 2.f);
-    auto size = getNumberTextSize(slider);
-    auto pos = StringUtil::calcPositionFromPivot(frameCenter, str, size, Pivot::CENTER);
-
-    int len = static_cast<int>(str.length());
-    for (int i = 0; i < len; ++i) {
-        auto leftTop = AsciiHelper::calcPositionRateToAscii(
-            str[i],
-            DrawString::WIDTH_CHAR_COUNT,
-            DrawString::HEIGHT_CHAR_COUNT
-        );
-
-        //文字更新
-        int idx = start + i * 4;
-        dl.setVertexPosition(pos, idx);
-        dl.setVertexPosition(pos + Vector2(size.x, 0.f), idx + 1);
-        dl.setVertexPosition(pos + size, idx + 2);
-        dl.setVertexPosition(pos + Vector2(0.f, size.y), idx + 3);
-
-        dl.setVertexUV(leftTop, idx);
-        dl.setVertexUV(leftTop + Vector2(DrawString::CHAR_WIDTH_RATE, 0.f), idx + 1);
-        dl.setVertexUV(leftTop + DrawString::CHAR_RATE, idx + 2);
-        dl.setVertexUV(leftTop + Vector2(0.f, DrawString::CHAR_HEIGHT_RATE), idx + 3);
-
-        pos.x += size.x;
-    }
+    mText->changeText(slider.valueTextIndex, str);
 }
 
 void GuiWidgetSlider::updateGrabPosition(const GuiSlider& slider, float t) {
@@ -228,21 +194,17 @@ void GuiWidgetSlider::updateGrabPosition(const GuiSlider& slider, float t) {
     );
 }
 
-void GuiWidgetSlider::clearTextNumber(const GuiSlider& slider) {
-    mWindow.getDrawList().setVertexUVs(
-        mWindow.getContext().getDrawListSharedData().texUvTransparentPixel,
-        slider.valueTextStartIndex,
-        slider.valueTextNumPoints
-    );
+std::string GuiWidgetSlider::numberToText(const GuiSlider& slider) {
+    return numberToText(slider.data, slider.type);
 }
 
-std::string GuiWidgetSlider::numberToText(const GuiSlider& slider) {
+std::string GuiWidgetSlider::numberToText(const void* data, GuiDataType type) {
     std::string str;
-    if (slider.type == GuiDataType::INT) {
-        auto v = *static_cast<int*>(slider.data);
+    if (type == GuiDataType::INT) {
+        auto v = *static_cast<const int*>(data);
         str = StringUtil::intToString(v);
-    } else if (slider.type == GuiDataType::FLOAT) {
-        auto v = *static_cast<float*>(slider.data);
+    } else if (type == GuiDataType::FLOAT) {
+        auto v = *static_cast<const float*>(data);
         str = StringUtil::floatToString(v);
     } else {
         assert(false);
@@ -251,13 +213,20 @@ std::string GuiWidgetSlider::numberToText(const GuiSlider& slider) {
     return str;
 }
 
-const Vector2& GuiWidgetSlider::getFramePosition(const GuiSlider& slider) const {
-    return mWindow.getDrawList().getVertexBuffer()[slider.frameStartIndex].pos;
+void GuiWidgetSlider::clamp(void* data, const std::any& min, const std::any& max, GuiDataType type) {
+    if (type == GuiDataType::INT) {
+        auto& v = *static_cast<int*>(data);
+        v = Math::clamp(v, std::any_cast<int>(min), std::any_cast<int>(max));
+    } else if (type == GuiDataType::FLOAT) {
+        auto& v = *static_cast<float*>(data);
+        v = Math::clamp(v, std::any_cast<float>(min), std::any_cast<float>(max));
+    } else {
+        assert(false);
+    }
 }
 
-Vector2 GuiWidgetSlider::getNumberTextSize(const GuiSlider& slider) const {
-    const auto& vb = mWindow.getDrawList().getVertexBuffer();
-    return (vb[slider.valueTextStartIndex + 2].pos - vb[slider.valueTextStartIndex].pos);
+const Vector2& GuiWidgetSlider::getFramePosition(const GuiSlider& slider) const {
+    return mWindow.getDrawList().getVertexBuffer()[slider.frameStartIndex].pos;
 }
 
 const GuiSlider& GuiWidgetSlider::getGrabbingSlider() const {

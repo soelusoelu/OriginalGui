@@ -11,6 +11,7 @@ struct GuiTextInfo {
     std::string text = "";
     Vector2 startPos = Vector2::zero;
     Pivot pivot = Pivot::LEFT_TOP;
+    unsigned capacity = 0;
     unsigned startIndex = 0;
     unsigned numPoints = 0;
 };

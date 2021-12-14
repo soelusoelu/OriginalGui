@@ -56,7 +56,7 @@ unsigned GuiWidgetText::text(
     );
     auto numPoints = dl.getVertexCount() - start;
 
-    mTexts.emplace_back(GuiTextInfo{ text, pos, pivot, start, numPoints });
+    mTexts.emplace_back(GuiTextInfo{ text, pos, pivot, numPoints / 4, start, numPoints });
 
     return (mTexts.size() - 1);
 }
@@ -74,8 +74,9 @@ void GuiWidgetText::changeText(
     auto& dl = mWindow.getDrawList();
     auto size = getSize(info);
     auto pos = StringUtil::calcPositionFromPivot(info.startPos, text, size, info.pivot);
-    int len = static_cast<int>(text.length());
-    for (int i = 0; i < len; ++i) {
+    auto len = static_cast<unsigned>(text.length());
+    len = Math::Min(len, info.capacity);
+    for (unsigned i = 0; i < len; ++i) {
         auto leftTop = AsciiHelper::calcPositionRateToAscii(
             text[i],
             DrawString::WIDTH_CHAR_COUNT,

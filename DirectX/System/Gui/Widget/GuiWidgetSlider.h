@@ -4,10 +4,12 @@
 #include "GuiWidgetConstant.h"
 #include "../../../Math/Math.h"
 #include <any>
+#include <memory>
 #include <string>
 #include <vector>
 
 class GuiWindow;
+class GuiWidgetText;
 
 struct GuiSlider {
     std::string label = "";
@@ -18,8 +20,7 @@ struct GuiSlider {
     unsigned frameStartIndex = 0;
     unsigned grabStartIndex = 0;
     unsigned grabNumPoints = 0;
-    unsigned valueTextStartIndex = 0;
-    unsigned valueTextNumPoints = 0;
+    unsigned valueTextIndex = 0;
 };
 
 class GuiWidgetSlider {
@@ -55,15 +56,14 @@ private:
     void updateNumberText(const GuiSlider& slider);
     //選択中のスライダーのグラブ位置を更新する
     void updateGrabPosition(const GuiSlider& slider, float t);
-    //数値文字列を削除する
-    void clearTextNumber(const GuiSlider& slider);
     //保有している数値を文字列に変換する
     std::string numberToText(const GuiSlider& slider);
+    std::string numberToText(const void* data, GuiDataType type);
+    //数値をクランプする
+    void clamp(void* data, const std::any& min, const std::any& max, GuiDataType type);
 
     //sliderのフレーム位置を取得する
     const Vector2& getFramePosition(const GuiSlider& slider) const;
-    //数値文字のサイズを取得する
-    Vector2 getNumberTextSize(const GuiSlider& slider) const;
     //掴んでいるグラブを取得する
     const GuiSlider& getGrabbingSlider() const;
     //掴んでいるか
@@ -76,6 +76,7 @@ private:
 private:
     GuiWindow& mWindow;
     std::vector<GuiSlider> mSliders;
+    std::unique_ptr<GuiWidgetText> mText;
     //マウスで掴んでいるグラブのインデックス
     //-1なら掴んでいない
     int mGrabbingIndex;
