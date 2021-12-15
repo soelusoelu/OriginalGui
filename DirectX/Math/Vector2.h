@@ -35,8 +35,11 @@ public:
     //2つのベクトルの距離を求める
     static float distance(const Vector2& a, const Vector2& b);
 
-    //2つのベクトルの範囲内に収める
-    void clamp(const Vector2& min, const Vector2& max);
+    //2つのベクトルから最小のベクトルを求める
+    static Vector2 Min(const Vector2& a, const Vector2& b);
+    //2つのベクトルから最大のベクトルを求める
+    static Vector2 Max(const Vector2& a, const Vector2& b);
+
     //2つのベクトルの範囲内に収める
     static Vector2 clamp(const Vector2& value, const Vector2& min, const Vector2& max);
 

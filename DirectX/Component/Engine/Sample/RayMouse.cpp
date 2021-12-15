@@ -35,8 +35,7 @@ void RayMouse::update() {
     const auto& mouse = Input::mouse();
 
     //ワールド座標におけるマウスの位置を取得
-    auto mousePos = mouse.getMousePosition();
-    mousePos.clamp(Vector2::zero, Vector2(Window::width(), Window::height()));
+    auto mousePos = Vector2::clamp(mouse.getMousePosition(), Vector2::zero, Vector2(Window::width(), Window::height()));
     auto clickPos = mCamera->screenToWorldPoint(mousePos, 1.f);
 
     //計算に必要な要素を用意しておく

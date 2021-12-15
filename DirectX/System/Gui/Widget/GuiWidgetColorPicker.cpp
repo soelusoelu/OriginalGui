@@ -76,3 +76,13 @@ void GuiWidgetColorPicker::colorPicker(const std::string& label, void* color, bo
     auto paddingY = mWindow.getContext().getFramePadding().y;
     mWindow.setNextWidgetPosition(prevPos + Vector2(0.f, COLOR_PICKER_HEIGHT + paddingY));
 }
+
+void GuiWidgetColorPicker::clamp(GuiColorPicker& colorPicker) {
+    if (colorPicker.isVec4) {
+        auto& color = *static_cast<Vector4*>(colorPicker.color);
+        color = Vector4::clamp(color, Vector4::zero, Vector4::one);
+    } else {
+        auto& color = *static_cast<Vector3*>(colorPicker.color);
+        color = Vector3::clamp(color, Vector3::zero, Vector3::one);
+    }
+}

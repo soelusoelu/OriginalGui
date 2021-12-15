@@ -23,6 +23,11 @@ public:
     friend Vector4 operator*(float scalar, const Vector4& vec);
     friend Vector4 operator/(const Vector4& vec, float scalar);
 
+    //2つのベクトルの範囲内に収める
+    static Vector4 clamp(const Vector4& value, const Vector4& min, const Vector4& max);
     //2つのベクトルを線形補間する
     static Vector4 lerp(const Vector4& a, const Vector4& b, float f);
+
+    static const Vector4 zero;
+    static const Vector4 one;
 };

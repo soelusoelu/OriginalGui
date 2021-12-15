@@ -123,7 +123,8 @@ void Mouse::updateMousePosition() {
 }
 
 void Mouse::clampMousePosition() {
-    mCurrentMousePosition.clamp(
+    mCurrentMousePosition = Vector2::clamp(
+        mCurrentMousePosition,
         Vector2::zero,
         Vector2(static_cast<float>(Window::standardWidth()), static_cast<float>(Window::standardHeight()))
     );

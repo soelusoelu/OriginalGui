@@ -22,12 +22,6 @@ Vector3::Vector3(const Vector2& vec2, float inZ) :
     z(inZ) {
 }
 
-void Vector3::set(float inX, float inY, float inZ) {
-    x = inX;
-    y = inY;
-    z = inZ;
-}
-
 Vector3& Vector3::operator=(const Vector3& vec) {
     x = vec.x;
     y = vec.y;
@@ -118,38 +112,31 @@ float Vector3::length() const {
 }
 
 float Vector3::distance(const Vector3& a, const Vector3& b) {
-    auto dist = a - b;
-    return dist.length();
+    return (a - b).length();
 }
 
 Vector3 Vector3::Min(const Vector3& a, const Vector3& b) {
-    Vector3 result;
-    result.x = Math::Min<float>(a.x, b.x);
-    result.y = Math::Min<float>(a.y, b.y);
-    result.z = Math::Min<float>(a.z, b.z);
-    return result;
+    return Vector3(
+        Math::Min<float>(a.x, b.x),
+        Math::Min<float>(a.y, b.y),
+        Math::Min<float>(a.z, b.z)
+    );
 }
 
 Vector3 Vector3::Max(const Vector3& a, const Vector3& b) {
-    Vector3 result;
-    result.x = Math::Max<float>(a.x, b.x);
-    result.y = Math::Max<float>(a.y, b.y);
-    result.z = Math::Max<float>(a.z, b.z);
-    return result;
-}
-
-void Vector3::clamp(const Vector3& min, const Vector3& max) {
-    x = Math::clamp<float>(x, min.x, max.x);
-    y = Math::clamp<float>(y, min.y, max.y);
-    z = Math::clamp<float>(z, min.z, max.z);
+    return Vector3(
+        Math::Max<float>(a.x, b.x),
+        Math::Max<float>(a.y, b.y),
+        Math::Max<float>(a.z, b.z)
+    );
 }
 
 Vector3 Vector3::clamp(const Vector3& value, const Vector3& min, const Vector3& max) {
-    Vector3 temp = value;
-    temp.x = Math::clamp<float>(temp.x, min.x, max.x);
-    temp.y = Math::clamp<float>(temp.y, min.y, max.y);
-    temp.z = Math::clamp<float>(temp.z, min.z, max.z);
-    return temp;
+    return Vector3(
+        Math::clamp<float>(value.x, min.x, max.x),
+        Math::clamp<float>(value.y, min.y, max.y),
+        Math::clamp<float>(value.z, min.z, max.z)
+    );
 }
 
 void Vector3::normalize() {

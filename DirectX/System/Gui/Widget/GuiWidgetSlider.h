@@ -78,7 +78,7 @@ private:
     //選択中のスライダーのグラブ位置を更新する
     void updateGrabPosition(const GuiSlider& slider, const GuiFrameInfo& frame, float t);
     //数値をクランプする
-    void clamp(void* data, const std::any& min, const std::any& max, GuiDataType type);
+    void clamp(GuiSlider& slider);
 
     //グラブの最低位置を求める
     float calcGrabbingPosXMin(const GuiFrameInfo& frame) const;

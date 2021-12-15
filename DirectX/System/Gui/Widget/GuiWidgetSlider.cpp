@@ -16,7 +16,7 @@ void GuiWidgetSlider::update() {
     assert(mSliders.size() == mFrames.size());
     for (int i = 0; i < mSliders.size(); ++i) {
         auto& s = mSliders[i];
-        clamp(s.data, s.min, s.max, s.type);
+        clamp(s);
         updateGrabPosition(s, mFrames[i]);
     }
 }
@@ -122,10 +122,10 @@ void GuiWidgetSlider::sliderScalar(
     createFrameText(frame, type, v);
 
     //配列に追加
-    mSliders.emplace_back(GuiSlider{ type, v, min, max, grabStart, grabNumPoints });
+    auto& s = mSliders.emplace_back(GuiSlider{ type, v, min, max, grabStart, grabNumPoints });
 
     //初期値が範囲を超えてる場合のためにクランプする
-    clamp(v, min, max, type);
+    clamp(s);
     //初期値をグラブに反映する
     updateGrabPosition(mSliders.back(), frame);
 }
@@ -182,13 +182,13 @@ void GuiWidgetSlider::updateGrabPosition(const GuiSlider& slider, const GuiFrame
     );
 }
 
-void GuiWidgetSlider::clamp(void* data, const std::any& min, const std::any& max, GuiDataType type) {
-    if (type == GuiDataType::INT) {
-        auto& v = *static_cast<int*>(data);
-        v = Math::clamp(v, std::any_cast<int>(min), std::any_cast<int>(max));
-    } else if (type == GuiDataType::FLOAT) {
-        auto& v = *static_cast<float*>(data);
-        v = Math::clamp(v, std::any_cast<float>(min), std::any_cast<float>(max));
+void GuiWidgetSlider::clamp(GuiSlider& slider) {
+    if (slider.type == GuiDataType::INT) {
+        auto& v = *static_cast<int*>(slider.data);
+        v = Math::clamp(v, std::any_cast<int>(slider.min), std::any_cast<int>(slider.max));
+    } else if (slider.type == GuiDataType::FLOAT) {
+        auto& v = *static_cast<float*>(slider.data);
+        v = Math::clamp(v, std::any_cast<float>(slider.min), std::any_cast<float>(slider.max));
     } else {
         assert(false);
     }

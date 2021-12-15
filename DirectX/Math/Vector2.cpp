@@ -1,5 +1,5 @@
 ﻿#include "Vector2.h"
-#include "Math.h"
+#include "MathUtility.h"
 #include "Matrix3.h"
 
 Vector2::Vector2() :
@@ -79,20 +79,28 @@ float Vector2::length() const {
 }
 
 float Vector2::distance(const Vector2& a, const Vector2& b) {
-    auto dist = a - b;
-    return dist.length();
+    return (a - b).length();
 }
 
-void Vector2::clamp(const Vector2& min, const Vector2& max) {
-    x = Math::clamp<float>(x, min.x, max.x);
-    y = Math::clamp<float>(y, min.y, max.y);
+Vector2 Vector2::Min(const Vector2& a, const Vector2& b) {
+    return Vector2(
+        Math::Min<float>(a.x, b.x),
+        Math::Min<float>(a.y, b.y)
+    );
+}
+
+Vector2 Vector2::Max(const Vector2& a, const Vector2& b) {
+    return Vector2(
+        Math::Max<float>(a.x, b.x),
+        Math::Max<float>(a.y, b.y)
+    );
 }
 
 Vector2 Vector2::clamp(const Vector2& value, const Vector2& min, const Vector2& max) {
-    Vector2 temp = value;
-    temp.x = Math::clamp<float>(temp.x, min.x, max.x);
-    temp.y = Math::clamp<float>(temp.y, min.y, max.y);
-    return temp;
+    return Vector2(
+        Math::clamp<float>(value.x, min.x, max.x),
+        Math::clamp<float>(value.y, min.y, max.y)
+    );
 }
 
 void Vector2::normalize() {

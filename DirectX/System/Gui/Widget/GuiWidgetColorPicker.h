@@ -32,6 +32,8 @@ public:
 private:
     //すべての新規カラーピッカーの処理
     void colorPicker(const std::string& label, void* color, bool isVec4);
+    //数値をクランプする
+    void clamp(GuiColorPicker& colorPicker);
 
 private:
     std::vector<GuiColorPicker> mColorPickers;

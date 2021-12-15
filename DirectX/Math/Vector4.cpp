@@ -1,4 +1,5 @@
 ﻿#include "Vector4.h"
+#include "MathUtility.h"
 #include "Vector3.h"
 
 Vector4::Vector4()
@@ -64,6 +65,18 @@ Vector4 operator/(const Vector4& vec, float scalar) {
     return Vector4(vec.x / scalar, vec.y / scalar, vec.z / scalar, vec.w / scalar);
 }
 
+Vector4 Vector4::clamp(const Vector4& value, const Vector4& min, const Vector4& max) {
+    return Vector4(
+        Math::clamp<float>(value.x, min.x, max.x),
+        Math::clamp<float>(value.y, min.y, max.y),
+        Math::clamp<float>(value.z, min.z, max.z),
+        Math::clamp<float>(value.w, min.w, max.w)
+    );
+}
+
 Vector4 Vector4::lerp(const Vector4& a, const Vector4& b, float f) {
     return Vector4(a + f * (b - a));
 }
+
+const Vector4 Vector4::zero(0.f, 0.f, 0.f, 0.f);
+const Vector4 Vector4::one(1.f, 1.f, 1.f, 1.f);

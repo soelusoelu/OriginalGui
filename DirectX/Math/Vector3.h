@@ -15,9 +15,6 @@ public:
     explicit Vector3(float inX, float inY, float inZ);
     explicit Vector3(const Vector2& vec2, float inZ);
 
-    //ベクトルのそれぞれの要素を設定する
-    void set(float inX, float inY, float inZ);
-
     Vector3& operator=(const Vector3& vec);
     Vector3 operator-() const;
     friend Vector3 operator+(const Vector3& a, const Vector3& b);
@@ -47,8 +44,6 @@ public:
     //2つのベクトルから最大のベクトルを求める
     static Vector3 Max(const Vector3& a, const Vector3& b);
 
-    //2つのベクトルの範囲内に収める
-    void clamp(const Vector3& min, const Vector3& max);
     //2つのベクトルの範囲内に収める
     static Vector3 clamp(const Vector3& value, const Vector3& min, const Vector3& max);
 

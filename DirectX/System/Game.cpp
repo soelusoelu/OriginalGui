@@ -115,8 +115,10 @@ void Game::initialize() {
     mGuiWindow->sliderVector3("sliderVector3", test5, Vector3::one * -100.f, Vector3::one * 100.f);
     static Vector4 test6 = Vector4(0.f, 0.f, 0.f, 0.f);
     mGuiWindow->sliderVector4("sliderVector4", test6, Vector4(1.f, 1.f, 1.f, 1.f) * -100.f, Vector4(1.f, 1.f, 1.f, 1.f) * 100.f);
-    static Vector4 test3 = Vector4(1.f, 1.f, 1.f, 1.f);
-    mGuiWindow->colorPicker4("colorPicker", test3);
+    static Vector3 test7 = Vector3(0.f, 0.f, 1.f);
+    mGuiWindow->colorPicker3("colorPicker3", test7);
+    static Vector4 test3 = Vector4(0.f, 1.f, 0.f, 1.f);
+    mGuiWindow->colorPicker4("colorPicker4", test3);
     mGuiWindow->text("text");
 }
 
