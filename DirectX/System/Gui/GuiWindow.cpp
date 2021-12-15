@@ -189,6 +189,10 @@ GuiDrawList& GuiWindow::getDrawList() const {
     return *mDrawList;
 }
 
+const GuiWidgets& GuiWindow::getWidgets() const {
+    return mWidgets;
+}
+
 void GuiWindow::setNextWidgetPosition(const Vector2& pos) {
     mNextWidgetPosition = pos;
 }

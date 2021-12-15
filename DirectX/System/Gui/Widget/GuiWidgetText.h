@@ -36,6 +36,8 @@ public:
         const Vector4& color = Vector4(1.f, 1.f, 1.f, 1.f),
         Pivot pivot = Pivot::LEFT_TOP
     );
+    //ラベルを追加する
+    void label(const std::string& label, const Vector2& framePos);
     //テキストを書き換える
     void changeText(
         unsigned index,

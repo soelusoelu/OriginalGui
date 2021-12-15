@@ -66,7 +66,6 @@ private:
     //すべての新規スライダーの処理
     void sliderScalar(
         GuiFrameInfo& frame,
-        const std::string& label,
         GuiDataType type,
         void* v,
         const std::any& min,

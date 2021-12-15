@@ -220,6 +220,11 @@ void GuiDrawList::addText(
     if (len > capacity) {
         capacity = len;
     }
+    //容量0なら終了
+    if (capacity == 0) {
+        return;
+    }
+
     primReserve(capacity * 6, capacity * 4);
 
     //指定のピクセルサイズから実際の描画サイズを求める

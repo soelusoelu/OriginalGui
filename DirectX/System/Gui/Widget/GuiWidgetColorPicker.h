@@ -2,11 +2,13 @@
 
 #include "GuiWidgetColorBase.h"
 #include "../../../Math/Math.h"
+#include <memory>
 #include <string>
 #include <vector>
 
+class GuiWidgetText;
+
 struct GuiColorPicker {
-    std::string label = "";
     void* color = nullptr;
     bool isVec4 = true;
 };

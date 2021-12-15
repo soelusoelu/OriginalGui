@@ -61,6 +61,12 @@ unsigned GuiWidgetText::text(
     return (mTexts.size() - 1);
 }
 
+void GuiWidgetText::label(const std::string& label, const Vector2& framePos) {
+    auto offsetX = GuiWidgetConstant::FRAME_WIDTH + mWindow.getContext().getFramePadding().x;
+    auto offsetY = GuiWidgetConstant::TEXT_HEIGHT_PADDING;
+    text(label, framePos + Vector2(offsetX, offsetY), GuiWidgetConstant::TEXT_HEIGHT);
+}
+
 void GuiWidgetText::changeText(
     unsigned index,
     const std::string& text

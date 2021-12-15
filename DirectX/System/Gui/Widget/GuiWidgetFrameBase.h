@@ -58,7 +58,6 @@ private:
 
 protected:
     GuiWindow& mWindow;
-    std::unique_ptr<GuiWidgetText> mText;
     std::vector<GuiFrameInfo> mFrames;
     //選択中のフレームのインデックス
     //-1なら掴んでいない

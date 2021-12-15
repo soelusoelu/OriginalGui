@@ -1,4 +1,6 @@
 ﻿#include "GuiWidgetColorPicker.h"
+#include "GuiWidgetSlider.h"
+#include "GuiWidgetText.h"
 #include "../GuiContext.h"
 #include "../GuiWindow.h"
 
@@ -21,7 +23,9 @@ void GuiWidgetColorPicker::onUpdateColorPicker(const Vector4& newColor) {
     auto& cp = mColorPickers[getSelectingIndex()];
     if (cp.isVec4) {
         auto& data = *static_cast<Vector4*>(cp.color);
-        data = newColor;
+        data.x = newColor.x;
+        data.y = newColor.y;
+        data.z = newColor.z;
     } else {
         auto& data = *static_cast<Vector3*>(cp.color);
         data = Vector3(newColor.x, newColor.y, newColor.z);
@@ -30,10 +34,22 @@ void GuiWidgetColorPicker::onUpdateColorPicker(const Vector4& newColor) {
 
 void GuiWidgetColorPicker::colorPicker3(const std::string& label, Vector3& color) {
     colorPicker(label, &color, false);
+    mWindow.getWidgets().getSlider().sliderVector3(
+        "",
+        color,
+        Vector3::zero,
+        Vector3::one
+    );
 }
 
 void GuiWidgetColorPicker::colorPicker4(const std::string& label, Vector4& color) {
     colorPicker(label, &color, true);
+    mWindow.getWidgets().getSlider().sliderVector4(
+        "",
+        color,
+        Vector4(0.f, 0.f, 0.f, 0.f),
+        Vector4(1.f, 1.f, 1.f, 1.f)
+    );
 }
 
 void GuiWidgetColorPicker::colorPicker(const std::string& label, void* color, bool isVec4) {
@@ -50,7 +66,10 @@ void GuiWidgetColorPicker::colorPicker(const std::string& label, void* color, bo
     createHueBarCursor();
 
     //配列に追加
-    mColorPickers.emplace_back(GuiColorPicker{ label, color, isVec4 });
+    mColorPickers.emplace_back(GuiColorPicker{ color, isVec4 });
+
+    //ラベル
+    mWindow.getWidgets().getText().label(label, getColorPickerPosition(mColorsVertexInfo.back()));
 
     //次のウィジェットの描画位置を設定する
     const auto& prevPos = mWindow.getNextWidgetPosition();

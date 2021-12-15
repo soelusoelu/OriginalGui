@@ -10,7 +10,6 @@
 
 GuiWidgetFrameBase::GuiWidgetFrameBase(GuiWindow& window)
     : mWindow(window)
-    , mText(std::make_unique<GuiWidgetText>(window))
     , mFrameIndex(-1)
 {
 }
@@ -63,13 +62,7 @@ unsigned GuiWidgetFrameBase::createFrame(const std::string& label, int frameCoun
     }
 
     //ラベルの情報を登録
-    auto offsetX = frameWidth + mWindow.getContext().getFramePadding().x;
-    auto offsetY = GuiWidgetConstant::TEXT_HEIGHT_PADDING;
-    mText->text(
-        label,
-        getFramePosition(mFrames.back()) + Vector2(offsetX, offsetY),
-        GuiWidgetConstant::TEXT_HEIGHT
-    );
+    mWindow.getWidgets().getText().label(label, getFramePosition(mFrames[mFrames.size() - frameCount]));
 
     //次のウィジェットの描画位置を調整
     mWindow.setNextWidgetPosition(
@@ -84,7 +77,7 @@ void GuiWidgetFrameBase::createFrameText(GuiFrameInfo& frame, GuiDataType type, 
     frame.data = v;
 
     //値を文字列で描画
-    frame.valueTextIndex = mText->text(
+    frame.valueTextIndex = mWindow.getWidgets().getText().text(
         numberToText(frame),
         getFramePosition(frame) + (getFrameSize(frame) / 2.f),
         GuiWidgetConstant::TEXT_HEIGHT - 2.f,
@@ -97,7 +90,7 @@ void GuiWidgetFrameBase::createFrameText(GuiFrameInfo& frame, GuiDataType type, 
 void GuiWidgetFrameBase::updateNumberText() {
     for (const auto& f : mFrames) {
         auto str = numberToText(f);
-        mText->changeText(f.valueTextIndex, str);
+        mWindow.getWidgets().getText().changeText(f.valueTextIndex, str);
     }
 }
 

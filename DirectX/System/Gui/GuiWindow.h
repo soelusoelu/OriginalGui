@@ -53,6 +53,7 @@ public:
 
     GuiContext& getContext() const;
     GuiDrawList& getDrawList() const;
+    const GuiWidgets& getWidgets() const;
 
     void setNextWidgetPosition(const Vector2& pos);
     const Vector2& getNextWidgetPosition() const;

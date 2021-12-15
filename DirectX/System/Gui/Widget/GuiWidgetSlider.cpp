@@ -46,7 +46,7 @@ void GuiWidgetSlider::sliderInt(
 ) {
     //フレームの描画
     unsigned frameIdx = createFrame(label);
-    sliderScalar(mFrames[frameIdx], label, GuiDataType::INT, &v, min, max);
+    sliderScalar(mFrames[frameIdx], GuiDataType::INT, &v, min, max);
 }
 
 void GuiWidgetSlider::sliderFloat(
@@ -57,7 +57,7 @@ void GuiWidgetSlider::sliderFloat(
 ) {
     //フレームの描画
     unsigned frameIdx = createFrame(label);
-    sliderScalar(mFrames[frameIdx], label, GuiDataType::FLOAT, &v, min, max);
+    sliderScalar(mFrames[frameIdx], GuiDataType::FLOAT, &v, min, max);
 }
 
 void GuiWidgetSlider::sliderVector2(
@@ -69,8 +69,8 @@ void GuiWidgetSlider::sliderVector2(
     //フレームの描画
     unsigned frameIdx = createFrame(label, 2);
     //Vector2はfloat2回分で登録する
-    sliderScalar(mFrames[frameIdx], label, GuiDataType::FLOAT, &v.x, min.x, max.x);
-    sliderScalar(mFrames[frameIdx + 1], label, GuiDataType::FLOAT, &v.y, min.y, max.y);
+    sliderScalar(mFrames[frameIdx], GuiDataType::FLOAT, &v.x, min.x, max.x);
+    sliderScalar(mFrames[frameIdx + 1], GuiDataType::FLOAT, &v.y, min.y, max.y);
 }
 
 void GuiWidgetSlider::sliderVector3(
@@ -82,9 +82,9 @@ void GuiWidgetSlider::sliderVector3(
     //フレームの描画
     unsigned frameIdx = createFrame(label, 3);
     //Vector3はfloat3回分で登録する
-    sliderScalar(mFrames[frameIdx], label, GuiDataType::FLOAT, &v.x, min.x, max.x);
-    sliderScalar(mFrames[frameIdx + 1], label, GuiDataType::FLOAT, &v.y, min.y, max.y);
-    sliderScalar(mFrames[frameIdx + 2], label, GuiDataType::FLOAT, &v.z, min.z, max.z);
+    sliderScalar(mFrames[frameIdx], GuiDataType::FLOAT, &v.x, min.x, max.x);
+    sliderScalar(mFrames[frameIdx + 1], GuiDataType::FLOAT, &v.y, min.y, max.y);
+    sliderScalar(mFrames[frameIdx + 2], GuiDataType::FLOAT, &v.z, min.z, max.z);
 }
 
 void GuiWidgetSlider::sliderVector4(
@@ -96,15 +96,14 @@ void GuiWidgetSlider::sliderVector4(
     //フレームの描画
     unsigned frameIdx = createFrame(label, 4);
     //Vector4はfloat4回分で登録する
-    sliderScalar(mFrames[frameIdx], label, GuiDataType::FLOAT, &v.x, min.x, max.x);
-    sliderScalar(mFrames[frameIdx + 1], label, GuiDataType::FLOAT, &v.y, min.y, max.y);
-    sliderScalar(mFrames[frameIdx + 2], label, GuiDataType::FLOAT, &v.z, min.z, max.z);
-    sliderScalar(mFrames[frameIdx + 3], label, GuiDataType::FLOAT, &v.w, min.w, max.w);
+    sliderScalar(mFrames[frameIdx], GuiDataType::FLOAT, &v.x, min.x, max.x);
+    sliderScalar(mFrames[frameIdx + 1], GuiDataType::FLOAT, &v.y, min.y, max.y);
+    sliderScalar(mFrames[frameIdx + 2], GuiDataType::FLOAT, &v.z, min.z, max.z);
+    sliderScalar(mFrames[frameIdx + 3], GuiDataType::FLOAT, &v.w, min.w, max.w);
 }
 
 void GuiWidgetSlider::sliderScalar(
     GuiFrameInfo& frame,
-    const std::string& label,
     GuiDataType type,
     void* v,
     const std::any& min,
