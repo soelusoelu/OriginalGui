@@ -31,10 +31,8 @@ public:
     virtual void onUpdateSelectFrame(const GuiFrameInfo& frame) {};
 
 protected:
-    //1本の基本的なフレームを作成する
-    unsigned createSingleFrame(const std::string& label);
-    //2本の基本的なフレームを作成する
-    unsigned createDoubleFrame(const std::string& label);
+    //基本的なフレームを作成する
+    unsigned createFrame(const std::string& label, int frameCount = 1);
     //フレームに描画するテキストを作成する
     void createFrameText(GuiFrameInfo& frame, GuiDataType type, void* v);
 
@@ -43,9 +41,7 @@ protected:
 
     //保有している数値を文字列に変換する
     std::string numberToText(const GuiFrameInfo& frame);
-    std::string numberToText(const void* data, GuiDataType type);
     //指定のフレームの位置を取得する
-    const Vector2& getFramePosition(unsigned index) const;
     const Vector2& getFramePosition(const GuiFrameInfo& frame) const;
     //指定のフレームの大きさを取得する
     Vector2 getFrameSize(const GuiFrameInfo& frame) const;

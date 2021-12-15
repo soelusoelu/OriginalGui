@@ -110,7 +110,11 @@ void Game::initialize() {
     static float test2 = 0.f;
     mGuiWindow->sliderFloat("sliderFloat", test2, -100.f, 100.f);
     static Vector2 test4 = Vector2::zero;
-    mGuiWindow->sliderVector2("sliderVector2", test4, -Vector2::one * 100.f, Vector2::one * 100.f);
+    mGuiWindow->sliderVector2("sliderVector2", test4, Vector2::one * -100.f, Vector2::one * 100.f);
+    static Vector3 test5 = Vector3::zero;
+    mGuiWindow->sliderVector3("sliderVector3", test5, Vector3::one * -100.f, Vector3::one * 100.f);
+    static Vector4 test6 = Vector4(0.f, 0.f, 0.f, 0.f);
+    mGuiWindow->sliderVector4("sliderVector4", test6, Vector4(1.f, 1.f, 1.f, 1.f) * -100.f, Vector4(1.f, 1.f, 1.f, 1.f) * 100.f);
     static Vector4 test3 = Vector4(1.f, 1.f, 1.f, 1.f);
     mGuiWindow->colorPicker4("colorPicker", test3);
     mGuiWindow->text("text");

@@ -45,7 +45,7 @@ void GuiWidgetSlider::sliderInt(
     int max
 ) {
     //フレームの描画
-    unsigned frameIdx = createSingleFrame(label);
+    unsigned frameIdx = createFrame(label);
     sliderScalar(mFrames[frameIdx], label, GuiDataType::INT, &v, min, max);
 }
 
@@ -56,7 +56,7 @@ void GuiWidgetSlider::sliderFloat(
     float max
 ) {
     //フレームの描画
-    unsigned frameIdx = createSingleFrame(label);
+    unsigned frameIdx = createFrame(label);
     sliderScalar(mFrames[frameIdx], label, GuiDataType::FLOAT, &v, min, max);
 }
 
@@ -67,10 +67,39 @@ void GuiWidgetSlider::sliderVector2(
     const Vector2& max
 ) {
     //フレームの描画
-    unsigned frameIdx = createDoubleFrame(label);
-    //Vectorはfloat2回分で登録する
+    unsigned frameIdx = createFrame(label, 2);
+    //Vector2はfloat2回分で登録する
     sliderScalar(mFrames[frameIdx], label, GuiDataType::FLOAT, &v.x, min.x, max.x);
     sliderScalar(mFrames[frameIdx + 1], label, GuiDataType::FLOAT, &v.y, min.y, max.y);
+}
+
+void GuiWidgetSlider::sliderVector3(
+    const std::string& label,
+    Vector3& v,
+    const Vector3& min,
+    const Vector3& max
+) {
+    //フレームの描画
+    unsigned frameIdx = createFrame(label, 3);
+    //Vector3はfloat3回分で登録する
+    sliderScalar(mFrames[frameIdx], label, GuiDataType::FLOAT, &v.x, min.x, max.x);
+    sliderScalar(mFrames[frameIdx + 1], label, GuiDataType::FLOAT, &v.y, min.y, max.y);
+    sliderScalar(mFrames[frameIdx + 2], label, GuiDataType::FLOAT, &v.z, min.z, max.z);
+}
+
+void GuiWidgetSlider::sliderVector4(
+    const std::string& label,
+    Vector4& v,
+    const Vector4& min,
+    const Vector4& max
+) {
+    //フレームの描画
+    unsigned frameIdx = createFrame(label, 4);
+    //Vector4はfloat4回分で登録する
+    sliderScalar(mFrames[frameIdx], label, GuiDataType::FLOAT, &v.x, min.x, max.x);
+    sliderScalar(mFrames[frameIdx + 1], label, GuiDataType::FLOAT, &v.y, min.y, max.y);
+    sliderScalar(mFrames[frameIdx + 2], label, GuiDataType::FLOAT, &v.z, min.z, max.z);
+    sliderScalar(mFrames[frameIdx + 3], label, GuiDataType::FLOAT, &v.w, min.w, max.w);
 }
 
 void GuiWidgetSlider::sliderScalar(

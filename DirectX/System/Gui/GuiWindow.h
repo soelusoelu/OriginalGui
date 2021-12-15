@@ -43,6 +43,8 @@ public:
     void sliderInt(const std::string& label, int& v, int min, int max);
     void sliderFloat(const std::string& label, float& v, float min, float max);
     void sliderVector2(const std::string& label, Vector2& v, const Vector2& min, const Vector2& max);
+    void sliderVector3(const std::string& label, Vector3& v, const Vector3& min, const Vector3& max);
+    void sliderVector4(const std::string& label, Vector4& v, const Vector4& min, const Vector4& max);
 
     void colorPicker3(const std::string& label, Vector3& color);
     void colorPicker4(const std::string& label, Vector4& color);

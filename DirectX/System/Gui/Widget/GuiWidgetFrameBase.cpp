@@ -39,47 +39,18 @@ void GuiWidgetFrameBase::baseUpdate() {
     update();
 }
 
-unsigned GuiWidgetFrameBase::createSingleFrame(const std::string& label) {
-    const auto& nextPos = mWindow.getNextWidgetPosition();
-    auto& dl = mWindow.getDrawList();
-
-    //新規フレームを取得
-    auto& newFrame = mFrames.emplace_back();
-
-    //フレームの情報を登録
-    newFrame.startIndex = dl.getVertexCount();
-    dl.addRectFilled(nextPos, nextPos + GuiWidgetConstant::FRAME_SIZE, GuiWidgetConstant::FRAME_COLOR);
-    newFrame.numPoints = dl.getVertexCount() - newFrame.startIndex;
-
-    //ラベルの情報を登録
-    auto offsetX = GuiWidgetConstant::FRAME_WIDTH + mWindow.getContext().getFramePadding().x;
-    auto offsetY = GuiWidgetConstant::TEXT_HEIGHT_PADDING;
-    mText->text(
-        label,
-        getFramePosition(newFrame) + Vector2(offsetX, offsetY),
-        GuiWidgetConstant::TEXT_HEIGHT
-    );
-
-    //次のウィジェットの描画位置を調整
-    mWindow.setNextWidgetPosition(
-        nextPos + Vector2(0.f, GuiWidgetConstant::FRAME_HEIGHT + mWindow.getContext().getFramePadding().y)
-    );
-
-    return (mFrames.size() - 1);
-}
-
-unsigned GuiWidgetFrameBase::createDoubleFrame(const std::string& label) {
+unsigned GuiWidgetFrameBase::createFrame(const std::string& label, int frameCount) {
     const auto& nextPos = mWindow.getNextWidgetPosition();
     auto& dl = mWindow.getDrawList();
     const auto& padding = mWindow.getContext().getFramePadding();
 
     //1本のフレームの長さ
-    auto frameWidth = calcDivFrameLength(2);
+    auto frameWidth = calcDivFrameLength(frameCount);
     auto frameSize = Vector2(frameWidth, GuiWidgetConstant::FRAME_HEIGHT);
 
     //フレームの情報を登録
     auto pos = nextPos;
-    for (int i = 0; i < 2; ++i) {
+    for (int i = 0; i < frameCount; ++i) {
         //新規フレームを取得
         auto& newFrame = mFrames.emplace_back();
 
@@ -105,7 +76,7 @@ unsigned GuiWidgetFrameBase::createDoubleFrame(const std::string& label) {
         nextPos + Vector2(0.f, GuiWidgetConstant::FRAME_HEIGHT + mWindow.getContext().getFramePadding().y)
     );
 
-    return (mFrames.size() - 2);
+    return (mFrames.size() - frameCount);
 }
 
 void GuiWidgetFrameBase::createFrameText(GuiFrameInfo& frame, GuiDataType type, void* v) {
@@ -114,7 +85,7 @@ void GuiWidgetFrameBase::createFrameText(GuiFrameInfo& frame, GuiDataType type, 
 
     //値を文字列で描画
     frame.valueTextIndex = mText->text(
-        numberToText(v, type),
+        numberToText(frame),
         getFramePosition(frame) + (getFrameSize(frame) / 2.f),
         GuiWidgetConstant::TEXT_HEIGHT - 2.f,
         GuiWidgetConstant::DIGITS,
@@ -131,26 +102,18 @@ void GuiWidgetFrameBase::updateNumberText() {
 }
 
 std::string GuiWidgetFrameBase::numberToText(const GuiFrameInfo& frame) {
-    return numberToText(frame.data, frame.type);
-}
-
-std::string GuiWidgetFrameBase::numberToText(const void* data, GuiDataType type) {
     std::string str;
-    if (type == GuiDataType::INT) {
-        auto v = *static_cast<const int*>(data);
+    if (frame.type == GuiDataType::INT) {
+        auto v = *static_cast<const int*>(frame.data);
         str = StringUtil::intToString(v);
-    } else if (type == GuiDataType::FLOAT) {
-        auto v = *static_cast<const float*>(data);
+    } else if (frame.type == GuiDataType::FLOAT) {
+        auto v = *static_cast<const float*>(frame.data);
         str = StringUtil::floatToString(v);
     } else {
         assert(false);
     }
 
     return str;
-}
-
-const Vector2& GuiWidgetFrameBase::getFramePosition(unsigned index) const {
-    return getFramePosition(mFrames[index]);
 }
 
 const Vector2& GuiWidgetFrameBase::getFramePosition(const GuiFrameInfo& frame) const {

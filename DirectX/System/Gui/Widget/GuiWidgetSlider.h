@@ -49,6 +49,18 @@ public:
         const Vector2& min,
         const Vector2& max
     );
+    void sliderVector3(
+        const std::string& label,
+        Vector3& v,
+        const Vector3& min,
+        const Vector3& max
+    );
+    void sliderVector4(
+        const std::string& label,
+        Vector4& v,
+        const Vector4& min,
+        const Vector4& max
+    );
 
 private:
     //すべての新規スライダーの処理
