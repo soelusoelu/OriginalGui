@@ -10,7 +10,6 @@ class GuiWindow;
 class GuiWidgetText;
 
 struct GuiFrameInfo {
-    std::string label = "";
     unsigned startIndex = 0;
     unsigned numPoints = 0;
 
@@ -34,7 +33,10 @@ public:
 protected:
     //1本の基本的なフレームを作成する
     unsigned createSingleFrame(const std::string& label);
-    void createFrameText(unsigned index, GuiDataType type, void* v);
+    //2本の基本的なフレームを作成する
+    unsigned createDoubleFrame(const std::string& label);
+    //フレームに描画するテキストを作成する
+    void createFrameText(GuiFrameInfo& frame, GuiDataType type, void* v);
 
     //フレームの数値文字列を更新する
     void updateNumberText();
@@ -45,6 +47,8 @@ protected:
     //指定のフレームの位置を取得する
     const Vector2& getFramePosition(unsigned index) const;
     const Vector2& getFramePosition(const GuiFrameInfo& frame) const;
+    //指定のフレームの大きさを取得する
+    Vector2 getFrameSize(const GuiFrameInfo& frame) const;
     //選択中のフレームを取得する
     const GuiFrameInfo& getSelectingFrame() const;
     //フレームを選択中か
@@ -53,6 +57,8 @@ protected:
 private:
     //マウス位置からフレームを選択する
     void selectFrame();
+    //フレームを分割した際の長さを求める
+    float calcDivFrameLength(int x) const;
 
 protected:
     GuiWindow& mWindow;

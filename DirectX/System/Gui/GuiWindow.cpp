@@ -157,6 +157,10 @@ void GuiWindow::sliderFloat(const std::string& label, float& v, float min, float
     mWidgets.getSlider().sliderFloat(label, v, min, max);
 }
 
+void GuiWindow::sliderVector2(const std::string& label, Vector2& v, const Vector2& min, const Vector2& max) {
+    mWidgets.getSlider().sliderVector2(label, v, min, max);
+}
+
 void GuiWindow::colorPicker3(const std::string& label, Vector3& color) {
     mWidgets.getColorPicker().colorPicker3(label, color);
 }

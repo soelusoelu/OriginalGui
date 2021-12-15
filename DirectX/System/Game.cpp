@@ -109,6 +109,8 @@ void Game::initialize() {
     mGuiWindow->sliderInt("sliderInt", test, 0, 100);
     static float test2 = 0.f;
     mGuiWindow->sliderFloat("sliderFloat", test2, -100.f, 100.f);
+    static Vector2 test4 = Vector2::zero;
+    mGuiWindow->sliderVector2("sliderVector2", test4, -Vector2::one * 100.f, Vector2::one * 100.f);
     static Vector4 test3 = Vector4(1.f, 1.f, 1.f, 1.f);
     mGuiWindow->colorPicker4("colorPicker", test3);
     mGuiWindow->text("text");
@@ -144,6 +146,8 @@ void Game::mainLoop() {
         ImGui::DragInt("drag", &num);
         static int num2 = 0;
         ImGui::SliderInt("slide", &num2, 0, 100);
+        static float num3[3] = { 0 };
+        ImGui::SliderFloat3("slide", num3, 0.f, 100.f);
         //static ImVec4 col(1.f, 1.f, 1.f, 1.f);
         static float col[4] = { 1.f, 1.f, 1.f, 1.f };
         //ImGui::ColorEdit4("colorEdit", col);

@@ -31,12 +31,29 @@ public:
     virtual void onUpdateSelectFrame(const GuiFrameInfo& frame) override;
 
     //各種スライダー
-    void sliderInt(const std::string& label, int& v, int min, int max);
-    void sliderFloat(const std::string& label, float& v, float min, float max);
+    void sliderInt(
+        const std::string& label,
+        int& v,
+        int min,
+        int max
+    );
+    void sliderFloat(
+        const std::string& label,
+        float& v,
+        float min,
+        float max
+    );
+    void sliderVector2(
+        const std::string& label,
+        Vector2& v,
+        const Vector2& min,
+        const Vector2& max
+    );
 
 private:
     //すべての新規スライダーの処理
     void sliderScalar(
+        GuiFrameInfo& frame,
         const std::string& label,
         GuiDataType type,
         void* v,

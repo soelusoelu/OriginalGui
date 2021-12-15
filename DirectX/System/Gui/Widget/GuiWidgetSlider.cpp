@@ -1,13 +1,8 @@
 ﻿#include "GuiWidgetSlider.h"
-#include "GuiWidgetText.h"
 #include "../GuiContext.h"
 #include "../GuiDrawList.h"
 #include "../GuiWindow.h"
-#include "../../../Collision/Collision.h"
-#include "../../../Device/DrawString.h"
 #include "../../../Input/Input.h"
-#include "../../../Utility/AsciiHelper.h"
-#include "../../../Utility/StringUtil.h"
 #include <cassert>
 
 GuiWidgetSlider::GuiWidgetSlider(GuiWindow& window)
@@ -43,15 +38,43 @@ void GuiWidgetSlider::onUpdateSelectFrame(const GuiFrameInfo& frame) {
     updateGrabPosition(s, frame, t);
 }
 
-void GuiWidgetSlider::sliderInt(const std::string& label, int& v, int min, int max) {
-    sliderScalar(label, GuiDataType::INT, &v, min, max);
+void GuiWidgetSlider::sliderInt(
+    const std::string& label,
+    int& v,
+    int min,
+    int max
+) {
+    //フレームの描画
+    unsigned frameIdx = createSingleFrame(label);
+    sliderScalar(mFrames[frameIdx], label, GuiDataType::INT, &v, min, max);
 }
 
-void GuiWidgetSlider::sliderFloat(const std::string& label, float& v, float min, float max) {
-    sliderScalar(label, GuiDataType::FLOAT, &v, min, max);
+void GuiWidgetSlider::sliderFloat(
+    const std::string& label,
+    float& v,
+    float min,
+    float max
+) {
+    //フレームの描画
+    unsigned frameIdx = createSingleFrame(label);
+    sliderScalar(mFrames[frameIdx], label, GuiDataType::FLOAT, &v, min, max);
+}
+
+void GuiWidgetSlider::sliderVector2(
+    const std::string& label,
+    Vector2& v,
+    const Vector2& min,
+    const Vector2& max
+) {
+    //フレームの描画
+    unsigned frameIdx = createDoubleFrame(label);
+    //Vectorはfloat2回分で登録する
+    sliderScalar(mFrames[frameIdx], label, GuiDataType::FLOAT, &v.x, min.x, max.x);
+    sliderScalar(mFrames[frameIdx + 1], label, GuiDataType::FLOAT, &v.y, min.y, max.y);
 }
 
 void GuiWidgetSlider::sliderScalar(
+    GuiFrameInfo& frame,
     const std::string& label,
     GuiDataType type,
     void* v,
@@ -61,32 +84,22 @@ void GuiWidgetSlider::sliderScalar(
     auto& dl = mWindow.getDrawList();
     const auto& framePadding = mWindow.getContext().getFramePadding();
 
-    //フレームの描画
-    auto frameIdx = createSingleFrame(label);
-
     //グラブの描画
     auto grabStart = dl.getVertexCount();
-    auto pos = getFramePosition(frameIdx) + Vector2::one * GRAB_PADDING;
+    auto pos = getFramePosition(frame) + Vector2::one * GRAB_PADDING;
     dl.addRectFilled(pos, pos + GRAB_SIZE, GRAB_COLOR);
     auto grabNumPoints = dl.getVertexCount() - grabStart;
 
     //値テキストの描画
-    createFrameText(frameIdx, type, v);
+    createFrameText(frame, type, v);
 
     //配列に追加
-    mSliders.emplace_back(GuiSlider{
-        type,
-        v,
-        min,
-        max,
-        grabStart,
-        grabNumPoints
-    });
+    mSliders.emplace_back(GuiSlider{ type, v, min, max, grabStart, grabNumPoints });
 
     //初期値が範囲を超えてる場合のためにクランプする
     clamp(v, min, max, type);
     //初期値をグラブに反映する
-    updateGrabPosition(mSliders.back(), mFrames.back());
+    updateGrabPosition(mSliders.back(), frame);
 }
 
 void GuiWidgetSlider::updateNumber(const GuiSlider& slider, float t) {
@@ -158,5 +171,5 @@ float GuiWidgetSlider::calcGrabbingPosXMin(const GuiFrameInfo& frame) const {
 }
 
 float GuiWidgetSlider::calcGrabbingPosXMax(const GuiFrameInfo& frame) const {
-    return getFramePosition(frame).x + GuiWidgetConstant::FRAME_WIDTH - (GRAB_WIDTH_HALF + GRAB_PADDING);
+    return getFramePosition(frame).x + getFrameSize(frame).x - (GRAB_WIDTH_HALF + GRAB_PADDING);
 }

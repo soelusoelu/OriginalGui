@@ -44,20 +44,19 @@ unsigned GuiWidgetFrameBase::createSingleFrame(const std::string& label) {
     auto& dl = mWindow.getDrawList();
 
     //新規フレームを取得
-    auto& frame = mFrames.emplace_back();
-    frame.label = label;
+    auto& newFrame = mFrames.emplace_back();
 
     //フレームの情報を登録
-    frame.startIndex = dl.getVertexCount();
+    newFrame.startIndex = dl.getVertexCount();
     dl.addRectFilled(nextPos, nextPos + GuiWidgetConstant::FRAME_SIZE, GuiWidgetConstant::FRAME_COLOR);
-    frame.numPoints = dl.getVertexCount() - frame.startIndex;
+    newFrame.numPoints = dl.getVertexCount() - newFrame.startIndex;
 
     //ラベルの情報を登録
     auto offsetX = GuiWidgetConstant::FRAME_WIDTH + mWindow.getContext().getFramePadding().x;
     auto offsetY = GuiWidgetConstant::TEXT_HEIGHT_PADDING;
     mText->text(
         label,
-        getFramePosition(frame) + Vector2(offsetX, offsetY),
+        getFramePosition(newFrame) + Vector2(offsetX, offsetY),
         GuiWidgetConstant::TEXT_HEIGHT
     );
 
@@ -69,15 +68,54 @@ unsigned GuiWidgetFrameBase::createSingleFrame(const std::string& label) {
     return (mFrames.size() - 1);
 }
 
-void GuiWidgetFrameBase::createFrameText(unsigned index, GuiDataType type, void* v) {
-    auto& frame = mFrames[index];
+unsigned GuiWidgetFrameBase::createDoubleFrame(const std::string& label) {
+    const auto& nextPos = mWindow.getNextWidgetPosition();
+    auto& dl = mWindow.getDrawList();
+    const auto& padding = mWindow.getContext().getFramePadding();
+
+    //1本のフレームの長さ
+    auto frameWidth = calcDivFrameLength(2);
+    auto frameSize = Vector2(frameWidth, GuiWidgetConstant::FRAME_HEIGHT);
+
+    //フレームの情報を登録
+    auto pos = nextPos;
+    for (int i = 0; i < 2; ++i) {
+        //新規フレームを取得
+        auto& newFrame = mFrames.emplace_back();
+
+        newFrame.startIndex = dl.getVertexCount();
+        dl.addRectFilled(pos, pos + frameSize, GuiWidgetConstant::FRAME_COLOR);
+        newFrame.numPoints = dl.getVertexCount() - newFrame.startIndex;
+
+        pos.x += frameWidth;
+        pos.x += padding.x;
+    }
+
+    //ラベルの情報を登録
+    auto offsetX = frameWidth + mWindow.getContext().getFramePadding().x;
+    auto offsetY = GuiWidgetConstant::TEXT_HEIGHT_PADDING;
+    mText->text(
+        label,
+        getFramePosition(mFrames.back()) + Vector2(offsetX, offsetY),
+        GuiWidgetConstant::TEXT_HEIGHT
+    );
+
+    //次のウィジェットの描画位置を調整
+    mWindow.setNextWidgetPosition(
+        nextPos + Vector2(0.f, GuiWidgetConstant::FRAME_HEIGHT + mWindow.getContext().getFramePadding().y)
+    );
+
+    return (mFrames.size() - 2);
+}
+
+void GuiWidgetFrameBase::createFrameText(GuiFrameInfo& frame, GuiDataType type, void* v) {
     frame.type = type;
     frame.data = v;
 
     //値を文字列で描画
     frame.valueTextIndex = mText->text(
         numberToText(v, type),
-        getFramePosition(index) + (GuiWidgetConstant::FRAME_SIZE / 2.f),
+        getFramePosition(frame) + (getFrameSize(frame) / 2.f),
         GuiWidgetConstant::TEXT_HEIGHT - 2.f,
         GuiWidgetConstant::DIGITS,
         Vector4(ColorPalette::white, 1.f),
@@ -119,6 +157,11 @@ const Vector2& GuiWidgetFrameBase::getFramePosition(const GuiFrameInfo& frame) c
     return mWindow.getDrawList().getVertexBuffer()[frame.startIndex].pos;
 }
 
+Vector2 GuiWidgetFrameBase::getFrameSize(const GuiFrameInfo& frame) const {
+    const auto& vb = mWindow.getDrawList().getVertexBuffer();
+    return (vb[frame.startIndex + 2].pos - vb[frame.startIndex].pos);
+}
+
 const GuiFrameInfo& GuiWidgetFrameBase::getSelectingFrame() const {
     return mFrames[mFrameIndex];
 }
@@ -134,7 +177,7 @@ void GuiWidgetFrameBase::selectFrame() {
         //グラブの移動範囲(隙間なども考慮)
         const auto& f = mFrames[i];
         const auto& framePosition = getFramePosition(f);
-        Square sq(framePosition, framePosition + GuiWidgetConstant::FRAME_SIZE);
+        Square sq(framePosition, framePosition + getFrameSize(f));
         if (!sq.contains(mousePos)) {
             continue;
         }
@@ -143,4 +186,11 @@ void GuiWidgetFrameBase::selectFrame() {
         onSelectFrame(f);
         return;
     }
+}
+
+float GuiWidgetFrameBase::calcDivFrameLength(int x) const {
+    auto padding = mWindow.getContext().getFramePadding().x * (x - 1);
+    auto w = GuiWidgetConstant::FRAME_WIDTH - padding;
+    auto res = w / static_cast<float>(x);
+    return res;
 }
