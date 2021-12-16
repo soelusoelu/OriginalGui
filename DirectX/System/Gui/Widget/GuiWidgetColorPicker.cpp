@@ -34,27 +34,17 @@ void GuiWidgetColorPicker::onUpdateColorPicker(const Vector4& newColor) {
 
 void GuiWidgetColorPicker::colorPicker3(const std::string& label, Vector3& color) {
     colorPicker(label, &color, false);
-    mWindow.getWidgets().getSlider().sliderVector3(
-        "",
-        color,
-        Vector3::zero,
-        Vector3::one
-    );
+    mWindow.getWidgets().getSlider().sliderVector3("", color, Vector3::zero, Vector3::one);
 }
 
 void GuiWidgetColorPicker::colorPicker4(const std::string& label, Vector4& color) {
     colorPicker(label, &color, true);
-    mWindow.getWidgets().getSlider().sliderVector4(
-        "",
-        color,
-        Vector4(0.f, 0.f, 0.f, 0.f),
-        Vector4(1.f, 1.f, 1.f, 1.f)
-    );
+    mWindow.getWidgets().getSlider().sliderVector4("", color, Vector4::zero, Vector4::one);
 }
 
 void GuiWidgetColorPicker::colorPicker(const std::string& label, void* color, bool isVec4) {
     //カラーピッカーの描画
-    createColorPicker(mWindow.getNextWidgetPosition());
+    createColorPicker(mWindow.getNextWidgetPosition(), color, isVec4);
 
     //色相バー
     createHueBar();
@@ -69,20 +59,10 @@ void GuiWidgetColorPicker::colorPicker(const std::string& label, void* color, bo
     mColorPickers.emplace_back(GuiColorPicker{ color, isVec4 });
 
     //ラベル
-    mWindow.getWidgets().getText().label(label, getColorPickerPosition(mColorsVertexInfo.back()));
+    mWindow.getWidgets().getText().label(label, getColorPickerPosition(mColorsInfo.back()));
 
     //次のウィジェットの描画位置を設定する
     const auto& prevPos = mWindow.getNextWidgetPosition();
     auto paddingY = mWindow.getContext().getFramePadding().y;
     mWindow.setNextWidgetPosition(prevPos + Vector2(0.f, COLOR_PICKER_HEIGHT + paddingY));
-}
-
-void GuiWidgetColorPicker::clamp(GuiColorPicker& colorPicker) {
-    if (colorPicker.isVec4) {
-        auto& color = *static_cast<Vector4*>(colorPicker.color);
-        color = Vector4::clamp(color, Vector4::zero, Vector4::one);
-    } else {
-        auto& color = *static_cast<Vector3*>(colorPicker.color);
-        color = Vector3::clamp(color, Vector3::zero, Vector3::one);
-    }
 }

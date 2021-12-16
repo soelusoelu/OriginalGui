@@ -6,13 +6,16 @@
 
 class GuiWindow;
 
-struct GuiColorBaseVertexInfo {
+struct GuiColorBaseInfo {
     unsigned colorPickerStartIndex = 0;
     unsigned hueBarStartIndex = 0;
     unsigned colorPickerCursorStartIndex = 0;
     unsigned colorPickerCursorNumPoints = 0;
     unsigned hueBarCursorStartIndex = 0;
     unsigned hueBarCursorNumPoints = 0;
+
+    void* color = nullptr;
+    bool isVec4 = true;
 };
 
 class GuiWidgetColorBase {
@@ -31,7 +34,7 @@ public:
 
 protected:
     //カラーピッカーを作成する
-    void createColorPicker(const Vector2& pos);
+    void createColorPicker(const Vector2& pos, void* color, bool isVec4);
     //カラーピッカーのカーソルを作成する
     void createColorPickerCursor();
     //色相バーを作成する
@@ -39,20 +42,24 @@ protected:
     //色相バーのカーソルを作成する
     void createHueBarCursor();
 
+    //数値をクランプする
+    void clamp(GuiColorBaseInfo& colorBase);
     //選択中のカラーピッカーを取得する
-    const GuiColorBaseVertexInfo& getSelectingVertexInfo() const;
+    const GuiColorBaseInfo& getSelectingVertexInfo() const;
     //選択中のインデックスを取得する
     int getSelectingIndex() const;
     //カラーピッカーを選択中か
     bool isSelectingColorPicker() const;
     //色相バーを選択中か
     bool isSelectingHueBar() const;
+    //Vector3, 4に関わらずVector3型で取得する
+    Vector3 getVector3(const GuiColorBaseInfo& colorBase) const;
 
-    const GuiColorBaseVertexInfo& getVertexInfo(unsigned index) const;
-    const Vector2& getColorPickerPosition(const GuiColorBaseVertexInfo& info) const;
-    const Vector2& getColorPickerCursorPosition(const GuiColorBaseVertexInfo& info) const;
-    const Vector2& getHueBarPosition(const GuiColorBaseVertexInfo& info) const;
-    float getHueBarWidth(const GuiColorBaseVertexInfo& info) const;
+    const GuiColorBaseInfo& getVertexInfo(unsigned index) const;
+    const Vector2& getColorPickerPosition(const GuiColorBaseInfo& info) const;
+    const Vector2& getColorPickerCursorPosition(const GuiColorBaseInfo& info) const;
+    const Vector2& getHueBarPosition(const GuiColorBaseInfo& info) const;
+    float getHueBarWidth(const GuiColorBaseInfo& info) const;
 
 private:
     //マウス位置からカラーピッカーを選択する
@@ -63,7 +70,13 @@ private:
     void selectHueBar();
     //色相バーの選択色を更新する
     void updateHueBar();
+    //管理している値をもとに更新する
+    void updateColorPickerValueBased(const GuiColorBaseInfo& colorBase);
 
+    //カラーピッカーの頂点色を設定する
+    void setColorPickerVertexColor(const GuiColorBaseInfo& colorBase, const Vector3& color);
+    //色相バーのカーソル位置を設定する
+    void setHueBarCursorPosition(const GuiColorBaseInfo& colorBase, float posY);
     //次のプリミティブの始まりのインデックスを求める
     void calcStartIndex(unsigned& startIndex) const;
     //現在のプリミティブの頂点数を求める
@@ -71,7 +84,7 @@ private:
 
 protected:
     GuiWindow& mWindow;
-    std::vector<GuiColorBaseVertexInfo> mColorsVertexInfo;
+    std::vector<GuiColorBaseInfo> mColorsInfo;
     //選択中のカラーピッカー/色相バーのインデックス
     //-1なら掴んでいない
     int mColorPickerIndex;

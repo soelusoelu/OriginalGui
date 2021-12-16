@@ -15,7 +15,7 @@ GuiWidgetColorBase::GuiWidgetColorBase(GuiWindow& window)
 GuiWidgetColorBase::~GuiWidgetColorBase() = default;
 
 void GuiWidgetColorBase::baseUpdate() {
-    if (mColorsVertexInfo.empty()) {
+    if (mColorsInfo.empty()) {
         return;
     }
 
@@ -31,14 +31,22 @@ void GuiWidgetColorBase::baseUpdate() {
     if (mouse.getMouseButton(MouseCode::LeftButton)) {
         updateColorPicker();
         updateHueBar();
+    } else {
+        for (auto&& c : mColorsInfo) {
+            clamp(c);
+            updateColorPickerValueBased(c);
+        }
     }
 
     //子クラスを更新
     update();
 }
 
-void GuiWidgetColorBase::createColorPicker(const Vector2& pos) {
-    auto& info = mColorsVertexInfo.emplace_back();
+void GuiWidgetColorBase::createColorPicker(const Vector2& pos, void* color, bool isVec4) {
+    auto& info = mColorsInfo.emplace_back();
+    info.color = color;
+    info.isVec4 = isVec4;
+
     calcStartIndex(info.colorPickerStartIndex);
 
     //最初はとりあえず赤
@@ -63,7 +71,7 @@ void GuiWidgetColorBase::createColorPicker(const Vector2& pos) {
 }
 
 void GuiWidgetColorBase::createColorPickerCursor() {
-    auto& info = mColorsVertexInfo.back();
+    auto& info = mColorsInfo.back();
     calcStartIndex(info.colorPickerCursorStartIndex);
 
     auto& dl = mWindow.getDrawList();
@@ -78,7 +86,7 @@ void GuiWidgetColorBase::createColorPickerCursor() {
 }
 
 void GuiWidgetColorBase::createHueBar() {
-    auto& info = mColorsVertexInfo.back();
+    auto& info = mColorsInfo.back();
     calcStartIndex(info.hueBarStartIndex);
 
     constexpr float ONE_SIZE_Y = HUE_BAR_HEIGHT / HUE_BAR_COLORS_SIZE;
@@ -104,7 +112,7 @@ void GuiWidgetColorBase::createHueBar() {
 }
 
 void GuiWidgetColorBase::createHueBarCursor() {
-    auto& info = mColorsVertexInfo.back();
+    auto& info = mColorsInfo.back();
     calcStartIndex(info.hueBarCursorStartIndex);
 
     auto& dl = mWindow.getDrawList();
@@ -127,8 +135,18 @@ void GuiWidgetColorBase::createHueBarCursor() {
     calcNumPoints(info.hueBarCursorNumPoints, info.hueBarCursorStartIndex);
 }
 
-const GuiColorBaseVertexInfo& GuiWidgetColorBase::getSelectingVertexInfo() const {
-    return mColorsVertexInfo[getSelectingIndex()];
+void GuiWidgetColorBase::clamp(GuiColorBaseInfo& colorBase) {
+    if (colorBase.isVec4) {
+        auto& color = *static_cast<Vector4*>(colorBase.color);
+        color = Vector4::clamp(color, Vector4::zero, Vector4::one);
+    } else {
+        auto& color = *static_cast<Vector3*>(colorBase.color);
+        color = Vector3::clamp(color, Vector3::zero, Vector3::one);
+    }
+}
+
+const GuiColorBaseInfo& GuiWidgetColorBase::getSelectingVertexInfo() const {
+    return mColorsInfo[getSelectingIndex()];
 }
 
 int GuiWidgetColorBase::getSelectingIndex() const {
@@ -143,24 +161,36 @@ bool GuiWidgetColorBase::isSelectingHueBar() const {
     return (mHueBarIndex != -1);
 }
 
-const GuiColorBaseVertexInfo& GuiWidgetColorBase::getVertexInfo(unsigned index) const {
-    assert(index < mColorsVertexInfo.size());
-    return mColorsVertexInfo[index];
+Vector3 GuiWidgetColorBase::getVector3(const GuiColorBaseInfo& colorBase) const {
+    auto color = Vector3::zero;
+    if (colorBase.isVec4) {
+        const auto& c = *static_cast<Vector4*>(colorBase.color);
+        color = Vector3(c.x, c.y, c.z);
+    } else {
+        color = *static_cast<Vector3*>(colorBase.color);
+    }
+
+    return color;
 }
 
-const Vector2& GuiWidgetColorBase::getColorPickerPosition(const GuiColorBaseVertexInfo& info) const {
+const GuiColorBaseInfo& GuiWidgetColorBase::getVertexInfo(unsigned index) const {
+    assert(index < mColorsInfo.size());
+    return mColorsInfo[index];
+}
+
+const Vector2& GuiWidgetColorBase::getColorPickerPosition(const GuiColorBaseInfo& info) const {
     return mWindow.getDrawList().getVertexBuffer()[info.colorPickerStartIndex].pos;
 }
 
-const Vector2& GuiWidgetColorBase::getColorPickerCursorPosition(const GuiColorBaseVertexInfo& info) const {
+const Vector2& GuiWidgetColorBase::getColorPickerCursorPosition(const GuiColorBaseInfo& info) const {
     return mWindow.getDrawList().getVertexBuffer()[info.colorPickerCursorStartIndex].pos;
 }
 
-const Vector2& GuiWidgetColorBase::getHueBarPosition(const GuiColorBaseVertexInfo& info) const {
+const Vector2& GuiWidgetColorBase::getHueBarPosition(const GuiColorBaseInfo& info) const {
     return mWindow.getDrawList().getVertexBuffer()[info.hueBarStartIndex].pos;
 }
 
-float GuiWidgetColorBase::getHueBarWidth(const GuiColorBaseVertexInfo& info) const {
+float GuiWidgetColorBase::getHueBarWidth(const GuiColorBaseInfo& info) const {
     const auto& vb = mWindow.getDrawList().getVertexBuffer();
     auto idx = info.hueBarStartIndex;
     return (vb[idx + 1].pos.x - vb[idx].pos.x);
@@ -168,8 +198,8 @@ float GuiWidgetColorBase::getHueBarWidth(const GuiColorBaseVertexInfo& info) con
 
 void GuiWidgetColorBase::selectColorPicker() {
     const auto& mousePos = Input::mouse().getMousePosition();
-    for (int i = 0; i < mColorsVertexInfo.size(); ++i) {
-        auto& info = mColorsVertexInfo[i];
+    for (int i = 0; i < mColorsInfo.size(); ++i) {
+        auto& info = mColorsInfo[i];
         const auto& pos = getColorPickerPosition(info);
         Square sq(pos, pos + COLOR_PICKER_SIZE);
         if (!sq.contains(mousePos)) {
@@ -230,8 +260,8 @@ void GuiWidgetColorBase::updateColorPicker() {
 
 void GuiWidgetColorBase::selectHueBar() {
     const auto& mousePos = Input::mouse().getMousePosition();
-    for (int i = 0; i < mColorsVertexInfo.size(); ++i) {
-        auto& info = mColorsVertexInfo[i];
+    for (int i = 0; i < mColorsInfo.size(); ++i) {
+        auto& info = mColorsInfo[i];
         const auto& pos = getHueBarPosition(info);
         Square sq(pos, pos + Vector2(getHueBarWidth(info), HUE_BAR_HEIGHT));
         if (!sq.contains(mousePos)) {
@@ -274,21 +304,87 @@ void GuiWidgetColorBase::updateHueBar() {
     );
 
     //カラーピッカーの色変更
-    //頂点4つの矩形想定
-    auto& dl = mWindow.getDrawList();
-    dl.setVertexColor(Vector4(color, 1.f), info.colorPickerStartIndex + 1);
-    dl.setVertexColor(Vector4(color, 1.f), info.colorPickerStartIndex + 2);
+    setColorPickerVertexColor(info, color);
 
     //色相バーのカーソル位置を変更する
-    auto prevPos = dl.getVertexBuffer()[info.hueBarCursorStartIndex].pos.y;
-    dl.updateVertexPosition(
-        Vector2(0.f, clampMousePosY - prevPos),
-        info.hueBarCursorStartIndex,
-        info.hueBarCursorNumPoints
-    );
+    setHueBarCursorPosition(info, clampMousePosY);
 
     //子呼び出し
     onUpdateHueBar(color);
+}
+
+void GuiWidgetColorBase::updateColorPickerValueBased(const GuiColorBaseInfo& colorBase) {
+    //auto color = getVector3(colorBase);
+
+    ////色相から最も近い値を求める
+    //float min = FLT_MAX;
+    //int idx = 0;
+    //for (int i = 0; i < HUE_BAR_COLORS_SIZE; ++i) {
+    //    auto sub = color - HUE_BAR_COLORS[i];
+    //    auto lenSq = sub.lengthSq();
+    //    if (lenSq < min) {
+    //        min = lenSq;
+    //        idx = i;
+    //    }
+    //}
+
+    ////色相から2番目に近い値を求める
+    //min = FLT_MAX;
+    //int idx2 = 0;
+    //for (int i = 0; i < HUE_BAR_COLORS_SIZE; ++i) {
+    //    if (i == idx) {
+    //        continue;
+    //    }
+
+    //    auto sub = color - HUE_BAR_COLORS[i];
+    //    auto lenSq = sub.lengthSq();
+    //    if (lenSq < min) {
+    //        min = lenSq;
+    //        idx2 = i;
+    //    }
+    //}
+
+    ////色値の大きさが小さい方をc1にする
+    //auto c1 = HUE_BAR_COLORS[idx];
+    //auto c2 = HUE_BAR_COLORS[idx2];
+    //if (c1.lengthSq() > c2.lengthSq()) {
+    //    std::swap(c1, c2);
+    //}
+
+    //float tx = (color.x - c1.x);
+    //float ty = (color.y - c1.y);
+    //float tz = (color.z - c1.z);
+    //float testx = (c2.x - c1.x);
+    //float testy = (c2.y - c1.y);
+    //float testz = (c2.z - c1.z);
+    //if (testx != 0.f) {
+    //    tx /= testx;
+    //}
+    //if (testy != 0.f) {
+    //    ty /= testy;
+    //}
+    //if (testz != 0.f) {
+    //    tz /= testz;
+    //}
+
+    //setColorPickerVertexColor(colorBase, c2);
+}
+
+void GuiWidgetColorBase::setColorPickerVertexColor(const GuiColorBaseInfo& colorBase, const Vector3& color) {
+    //頂点4つの矩形想定
+    auto& dl = mWindow.getDrawList();
+    dl.setVertexColor(Vector4(color, 1.f), colorBase.colorPickerStartIndex + 1);
+    dl.setVertexColor(Vector4(color, 1.f), colorBase.colorPickerStartIndex + 2);
+}
+
+void GuiWidgetColorBase::setHueBarCursorPosition(const GuiColorBaseInfo& colorBase, float posY) {
+    auto& dl = mWindow.getDrawList();
+    auto prevPosY = dl.getVertexBuffer()[colorBase.hueBarCursorStartIndex].pos.y;
+    dl.updateVertexPosition(
+        Vector2(0.f, posY - prevPosY),
+        colorBase.hueBarCursorStartIndex,
+        colorBase.hueBarCursorNumPoints
+    );
 }
 
 void GuiWidgetColorBase::calcStartIndex(unsigned& startIndex) const {
